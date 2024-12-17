@@ -12,6 +12,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/workspaces', require('./routes/workspaces'));
+app.use('/api/workspaces', require('./routes/channels'));
 
 
 app.get('/', (req, res) => {
