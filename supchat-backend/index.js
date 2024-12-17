@@ -6,6 +6,12 @@ const app = express();
 // Connect Database
 connectDB();
 
+// Middleware pour parser le JSON
+app.use(express.json());
+
+// Routes
+app.use('/api/auth', require('./routes/auth'));
+
 app.get('/', (req, res) => {
   res.send('Server is running');
 });
