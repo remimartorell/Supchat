@@ -15,7 +15,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/workspaces', require('./routes/workspaces'));
 app.use('/api/workspaces', require('./routes/channels'));
 app.use('/api/channels', require('./routes/messages'));
-
+app.use('/api/direct-messages', require('./routes/directMessages'));
 
 app.get('/', (req, res) => {
   res.send('Server is running');
