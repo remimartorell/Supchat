@@ -6,6 +6,8 @@ const app = express();
 // Connect Database
 connectDB();
 
+app.use('/uploads', express.static('uploads'));
+rfccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccr=vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggt
 // Middleware pour parser le JSON
 app.use(express.json());
 
