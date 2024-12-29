@@ -7,10 +7,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./supchat-backend:/app
-      - /app/node_modules
+      - /node_modules
     environment:
-      - MONGO_URI=mongodb://mongodb:27017/supchat
+      - MONGO_URI=mongodb+srv://adminsupchat:QKnX2fNJMDFW23P4@supchat-cluster.ddto3.mongodb.net/?retryWrites=true&w=majority&appName=supchat-cluster
     depends_on:
       - mongodb
 

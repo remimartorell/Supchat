@@ -13,8 +13,16 @@ const DirectMessageSchema = new mongoose.Schema({
     },
     content: {
         type: String,
-        required: true,
     },
+    fileUrl: {
+        type: String,
+    },
+    reactions: [
+        {
+            emoji: { type: String },
+            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        },
+    ],
     createdAt: {
         type: Date,
         default: Date.now,
