@@ -4,18 +4,12 @@ const auth = require('../middleware/auth');
 const DirectMessage = require('../models/DirectMessage');
 const User = require('../models/User');
 const multer = require('multer');
-const path = require('path');
 
-// Configuration de Multer pour stocker les fichiers
+// Configuration Multer
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + '-' + file.originalname);
-    },
+    destination: (req, file, cb) => cb(null, 'uploads/'),
+    filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
 });
-
 const upload = multer({ storage });
 
 // @route   GET /api/direct-messages/:userId
@@ -68,7 +62,7 @@ router.post('/:messageId/reactions', auth, async (req, res) => {
 });
 
 // @route   POST /api/direct-messages
-// @desc    Envoyer un message privé avec ou sans fichier
+// @desc    Envoyer un message privé
 // @access  Privé
 router.post('/', auth, upload.single('file'), async (req, res) => {
     const { content, receiverId } = req.body;
@@ -79,18 +73,41 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
             return res.status(404).json({ msg: 'Receiver not found' });
         }
 
+        // Sauvegarde du message dans la DB
         const newMessage = new DirectMessage({
             sender: req.user.id,
             receiver: receiverId,
             content,
             fileUrl: req.file ? `/uploads/${req.file.filename}` : null,
         });
-
         const message = await newMessage.save();
-        res.json(message);
+
+        // Récupération de l’instance de socket.io + du mapping user->socket
+        const io = req.app.get('socketio');
+        const userSocketMap = req.app.get('userSocketMap');
+
+        // Récupération du socketId du destinataire
+        const receiverSocketId = userSocketMap[receiverId];
+
+        if (receiverSocketId) {
+            // On émet l’événement au socketId du destinataire
+            io.to(receiverSocketId).emit('new-private-message', {
+                sender: req.user.id,
+                receiver: receiverId,
+                content: message.content,
+                fileUrl: message.fileUrl,
+                createdAt: message.createdAt,
+            });
+
+            console.log(`Message privé émis via Socket.io au socketId : ${receiverSocketId}`);
+        } else {
+            console.log('Le destinataire n\'est pas connecté via Socket.io ou pas encore "join"');
+        }
+
+        return res.json(message);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        return res.status(500).send('Server Error');
     }
 });
 
