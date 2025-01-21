@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="- Ajout du front-end, amélioration de l'application">
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/package-lock.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/App.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/App.test.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/index.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/logo.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/reportWebVitals.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/setupTests.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Dockerfile" />
+        <option value="JavaScript File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="MIXED" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;remimartorell&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/remimartorell/Supchat.git&quot;,
+    &quot;accountId&quot;: &quot;39a550c0-b14e-4748-9a4e-1ebd85ade2a8&quot;
+  }
+}</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2qIgM2SGE8ACQPN3HA4lbU7iDzu" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Node.js.directMessages.js.executor&quot;: &quot;Run&quot;,
+    &quot;Node.js.index.js.executor&quot;: &quot;Run&quot;,
+    &quot;Node.js.workspaces.js.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/marto/Desktop/Cours/3e Année/3PROJ/Projet Final/Supchat&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.24807.4" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.24807.4" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="" />
+      <created>1734355451773</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1734355451773</updated>
+      <workItem from="1734355452812" duration="2936000" />
+      <workItem from="1734424605963" duration="9051000" />
+      <workItem from="1735391301801" duration="299000" />
+      <workItem from="1735391830594" duration="8239000" />
+      <workItem from="1735492544450" duration="5026000" />
+      <workItem from="1736755928827" duration="12000" />
+      <workItem from="1736755946318" duration="8494000" />
+      <workItem from="1736764902025" duration="22857000" />
+      <workItem from="1737447086770" duration="1045000" />
+    </task>
+    <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
+      <option name="closed" value="true" />
+      <created>1734355654784</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1734355654784</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Ajout docker-compose.yml">
+      <option name="closed" value="true" />
+      <created>1734356275850</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1734356275850</updated>
+    </task>
+    <task id="LOCAL-00003" summary="- Ajout middleware/auth, models/ User &amp; Workspace, routes/ auth &amp; workspace&#10;- Installation de bcryptjs &amp; jsonwebtoken &amp; express-validator&#10;- Modification du index.js">
+      <option name="closed" value="true" />
+      <created>1734426508678</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1734426508678</updated>
+    </task>
+    <task id="LOCAL-00004" summary="- Utilisateurs : Inscription &amp; connexion&#10;- Workspace : Créer un workspace, voir les workspaces de l'utilisateur, ajout un membre à un workspace, modifier un workspace, supprimer un workspace&#10;- Modification du index.js">
+      <option name="closed" value="true" />
+      <created>1734429688821</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1734429688821</updated>
+    </task>
+    <task id="LOCAL-00005" summary="- Channels : Création de canal, lister les canaux d'un workspace, supprimer un canal&#10;- Modification du index.js">
+      <option name="closed" value="true" />
+      <created>1734431690472</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1734431690472</updated>
+    </task>
+    <task id="LOCAL-00006" summary="- Messages : Envoyer un message dans un canal, récupérer les messages d'un canal&#10;- Modification du index.js">
+      <option name="closed" value="true" />
+      <created>1734432466636</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1734432466636</updated>
+    </task>
+    <task id="LOCAL-00007" summary="- Messages : Envoyer un message dans un canal, récupérer les messages d'un canal&#10;- Modification du index.js">
+      <option name="closed" value="true" />
+      <created>1735391450873</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1735391450874</updated>
+    </task>
+    <task id="LOCAL-00008" summary="- Messages : Envoyer des messages privés, envoyer un fichier, ajouter des réactions.&#10;- Modification du index.js">
+      <option name="closed" value="true" />
+      <created>1735404099648</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1735404099648</updated>
+    </task>
+    <task id="LOCAL-00009" summary="- Messages : Envoyer des fichiers en message privé, ajouter des réactions aux messages privés.&#10;- Modification du docket-compose">
+      <option name="closed" value="true" />
+      <created>1735475922568</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1735475922568</updated>
+    </task>
+    <task id="LOCAL-00010" summary="- Régler le problème de socket.io . Maintenant les notifications et messages reçu via l'event new-private-message ainsi que join des rooms.">
+      <option name="closed" value="true" />
+      <created>1736762907679</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1736762907679</updated>
+    </task>
+    <task id="LOCAL-00011" summary="- Ajout du front-end, amélioration de l'application">
+      <option name="closed" value="true" />
+      <created>1737447830506</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1737447830506</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Début du projet (node.js, express, mongoose, .env)" />
+    <MESSAGE value="Ajout docker-compose.yml" />
+    <MESSAGE value="- Ajout middleware/auth, models/ User &amp; Workspace, routes/ auth &amp; workspace&#10;- Installation de bcryptjs &amp; jsonwebtoken &amp; express-validator&#10;- Modification du index.js" />
+    <MESSAGE value="- Utilisateurs : Inscription &amp; connexion&#10;- Workspace : Créer un workspace, voir les workspaces de l'utilisateur, ajout un membre à un workspace, modifier un workspace, supprimer un workspace&#10;- Modification du index.js" />
+    <MESSAGE value="- Channels : Création de canal, lister les canaux d'un workspace, supprimer un canal&#10;- Modification du index.js" />
+    <MESSAGE value="- Messages : Envoyer un message dans un canal, récupérer les messages d'un canal&#10;- Modification du index.js" />
+    <MESSAGE value="- Messages : Envoyer des messages privés, envoyer un fichier, ajouter des réactions.&#10;- Modification du index.js" />
+    <MESSAGE value="- Messages : Envoyer des fichiers en message privé, ajouter des réactions aux messages privés.&#10;- Modification du docket-compose" />
+    <MESSAGE value="- Régler le problème de socket.io . Maintenant les notifications et messages reçu via l'event new-private-message ainsi que join des rooms." />
+    <MESSAGE value="- Ajout du front-end, amélioration de l'application" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Ajout du front-end, amélioration de l'application" />
+  </component>
+</project>
