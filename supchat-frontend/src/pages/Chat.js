@@ -88,7 +88,11 @@ function Chat() {
             });
 
             newSocket.on('mention-notification', (notif) => {
-                alert(`Tu as été mentionné par ${notif.from} dans le channel ${notif.channelId}`);
+                alert(`
+                    Tu as été mentionné par ${notif.from}
+                    Dans le channel ${notif.channelName}
+                    Du workspace ${notif.workspaceName}
+                `);
             });
 
             return () => {
@@ -99,6 +103,13 @@ function Chat() {
             };
         }
     }, [isLoggedIn, userId, selectedUser, selectedChannel]);
+
+    useEffect(() => {
+        if (socket && selectedChannel) {
+            socket.emit('joinChannel', selectedChannel);
+            console.log('Re-join channel automatically', selectedChannel);
+        }
+    }, [socket, selectedChannel]);
 
     // -- 3) Au montage (ou après login), récupérer la liste d’utilisateurs + workspaces
     useEffect(() => {
@@ -236,7 +247,7 @@ function Chat() {
     };
 
     return (
-        <div style={{ display: 'flex', height: '100vh' }}>
+        <div style={{display: 'flex', flex: '1'}}>
             <Sidebar
                 users={users}
                 myWorkspaces={myWorkspaces}
@@ -246,7 +257,7 @@ function Chat() {
                 selectedChannel={selectedChannel}
             />
 
-            <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+            <div style={{display: 'flex', flexDirection: 'column', flexGrow: 1}}>
                 <ChatWindow
                     userId={userId}
                     messages={messages}

@@ -11,3 +11,33 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* pas de scroll global */
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.navbar {
+  background: #eee;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+.app-container {
+  flex: 1;
+  display: flex; /* Sidebar + Chat en flex */
+  overflow: hidden; /* on va scroller à l’intérieur */
+}
+
+.logout {
+  margin-left: 10px;
+  color: red;
+}

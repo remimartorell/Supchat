@@ -78,7 +78,7 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
             sender: req.user.id,
             receiver: receiverId,
             content,
-            fileUrl: req.file ? `/uploads/${req.file.filename}` : null,
+            fileUrl: req.file ? `http://localhost:3000/uploads/${req.file.filename}` : null,
         });
         const message = await newMessage.save();
 

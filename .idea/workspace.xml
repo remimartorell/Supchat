@@ -4,19 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="- Ajout du front-end, amélioration de l'application">
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/App.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/App.test.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/index.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/logo.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/reportWebVitals.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/setupTests.js" afterDir="false" />
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="- Ajout du dernier fichier qui n'était pas dans le git">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/directMessages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/directMessages.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/messages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/messages.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,7 +98,7 @@
       <workItem from="1736755928827" duration="12000" />
       <workItem from="1736755946318" duration="8494000" />
       <workItem from="1736764902025" duration="22857000" />
-      <workItem from="1737447086770" duration="1045000" />
+      <workItem from="1737447086770" duration="11182000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -191,7 +188,23 @@
       <option name="project" value="LOCAL" />
       <updated>1737447830506</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="- Ajout des fichiers qui n'étaient pas ajoutés dans git">
+      <option name="closed" value="true" />
+      <created>1737448186892</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1737448186892</updated>
+    </task>
+    <task id="LOCAL-00013" summary="- Ajout du dernier fichier qui n'était pas dans le git">
+      <option name="closed" value="true" />
+      <created>1737448278599</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1737448278599</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -219,6 +232,8 @@
     <MESSAGE value="- Messages : Envoyer des fichiers en message privé, ajouter des réactions aux messages privés.&#10;- Modification du docket-compose" />
     <MESSAGE value="- Régler le problème de socket.io . Maintenant les notifications et messages reçu via l'event new-private-message ainsi que join des rooms." />
     <MESSAGE value="- Ajout du front-end, amélioration de l'application" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Ajout du front-end, amélioration de l'application" />
+    <MESSAGE value="- Ajout des fichiers qui n'étaient pas ajoutés dans git" />
+    <MESSAGE value="- Ajout du dernier fichier qui n'était pas dans le git" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Ajout du dernier fichier qui n'était pas dans le git" />
   </component>
 </project>

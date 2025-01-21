@@ -7,6 +7,7 @@ const multer = require('multer');
 const path = require('path');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
+const Workspace = require('../models/Workspace');
 
 // Configuration de Multer pour stocker les fichiers localement
 const storage = multer.diskStorage({
@@ -29,6 +30,7 @@ router.post('/:channelId/messages', auth, upload.single('file'), async (req, res
 
     try {
         const channel = await Channel.findById(req.params.channelId);
+        const workspace = await Workspace.findById(channel.workspace);
         if (!channel) {
             return res.status(404).json({ msg: 'Channel not found' });
         }
@@ -36,15 +38,28 @@ router.post('/:channelId/messages', auth, upload.single('file'), async (req, res
         // On crée et sauvegarde le message
         const newMessage = new Message({
             content: req.body.content,
-            fileUrl: req.file ? `/uploads/${req.file.filename}` : null,
+            fileUrl: req.file ? `http://localhost:3000/uploads/${req.file.filename}` : null,
             channel: req.params.channelId,
             sender: req.user.id,
         });
 
+        const message = await newMessage.save();
+
+        // 3. Récup io & userSocketMap
+        const io = req.app.get('socketio');
+        const userSocketMap = req.app.get('userSocketMap');
+
         const mentions = JSON.parse(req.body.mentions || '[]');
+        const validMentions = []; // On va y mettre seulement les mentionNames qui existent
+
+        const fromUser = await User.findById(req.user.id).select('name');
+
         for (const mentionName of mentions) {
-            const userMentioned = await User.findOne({ username: mentionName });
+            // On cherche un user par name
+            const userMentioned = await User.findOne({ name: mentionName });
             if (userMentioned) {
+                validMentions.push(mentionName); // on l'ajoute à la liste
+
                 // Creer la notification
                 await Notification.create({
                     user: userMentioned._id,
@@ -57,45 +72,25 @@ router.post('/:channelId/messages', auth, upload.single('file'), async (req, res
                 const userSocketId = userSocketMap[userMentioned._id];
                 if (userSocketId) {
                     io.to(userSocketId).emit('mention-notification', {
-                        from: req.user.id,
-                        channelId: req.params.channelId,
-                        message: 'bla bla mention...'
+                        from: fromUser?.name || 'Unknown',
+                        channelName: channel.name,
+                        workspaceName: workspace?.name || '',
+                        message: `@${mentionName} a été mentionné.`
                     });
                 }
             }
         }
 
-        const message = await newMessage.save();
-
-        // -- Émettre l'event via Socket.IO
-        const io = req.app.get('socketio');
-        // Optionnel : si tu veux peupler le sender en code, ex. :
-        //   const user = await User.findById(req.user.id).select('name email');
-        //   (mais sinon on envoie juste l'ID)
-
-        const userSocketMap = req.app.get('userSocketMap');
-
         io.to(req.params.channelId).emit('new-channel-message', {
             _id: message._id,
             content: message.content,
             channelId: req.params.channelId,
+            channelName: channel.name, // << on affiche #NomDuChannel
             sender: req.user.id, // ou { _id: user._id, name: user.name }
             createdAt: message.createdAt,
+            validMentions, // on renvoie la liste des mentions valide
             fileUrl: message.fileUrl,
         });
-
-        // L’expéditeur (req.user.id) => on récupère son socketId
-        const senderSocketId = userSocketMap[req.user.id];
-        if (senderSocketId) {
-            io.to(senderSocketId).emit('new-channel-message', {
-                _id: message._id,
-                content: message.content,
-                channelId: req.params.channelId,
-                sender: req.user.id, // ou { _id: user._id, name: user.name }
-                createdAt: message.createdAt,
-                fileUrl: message.fileUrl,
-            });
-        }
 
         return res.json(message);
     } catch (err) {

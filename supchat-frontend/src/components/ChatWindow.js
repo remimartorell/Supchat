@@ -1,16 +1,24 @@
 // src/components/ChatWindow.js
 import React from 'react';
 
-function highlightMentions(text) {
-    return text.split(/(\@[^\s]+)/g).map((part, i) => {
-        if (part.startsWith('@')) {
-            return (
-                <span key={i} style={{ color: 'blue', fontWeight: 'bold' }}>
-          {part}
-        </span>
-            );
+function highlightMentions(content, validMentions) {
+    if (!content) {
+        return content; // si c'est vide, on le renvoie direct
+    }
+
+    // Découpe par espaces
+    // (tu peux affiner la logique si tu veux gérer la ponctuation)
+    return content.split(/\s+/).map((word, i) => {
+        // word ex: "@Michel" ou "hello"
+        if (word.startsWith('@')) {
+            const mentionName = word.slice(1); // “Michel”
+            if (validMentions.includes(mentionName)) {
+                // surligner
+                return <span key={i} style={{ color: 'blue', fontWeight: 'bold' }}>{word} </span>;
+            }
         }
-        return part;
+        // Sinon, on renvoie normal
+        return word + ' ';
     });
 }
 
@@ -48,8 +56,8 @@ function ChatWindow({ userId, messages, selectedUser, selectedChannel }) {
                         } else {
                             receiverLabel = m.receiver;
                         }
-                    } else if (m.channelId) {
-                        receiverLabel = m.channelId;
+                    } else if (m.channelName) {
+                        receiverLabel = `#${m.channelName}`;
                     } else {
                         receiverLabel = '(Inconnu)';
                     }
@@ -59,6 +67,9 @@ function ChatWindow({ userId, messages, selectedUser, selectedChannel }) {
                     const isMe = (typeof m.sender === 'object' && m.sender._id === userId)
                         || m.sender === userId;
 
+                    const text = m.content || ''; // au cas où
+                    const valid = m.validMentions || [];
+
                     return (
                         <div key={m._id} style={{
                             margin: '8px',
@@ -67,7 +78,7 @@ function ChatWindow({ userId, messages, selectedUser, selectedChannel }) {
                         }}>
                             <strong>From:</strong> {senderLabel}<br />
                             <strong>To:</strong> {receiverLabel}<br />
-                            <strong>Content:</strong> {highlightMentions(m.content)}<br />
+                            <strong>Content:</strong> {highlightMentions(text, valid)}<br />
 
                             {/* SI FILEURL */}
                             {m.fileUrl && (

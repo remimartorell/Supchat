@@ -7,33 +7,53 @@ import Chat from './pages/Chat';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
+    const token = localStorage.getItem('token');
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        window.location.reload();
+    };
+
     return (
-        <div>
-            <nav style={{ padding: '10px', background: '#eee' }}>
-                <Link to="/login" style={{ marginRight: '10px' }}>Login</Link>
-                <Link to="/register" style={{ marginRight: '10px' }}>Register</Link>
-                <Link to="/chat">Chat</Link>
-            </nav>
+        <div id="root-app">
+            <div className="navbar">
+                <nav style={{padding: '10px', background: '#eee'}}>
+                    {!token && (
+                        <>
+                            <Link to="/login" style={{marginRight: '10px'}}>Login</Link>
+                            <Link to="/register" style={{marginRight: '10px'}}>Register</Link>
+                        </>
+                    )}
+                    {token && (
+                        <>
+                            <Link to="/chat">Chat</Link>
+                            <button onClick={handleLogout} className={"logout"}>Logout</button>
+                        </>
+                    )}
+                </nav>
+            </div>
 
-            <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+            <div className="app-container">
+                <Routes>
+                    <Route path="/login" element={<Login/>}/>
+                    <Route path="/register" element={<Register/>}/>
 
-                <Route
-                    path="/chat"
-                    element={
-                        <PrivateRoute>
-                            <Chat />
-                        </PrivateRoute>
-                    }
-                />
+                    <Route
+                        path="/chat"
+                        element={
+                            <PrivateRoute>
+                                <Chat/>
+                            </PrivateRoute>
+                        }
+                    />
 
-                {/* Page d'accueil */}
-                <Route path="/" element={<div>Accueil</div>} />
+                    {/* Page d'accueil */}
+                    <Route path="/" element={<div>Accueil</div>}/>
 
-                {/* 404 */}
-                <Route path="*" element={<div>404 Not Found</div>} />
-            </Routes>
+                    {/* 404 */}
+                    <Route path="*" element={<div>404 Not Found</div>}/>
+                </Routes>
+            </div>
         </div>
     );
 }
