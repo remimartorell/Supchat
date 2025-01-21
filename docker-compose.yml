@@ -4,14 +4,24 @@ services:
   backend:
     build:
       context: ./supchat-backend
+    container_name: supchat-backend
     ports:
       - "3000:3000"
-    volumes:
-      - /node_modules
     environment:
       - MONGO_URI=mongodb+srv://adminsupchat:QKnX2fNJMDFW23P4@supchat-cluster.ddto3.mongodb.net/?retryWrites=true&w=majority&appName=supchat-cluster
     depends_on:
       - mongodb
+
+  frontend:
+    build:
+      context: ./supchat-frontend
+    container_name: supchat-frontend
+    ports:
+      - "3001:80"
+    depends_on:
+      - backend
+    # Pas forcément besoin d'environnement pour le front,
+    # sauf si tu veux passer des variables à build.
 
   mongodb:
     image: mongo
@@ -24,4 +34,4 @@ services:
 volumes:
   mongodb_data:
 
-    # Comande Docker "docker-compose up --build"
+  # Comande Docker "docker-compose up --build"

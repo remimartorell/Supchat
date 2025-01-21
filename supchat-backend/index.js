@@ -1,14 +1,22 @@
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const cors = require('cors');
 const connectDB = require('./db');
 
 const app = express();
 connectDB();
 
+// -- 1) Déclarer CORS avant tout :
+app.use(cors({
+  origin: '*',        // Autorise toute origine
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'x-auth-token'],
+}));
+
 // Middleware
-app.use('/uploads', express.static('uploads'));
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -18,6 +26,8 @@ app.use('/api/channels', require('./routes/messages'));
 app.use('/api/direct-messages', require('./routes/directMessages'));
 
 const server = http.createServer(app);
+
+// -- 3) Configurer Socket.IO avec CORS :
 const io = socketIo(server, {
   cors: {
     origin: '*',
@@ -54,6 +64,11 @@ io.on('connection', (socket) => {
     socket.emit('joined', {
       message: `Ok, userId ${userId} associé à socketId ${socket.id}`,
     });
+  });
+
+  socket.on('joinChannel', (channelId) => {
+    socket.join(channelId);
+    console.log(`Socket ${socket.id} joined channel ${channelId}`);
   });
 
   // Écouter la déconnexion

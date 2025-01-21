@@ -5,6 +5,8 @@ const Channel = require('../models/Channel');
 const Message = require('../models/Message');
 const multer = require('multer');
 const path = require('path');
+const User = require('../models/User');
+const Notification = require('../models/Notification');
 
 // Configuration de Multer pour stocker les fichiers localement
 const storage = multer.diskStorage({
@@ -31,19 +33,74 @@ router.post('/:channelId/messages', auth, upload.single('file'), async (req, res
             return res.status(404).json({ msg: 'Channel not found' });
         }
 
-        // Créer et sauvegarder le message
+        // On crée et sauvegarde le message
         const newMessage = new Message({
-            content,
+            content: req.body.content,
             fileUrl: req.file ? `/uploads/${req.file.filename}` : null,
             channel: req.params.channelId,
             sender: req.user.id,
         });
 
+        const mentions = JSON.parse(req.body.mentions || '[]');
+        for (const mentionName of mentions) {
+            const userMentioned = await User.findOne({ username: mentionName });
+            if (userMentioned) {
+                // Creer la notification
+                await Notification.create({
+                    user: userMentioned._id,
+                    type: 'mention',
+                    channel: req.params.channelId,
+                    message: `${req.user.id} t'a mentionné dans le channel ${req.params.channelId}`
+                });
+
+                // Émettre un event mention-notification
+                const userSocketId = userSocketMap[userMentioned._id];
+                if (userSocketId) {
+                    io.to(userSocketId).emit('mention-notification', {
+                        from: req.user.id,
+                        channelId: req.params.channelId,
+                        message: 'bla bla mention...'
+                    });
+                }
+            }
+        }
+
         const message = await newMessage.save();
-        res.json(message);
+
+        // -- Émettre l'event via Socket.IO
+        const io = req.app.get('socketio');
+        // Optionnel : si tu veux peupler le sender en code, ex. :
+        //   const user = await User.findById(req.user.id).select('name email');
+        //   (mais sinon on envoie juste l'ID)
+
+        const userSocketMap = req.app.get('userSocketMap');
+
+        io.to(req.params.channelId).emit('new-channel-message', {
+            _id: message._id,
+            content: message.content,
+            channelId: req.params.channelId,
+            sender: req.user.id, // ou { _id: user._id, name: user.name }
+            createdAt: message.createdAt,
+            fileUrl: message.fileUrl,
+        });
+
+        // L’expéditeur (req.user.id) => on récupère son socketId
+        const senderSocketId = userSocketMap[req.user.id];
+        if (senderSocketId) {
+            io.to(senderSocketId).emit('new-channel-message', {
+                _id: message._id,
+                content: message.content,
+                channelId: req.params.channelId,
+                sender: req.user.id, // ou { _id: user._id, name: user.name }
+                createdAt: message.createdAt,
+                fileUrl: message.fileUrl,
+            });
+        }
+
+        return res.json(message);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        return res.status(500).send('Server Error');
     }
 });
 

@@ -73,7 +73,7 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
             return res.status(404).json({ msg: 'Receiver not found' });
         }
 
-        // Sauvegarde du message dans la DB
+        // Création + sauvegarde
         const newMessage = new DirectMessage({
             sender: req.user.id,
             receiver: receiverId,
@@ -82,15 +82,28 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
         });
         const message = await newMessage.save();
 
-        // Récupération de l’instance de socket.io + du mapping user->socket
+        // Socket.IO
         const io = req.app.get('socketio');
         const userSocketMap = req.app.get('userSocketMap');
 
-        // Récupération du socketId du destinataire
+        // SocketId du destinataire
         const receiverSocketId = userSocketMap[receiverId];
+        // SocketId de l'expéditeur
+        const senderSocketId = userSocketMap[req.user.id];
 
+        // 1) Émettre à l’expéditeur
+        if (senderSocketId) {
+            io.to(senderSocketId).emit('new-private-message', {
+                sender: req.user.id,
+                receiver: receiverId,
+                content: message.content,
+                fileUrl: message.fileUrl,
+                createdAt: message.createdAt,
+            });
+        }
+
+        // 2) Émettre au destinataire
         if (receiverSocketId) {
-            // On émet l’événement au socketId du destinataire
             io.to(receiverSocketId).emit('new-private-message', {
                 sender: req.user.id,
                 receiver: receiverId,
@@ -98,12 +111,12 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
                 fileUrl: message.fileUrl,
                 createdAt: message.createdAt,
             });
-
-            console.log(`Message privé émis via Socket.io au socketId : ${receiverSocketId}`);
+            console.log(`Message privé émis au destinataire socketId : ${receiverSocketId}`);
         } else {
-            console.log('Le destinataire n\'est pas connecté via Socket.io ou pas encore "join"');
+            console.log('Le destinataire n’est pas connecté ou pas "join"');
         }
 
+        // On renvoie le message sauvegardé
         return res.json(message);
     } catch (err) {
         console.error(err.message);
