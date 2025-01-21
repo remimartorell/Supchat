@@ -17,10 +17,11 @@ function Login() {
                 password,
             });
             // Suppose que le back renvoie : { token: "..." }
-            const { token } = response.data;
+            const { token, user } = response.data;
 
             // On stocke le token dans localStorage
             localStorage.setItem('token', token);
+            localStorage.setItem('userId', user._id);
             // On met à jour axios pour les futures requêtes
             axios.defaults.headers.common['x-auth-token'] = token;
 

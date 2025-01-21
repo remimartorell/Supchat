@@ -57,17 +57,34 @@ function SearchResults() {
         navigate(`/chat?channelId=${channelId}&focusMsg=${msg._id}`);
     };
 
+
     // Sur un "dmMessage"
     const handleDMMessageClick = (dm) => {
-        const me = localStorage.getItem('userId');
+        /*const me = localStorage.getItem('userId');
+        const senderId = String(dm.sender?._id);
+        const receiverId = String(dm.receiver?._id);
+
         let otherUserId;
-        if (dm.sender?._id === me) {
+        if (senderId === me) {
             // si c'est moi l'envoyeur, l'autre est dm.receiver
             otherUserId = dm.receiver?._id;
         } else {
             otherUserId = dm.sender?._id;
         }
-        navigate(`/chat?userId=${otherUserId}&focusMsg=${dm._id}`);
+        navigate(`/chat?userId=${otherUserId}&focusMsg=${dm._id}`); */
+
+        const me = localStorage.getItem('userId') || '';     // string
+        const senderId = String(dm.sender?._id || '');       // convert
+        const receiverId = String(dm.receiver?._id || '');   // convert
+
+        if (senderId === me) {
+            // c'est moi l'envoyeur => conversation DM avec le receiver
+            navigate(`/chat?userId=${receiverId}&focusMsg=${dm._id}`);
+        } else {
+            // c'est l'autre qui a envoyé => conversation DM avec sender
+            navigate(`/chat?userId=${senderId}&focusMsg=${dm._id}`);
+        }
+
     };
 
     // Style pour les "cards"

@@ -46,13 +46,12 @@ router.get('/', auth, async (req, res) => {
             .sort({ createdAt: -1 }); // tri par date desc ?
 
         // 4) Rechercher dans les DirectMessages
-        const dmMessages = await DirectMessage.find({
-            content: { $regex: query, $options: 'i' },
-        })
+        const dmMessages = await DirectMessage.find({ content: { $regex: query, $options: 'i' } })
             .limit(50)
             .populate('sender', 'name email')
             .populate('receiver', 'name email')
             .sort({ createdAt: -1 });
+
 
         // Renvoyer un objet
         return res.json({

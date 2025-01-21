@@ -6,7 +6,6 @@ import Register from './pages/Register';
 import Chat from './pages/Chat';
 import PrivateRoute from './components/PrivateRoute';
 import SearchResults from './pages/SearchResults';
-import MainLayout from './layouts/MainLayout';
 
 function App() {
     const navigate = useNavigate();
@@ -72,9 +71,7 @@ function App() {
                         path="/search"
                         element={
                             <PrivateRoute>
-                                <MainLayout>
                                     <SearchResults />
-                                </MainLayout>
                             </PrivateRoute>
                         }
                     />
