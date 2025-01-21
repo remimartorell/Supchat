@@ -1,4 +1,4 @@
-version: '3.8'
+#version: '3.8'
 
 services:
   backend:
@@ -11,6 +11,9 @@ services:
       - MONGO_URI=mongodb+srv://adminsupchat:QKnX2fNJMDFW23P4@supchat-cluster.ddto3.mongodb.net/?retryWrites=true&w=majority&appName=supchat-cluster
     depends_on:
       - mongodb
+    volumes:
+      # Monte le dossier local ./supchat-backend/uploads dans /app/uploads du container
+      - ./supchat-backend/uploads:/app/uploads
 
   frontend:
     build:
@@ -34,4 +37,5 @@ services:
 volumes:
   mongodb_data:
 
-  # Comande Docker "docker-compose up --build"
+  # Commande Docker pour lancer le server "docker-compose up --build"
+  # Commande Docker pour stopper le server, dans un autre CMD "docker-compose down"

@@ -1,5 +1,5 @@
 // src/components/ChatWindow.js
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 function highlightMentions(content, validMentions) {
     if (!content) {
@@ -22,36 +22,56 @@ function highlightMentions(content, validMentions) {
     });
 }
 
-function ChatWindow({ userId, messages, selectedUser, selectedChannel }) {
-    // Déterminer si on est en mode DM ou Channel, juste pour l’affichage
-    const mode = selectedUser
-        ? `DM avec ${selectedUser}`
-        : selectedChannel
-            ? `Channel ${selectedChannel}`
-            : 'Aucun';
+function ChatWindow({ userId, messages, selectedUser, selectedChannel, focusMessageId }) {
+
+    const listRef = useRef(null);
+
+    // Auto-scroll sur focusMessageId
+    useEffect(() => {
+        if (focusMessageId) {
+            // on attend un mini delai
+            setTimeout(() => {
+                const el = document.getElementById(`msg-${focusMessageId}`);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // surligner
+                    el.style.transition = 'background-color 0.5s';
+                    el.style.backgroundColor = '#aaf';
+                    // Retirer la surbrillance après 2s
+                    setTimeout(() => {
+                        el.style.backgroundColor = '';
+                    }, 2000);
+                }
+            }, 100);
+        }
+    }, [focusMessageId, messages]);
+
+    // mode display
+    let mode = 'Aucun';
+    if (selectedUser) {
+        mode = `DM avec ${selectedUser}`;
+    } else if (selectedChannel) {
+        mode = `Channel ${selectedChannel}`;
+    }
 
     return (
         <div style={{ flexGrow: 1, padding: '10px', overflowY: 'auto' }}>
             <h4>ChatWindow : {mode}</h4>
-            <div style={{ height: '70vh', overflowY: 'auto', border: '1px solid #ccc' }}>
+
+            <div ref={listRef} style={{ height: '70vh', overflowY: 'auto', border: '1px solid #ccc' }}>
                 {messages.map((m) => {
-                    // 1) Déterminer l'affichage pour "sender"
-                    //    - s'il est un objet, on prend .name
-                    //    - sinon, on l'affiche tel quel
+                    // 1) Determine senderLabel
                     let senderLabel = '';
-                    if (typeof m.sender === 'object' && m.sender !== null) {
-                        // m.sender est un objet, ex: { _id, name, email }
+                    if (m.sender && typeof m.sender === 'object') {
                         senderLabel = m.sender.name || '(Sans nom)';
                     } else {
-                        // m.sender est probablement un string (ex: userId)
-                        senderLabel = m.sender;
+                        senderLabel = m.sender || '';
                     }
 
-                    // 2) Pareil pour "receiver" (ou channelId si c’est un message de channel)
+                    // 2) Determine receiverLabel
                     let receiverLabel = '';
                     if (m.receiver) {
-                        // DM
-                        if (typeof m.receiver === 'object' && m.receiver !== null) {
+                        if (typeof m.receiver === 'object') {
                             receiverLabel = m.receiver.name || '(Sans nom)';
                         } else {
                             receiverLabel = m.receiver;
@@ -62,20 +82,25 @@ function ChatWindow({ userId, messages, selectedUser, selectedChannel }) {
                         receiverLabel = '(Inconnu)';
                     }
 
-                    // 3) Couleur de fond : si le "sender" est l'utilisateur connecté
-                    //    il faut comparer userId à (m.sender._id ou m.sender).
-                    const isMe = (typeof m.sender === 'object' && m.sender._id === userId)
+                    // 3) Couleur de fond
+                    const isMe =
+                        (m.sender && typeof m.sender === 'object' && m.sender._id === userId)
                         || m.sender === userId;
 
-                    const text = m.content || ''; // au cas où
+                    const bg = isMe ? '#def' : '#fed';
+                    const text = m.content || '';
                     const valid = m.validMentions || [];
 
                     return (
-                        <div key={m._id} style={{
-                            margin: '8px',
-                            padding: '5px',
-                            background: isMe ? '#def' : '#fed',
-                        }}>
+                        <div
+                            key={m._id}
+                            id={`msg-${m._id}`} // ID pour auto-scroll
+                            style={{
+                                margin: '8px',
+                                padding: '5px',
+                                background: bg,
+                            }}
+                        >
                             <strong>From:</strong> {senderLabel}<br />
                             <strong>To:</strong> {receiverLabel}<br />
                             <strong>Content:</strong> {highlightMentions(text, valid)}<br />

@@ -7,6 +7,8 @@ import Sidebar from '../components/Sidebar';
 import ChatWindow from '../components/ChatWindow';
 import MessageInput from '../components/MessageInput';
 
+import { useLocation, useNavigate } from 'react-router-dom';
+
 function parseMentions(content) {
     // Regex très simple pour @quelquechose (sans espaces)
     const regex = /@(\S+)/g;
@@ -20,6 +22,8 @@ function parseMentions(content) {
 
 
 function Chat() {
+    const navigate = useNavigate();
+    const location = useLocation();
     const [socket, setSocket] = useState(null);
     const [userId, setUserId] = useState('');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -167,15 +171,24 @@ function Chat() {
         }
     };
 
-    // -- 5) Quand on clique sur un user ou un channel dans la Sidebar
-    // on fetch l’historique correspondant
-    const handleSelectUser = (uId) => {
-        setSelectedUser(uId);
-        setSelectedChannel('');
-        fetchDMHistory(uId);
-    };
+    const [focusMessageId, setFocusMessageId] = useState('');
 
-    const handleSelectChannel = (chId) => {
+    const queryParams = new URLSearchParams(location.search);
+    const paramChannelId = queryParams.get('channelId');
+    const paramUserId = queryParams.get('userId');
+    const paramFocusMsg = queryParams.get('focusMsg');
+
+    useEffect(() => {
+        // Si paramChannelId existe, on appelle handleSelectChannel(paramChannelId).
+        // Idem pour paramUserId => handleSelectUser
+        if (paramChannelId) {
+            handleSelectChannel(paramChannelId);
+        } else if (paramUserId) {
+            handleSelectUser(paramUserId);
+        }
+    }, []);
+
+    const handleSelectChannel = async (chId) => {
         setSelectedChannel(chId);
         setSelectedUser('');
 
@@ -185,7 +198,32 @@ function Chat() {
             console.log('joinChannel sent with ', chId);
         }
 
-        fetchChannelHistory(chId);
+        // j'utilise await pour fetchChannelHistory => on attend
+        await fetchChannelHistory(chId);
+
+        // ensuite, si paramFocusMsg => setFocusMessageId
+        if (paramFocusMsg) {
+            setFocusMessageId(paramFocusMsg);
+            const newParams = new URLSearchParams(location.search);
+            newParams.delete('focusMsg');
+            navigate(`${location.pathname}?${newParams.toString()}`, { replace: true });
+        }
+    };
+
+    // -- 5) Quand on clique sur un user ou un channel dans la Sidebar
+    // on fetch l’historique correspondant
+    const handleSelectUser = async (uId) => {
+        setSelectedUser(uId);
+        setSelectedChannel('');
+        await fetchDMHistory(uId);
+
+        // si paramFocusMsg => setFocusMessageId
+        if (paramFocusMsg) {
+            setFocusMessageId(paramFocusMsg);
+            const newParams = new URLSearchParams(location.search);
+            newParams.delete('focusMsg');
+            navigate(`${location.pathname}?${newParams.toString()}`, { replace: true });
+        }
     };
 
     // -- 6) Historique DM
@@ -263,6 +301,7 @@ function Chat() {
                     messages={messages}
                     selectedUser={selectedUser}
                     selectedChannel={selectedChannel}
+                    focusMessageId={focusMessageId}
                 />
                 <MessageInput
                     onSend={handleSendMessage}
