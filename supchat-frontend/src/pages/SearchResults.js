@@ -60,31 +60,25 @@ function SearchResults() {
 
     // Sur un "dmMessage"
     const handleDMMessageClick = (dm) => {
-        /*const me = localStorage.getItem('userId');
-        const senderId = String(dm.sender?._id);
-        const receiverId = String(dm.receiver?._id);
+        // 1) Récup ton ID stocké après login
+        const me = localStorage.getItem('userId') || '';
 
+        // 2) Convertir les IDs en string (au cas où)
+        const senderId = String(dm.sender?._id || '');
+        const receiverId = String(dm.receiver?._id || '');
+
+        // 3) Calculer l'ID de l'autre personne
         let otherUserId;
         if (senderId === me) {
-            // si c'est moi l'envoyeur, l'autre est dm.receiver
-            otherUserId = dm.receiver?._id;
+            // C'est moi l'expéditeur => la conversation DM est avec dm.receiver
+            otherUserId = receiverId;
         } else {
-            otherUserId = dm.sender?._id;
-        }
-        navigate(`/chat?userId=${otherUserId}&focusMsg=${dm._id}`); */
-
-        const me = localStorage.getItem('userId') || '';     // string
-        const senderId = String(dm.sender?._id || '');       // convert
-        const receiverId = String(dm.receiver?._id || '');   // convert
-
-        if (senderId === me) {
-            // c'est moi l'envoyeur => conversation DM avec le receiver
-            navigate(`/chat?userId=${receiverId}&focusMsg=${dm._id}`);
-        } else {
-            // c'est l'autre qui a envoyé => conversation DM avec sender
-            navigate(`/chat?userId=${senderId}&focusMsg=${dm._id}`);
+            // Sinon, l'autre est l'expéditeur => la conversation DM est avec dm.sender
+            otherUserId = senderId;
         }
 
+        // 4) Naviguer vers ce DM avec focus sur le message
+        navigate(`/chat?userId=${otherUserId}&focusMsg=${dm._id}`);
     };
 
     // Style pour les "cards"

@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="- Ajout de la recherche*&#10;- Les images et fichers du dossier uploads sont bien présents lors du redémarrage de l'application">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="- Modification de la recherche">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/layouts/MainLayout.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/SearchResults.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/SearchResults.js" afterDir="false" />
     </list>
@@ -99,7 +99,8 @@
       <workItem from="1736755928827" duration="12000" />
       <workItem from="1736755946318" duration="8494000" />
       <workItem from="1736764902025" duration="22857000" />
-      <workItem from="1737447086770" duration="22308000" />
+      <workItem from="1737447086770" duration="22704000" />
+      <workItem from="1737966007707" duration="3238000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -221,7 +222,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737472504682</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="- Modification de la recherche">
+      <option name="closed" value="true" />
+      <created>1737476109250</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1737476109250</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -253,6 +262,7 @@
     <MESSAGE value="- Ajout du dernier fichier qui n'était pas dans le git" />
     <MESSAGE value="- Mentions marchent avec notif de type &quot;alert&quot;&#10;- Notif &quot;alert&quot;&#10;- Connexion via un autre PC sur le même réseau&#10;- Bouton déconnexion&#10;- Affichage de la page revu, la barre de message est affichée en bas sans besoin de scroller&#10;- L'envoi de fichier marche&#10;- L'affichage de prévisualisation de l'image avant le message est correctement affiché&#10;- Possibilité de voir l'image envoyée de manière redimenssionnée dans le tchat&#10;- Possibilité de télécharger le fichier, qui n'est pas une image, dans le tchat" />
     <MESSAGE value="- Ajout de la recherche*&#10;- Les images et fichers du dossier uploads sont bien présents lors du redémarrage de l'application" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Ajout de la recherche*&#10;- Les images et fichers du dossier uploads sont bien présents lors du redémarrage de l'application" />
+    <MESSAGE value="- Modification de la recherche" />
+    <option name="LAST_COMMIT_MESSAGE" value="- Modification de la recherche" />
   </component>
 </project>
