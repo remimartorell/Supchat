@@ -37,7 +37,7 @@ router.post('/:channelId/messages', auth, upload.single('file'), async (req, res
 
         // On crée et sauvegarde le message
         const newMessage = new Message({
-            content: req.body.content,
+            content,
             fileUrl: req.file ? `http://localhost:3000/uploads/${req.file.filename}` : null,
             channel: req.params.channelId,
             sender: req.user.id,
@@ -85,6 +85,7 @@ router.post('/:channelId/messages', auth, upload.single('file'), async (req, res
             _id: message._id,
             content: message.content,
             channelId: req.params.channelId,
+            channel: req.params.channelId,
             channelName: channel.name, // << on affiche #NomDuChannel
             sender: req.user.id, // ou { _id: user._id, name: user.name }
             createdAt: message.createdAt,
@@ -183,9 +184,54 @@ router.delete('/:channelId/messages/:messageId', auth, async (req, res) => {
             return res.status(404).json({ msg: 'Message not found' });
         }
 
+        // Émettre l'événement via Socket.IO
+        const io = req.app.get('socketio');
+        // Envoyer à la “room” = channelId
+        io.to(req.params.channelId).emit('channel-message-deleted', {
+            channelId: req.params.channelId,
+            messageId: req.params.messageId,
+        });
+
         res.json({ msg: 'Message deleted successfully' });
     } catch (err) {
         console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+router.put('/:channelId/messages/:messageId', auth, async (req, res) => {
+    try {
+        const { newContent } = req.body;
+
+        // 1) Retrouver le message
+        let message = await Message.findById(req.params.messageId);
+        if (!message) {
+            return res.status(404).json({ msg: 'Message not found' });
+        }
+
+        // 2) Vérifier que c’est bien l’auteur qui édite
+        if (message.sender.toString() !== req.user.id) {
+            return res.status(403).json({ msg: 'Only the author can edit this message' });
+        }
+
+        // 3) Mettre à jour
+        message.content = newContent;
+        message.edited = true;  // => Pour afficher (Modifié)
+
+        await message.save();
+
+        // 4) Émettre un event "channel-message-updated"
+        const io = req.app.get('socketio');
+        io.to(req.params.channelId).emit('channel-message-updated', {
+            channelId: req.params.channelId,
+            messageId: message._id.toString(),
+            newContent,
+            edited: true,
+        });
+
+        res.json({ msg: 'Message updated', message });
+    } catch (err) {
+        console.error(err);
         res.status(500).send('Server Error');
     }
 });

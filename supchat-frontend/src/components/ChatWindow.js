@@ -1,11 +1,13 @@
 // src/components/ChatWindow.js
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import axios from '../services/axiosConfig';
 
+/**
+ * Fonction utilitaire pour mettre en surbrillance les mentions valides
+ */
 function highlightMentions(content, validMentions) {
-    if (!content) {
-        return content;
-    }
+    if (!content) return content;
+
     return content.split(/\s+/).map((word, i) => {
         if (word.startsWith('@')) {
             const mentionName = word.slice(1);
@@ -21,6 +23,9 @@ function highlightMentions(content, validMentions) {
     });
 }
 
+/**
+ * Composant principal d'affichage des messages dans un channel ou un DM
+ */
 function ChatWindow({
                         userId,
                         messages,
@@ -28,11 +33,15 @@ function ChatWindow({
                         selectedChannel,
                         focusMessageId,
                         canDelete,
-                        setMessages, // on suppose qu'on peut manipuler setMessages depuis Chat.js
+                        setMessages,
                     }) {
     const listRef = useRef(null);
 
-    // Auto-scroll sur focusMessageId
+    // État local pour l'édition d'un message
+    const [editingMessageId, setEditingMessageId] = useState(null);
+    const [editContent, setEditContent] = useState('');
+
+    // Au montage ou quand focusMessageId change : auto-scroll jusqu'au message ciblé
     useEffect(() => {
         if (focusMessageId) {
             setTimeout(() => {
@@ -49,21 +58,21 @@ function ChatWindow({
         }
     }, [focusMessageId, messages]);
 
-    // Affichage du mode (DM ou channel)
-    let mode = 'Aucun';
+    // Déterminer si on est en mode channel ou DM (juste pour l'affichage)
+    let modeLabel = 'Aucun';
     if (selectedUser) {
-        mode = `DM avec ${selectedUser}`;
+        modeLabel = `DM avec ${selectedUser}`;
     } else if (selectedChannel) {
-        mode = `Channel ${selectedChannel}`;
+        modeLabel = `Channel ${selectedChannel}`;
     }
 
-    // Fonction de suppression du message
+    // -- Suppression d'un message
     const handleDeleteMsg = async (m) => {
         if (!window.confirm('Supprimer ce message ?')) return;
         try {
-            // Supprimer le message côté back
+            // Appel backend
             await axios.delete(`/api/channels/${m.channel}/messages/${m._id}`);
-            // Retirer le message en local
+            // Retirer le message localement (optionnel si on compte sur socket “channel-message-deleted”)
             setMessages((prev) => prev.filter((msg) => msg._id !== m._id));
         } catch (err) {
             console.error('Erreur suppression message:', err);
@@ -71,16 +80,62 @@ function ChatWindow({
         }
     };
 
+    // -- Commencer à éditer un message (setEditingMessageId + setEditContent)
+    const startEditingMessage = (m) => {
+        setEditingMessageId(m._id);
+        setEditContent(m.content || '');
+    };
+
+    // -- Sauvegarder la modification d'un message
+    const handleSaveEdit = async (m) => {
+        if (!editContent.trim()) {
+            alert("Le contenu ne peut pas être vide.");
+            return;
+        }
+        try {
+            // PUT /api/channels/:channelId/messages/:messageId
+            await axios.put(`/api/channels/${m.channel}/messages/${m._id}`, {
+                newContent: editContent.trim(),
+            });
+
+            // Option 1 : compter sur l'event “channel-message-updated” pour mettre à jour
+            // Option 2 (facultatif) : faire un “update local” en plus
+            // setMessages((prev) =>
+            //   prev.map((msg) =>
+            //     msg._id === m._id
+            //       ? { ...msg, content: editContent.trim(), edited: true }
+            //       : msg
+            //   )
+            // );
+
+            setEditingMessageId(null);
+            setEditContent('');
+        } catch (err) {
+            console.error('Erreur lors de l’édition du message', err);
+            alert('Impossible de modifier ce message');
+        }
+    };
+
+    // -- Annuler l'édition
+    const handleCancelEdit = () => {
+        setEditingMessageId(null);
+        setEditContent('');
+    };
+
     return (
         <div style={{ flexGrow: 1, padding: '10px', overflowY: 'auto' }}>
-            <h4>ChatWindow : {mode}</h4>
+            <h4>ChatWindow : {modeLabel}</h4>
 
             <div
                 ref={listRef}
                 style={{ height: '70vh', overflowY: 'auto', border: '1px solid #ccc' }}
             >
                 {messages.map((m) => {
-                    // 1) Determine senderLabel
+                    const isMe =
+                        (m.sender && typeof m.sender === 'object' && m.sender._id === userId) ||
+                        m.sender === userId;
+
+                    // Détermine l'affichage du sender
                     let senderLabel = '';
                     if (m.sender && typeof m.sender === 'object') {
                         senderLabel = m.sender.name || '(Sans nom)';
@@ -88,7 +143,7 @@ function ChatWindow({
                         senderLabel = m.sender || '';
                     }
 
-                    // 2) Determine receiverLabel
+                    // Détermine le receiverLabel
                     let receiverLabel = '';
                     if (m.receiver) {
                         if (typeof m.receiver === 'object') {
@@ -102,15 +157,36 @@ function ChatWindow({
                         receiverLabel = '(Inconnu)';
                     }
 
-                    // 3) Couleur de fond
-                    const isMe =
-                        (m.sender && typeof m.sender === 'object' && m.sender._id === userId) ||
-                        m.sender === userId;
                     const bg = isMe ? '#def' : '#fed';
-
-                    const text = m.content || '';
                     const valid = m.validMentions || [];
 
+                    // -- Cas : on est en train d'éditer CE message
+                    if (m._id === editingMessageId) {
+                        return (
+                            <div
+                                key={m._id}
+                                id={`msg-${m._id}`}
+                                style={{ margin: '8px', padding: '5px', background: bg }}
+                            >
+                                <strong>From:</strong> {senderLabel} <br />
+                                <strong>To:</strong> {receiverLabel} <br />
+                                <strong>Edit Content:</strong>
+                                <textarea
+                                    style={{ display: 'block', width: '100%', marginTop: '5px' }}
+                                    value={editContent}
+                                    onChange={(e) => setEditContent(e.target.value)}
+                                />
+                                <div style={{ marginTop: '5px' }}>
+                                    <button onClick={() => handleSaveEdit(m)}>Enregistrer</button>
+                                    <button onClick={handleCancelEdit} style={{ marginLeft: '5px' }}>
+                                        Annuler
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    }
+
+                    // -- Sinon, affichage normal
                     return (
                         <div
                             key={m._id}
@@ -121,8 +197,12 @@ function ChatWindow({
                             <br />
                             <strong>To:</strong> {receiverLabel}
                             <br />
-                            <strong>Content:</strong> {highlightMentions(text, valid)}
-                            <br />
+                            <strong>Content:</strong>{' '}
+                            <div style={{display: 'inline-block', marginLeft: '5px'}}>
+                                {highlightMentions(m.content || '', valid)}{' '}
+                                {m.edited && <span style={{ marginLeft: 5, fontStyle: 'italic' }}>(Modifié)</span>}
+                            </div>
+                            <br/>
 
                             {/* SI FILEURL */}
                             {m.fileUrl &&
@@ -144,13 +224,23 @@ function ChatWindow({
 
                             <small>{m.createdAt}</small>
 
-                            {/* Bouton (X) si canDelete */}
+                            {/* Bouton SUPPRIMER (X) si canDelete */}
                             {canDelete && (
                                 <button
                                     onClick={() => handleDeleteMsg(m)}
                                     style={{ marginLeft: '10px', backgroundColor: '#f88' }}
                                 >
                                     X
+                                </button>
+                            )}
+
+                            {/* Bouton EDITER si c'est mon message */}
+                            {isMe && (
+                                <button
+                                    onClick={() => startEditingMessage(m)}
+                                    style={{ marginLeft: '10px', backgroundColor: '#ddf' }}
+                                >
+                                    Modifier
                                 </button>
                             )}
                         </div>

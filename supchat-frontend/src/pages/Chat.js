@@ -103,6 +103,8 @@ function Chat() {
             newSocket.on('new-channel-message', (message) => {
                 console.log('Nouveau message channel :', message);
                 if (selectedChannel && message.channelId === selectedChannel) {
+                    // on force message.channel = message.channelId
+                    message.channel = message.channelId;
                     setMessages((prev) => [...prev, message]);
                 }
             });
@@ -115,12 +117,41 @@ function Chat() {
                 `);
             });
 
+            newSocket.on('channel-message-deleted', (payload) => {
+                console.log('channel-message-deleted', payload);
+                // payload = { channelId, messageId }
+                // On vérifie qu'on est sur le canal concerné
+                if (selectedChannel === payload.channelId) {
+                    // On retire le message du state local
+                    setMessages((prev) =>
+                        prev.filter((m) => m._id !== payload.messageId)
+                    );
+                }
+            });
+
+            // Et si tu fais l'édition :
+            newSocket.on('channel-message-updated', (payload) => {
+                console.log('channel-message-updated', payload);
+                // payload = { channelId, messageId, newContent, edited }
+                if (selectedChannel === payload.channelId) {
+                    setMessages((prev) =>
+                        prev.map((m) =>
+                            m._id === payload.messageId
+                                ? { ...m, content: payload.newContent, edited: payload.edited }
+                                : m
+                        )
+                    );
+                }
+            });
+
             return () => {
                 newSocket.off('joined');
                 newSocket.off('workspace-updated');
                 newSocket.off('workspace-removed');
                 newSocket.off('new-private-message');
                 newSocket.off('new-channel-message');
+                newSocket.off('channel-message-deleted');
+                newSocket.off('channel-message-updated');
                 newSocket.disconnect();
             };
         }
