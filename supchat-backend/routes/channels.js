@@ -16,8 +16,8 @@ router.post('/:id/channels', auth, async (req, res) => {
             return res.status(404).json({ msg: 'Workspace not found' });
         }
 
-        // Vérifier que l'utilisateur est membre du workspace
-        if (!workspace.members.includes(req.user.id)) {
+        const isMember = workspace.members.some(m => m.user.toString() === req.user.id);
+        if (!isMember) {
             return res.status(403).json({ msg: 'Access denied' });
         }
 
@@ -45,8 +45,8 @@ router.get('/:id/channels', auth, async (req, res) => {
             return res.status(404).json({ msg: 'Workspace not found' });
         }
 
-        // Vérifier que l'utilisateur est membre du workspace
-        if (!workspace.members.includes(req.user.id)) {
+        const isMember = workspace.members.some(m => m.user.toString() === req.user.id);
+        if (!isMember) {
             return res.status(403).json({ msg: 'Access denied' });
         }
 
@@ -68,9 +68,16 @@ router.delete('/:id/channels/:channelId', auth, async (req, res) => {
             return res.status(404).json({ msg: 'Workspace not found' });
         }
 
-        // Vérifier que l'utilisateur est le propriétaire du workspace
+        // Vérifier role: owner ou admin
         if (workspace.owner.toString() !== req.user.id) {
-            return res.status(403).json({ msg: 'Access denied' });
+            // alors on check le membership
+            const currentMember = workspace.members.find(m => m.user.toString() === req.user.id);
+            if (!currentMember) {
+                return res.status(403).json({ msg: 'Access denied' });
+            }
+            if (!(currentMember.role === 'owner' || currentMember.role === 'admin')) {
+                return res.status(403).json({ msg: 'Access denied' });
+            }
         }
 
         const channel = await Channel.findById(req.params.channelId);

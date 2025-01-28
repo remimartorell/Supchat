@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import Chat from './pages/Chat';
 import PrivateRoute from './components/PrivateRoute';
 import SearchResults from './pages/SearchResults';
+import WorkspaceSettings from './pages/WorkspaceSettings';
 
 function App() {
     const navigate = useNavigate();
@@ -72,6 +73,14 @@ function App() {
                         element={
                             <PrivateRoute>
                                     <SearchResults />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/workspace/:workspaceId/settings"
+                        element={
+                            <PrivateRoute>
+                                <WorkspaceSettings />
                             </PrivateRoute>
                         }
                     />

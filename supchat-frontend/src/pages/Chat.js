@@ -71,6 +71,22 @@ function Chat() {
                 console.log('Reçu "joined":', msg);
             });
 
+            // Écoute : workspace-updated
+            newSocket.on('workspace-updated', (payload) => {
+                console.log('workspace-updated', payload);
+                // Ex : Re-fetch la liste pour voir si un membre a été ajouté, etc.
+                // -> (si on veut être optimal, on peut filtrer par workspaceId
+                //    pour seulement refetch le workspace concerné)
+                fetchWorkspacesAndChannels();
+            });
+
+            // Écoute : workspace-removed
+            newSocket.on('workspace-removed', (payload) => {
+                console.log('workspace-removed', payload);
+                // -> Retirer ce workspace de la liste
+                fetchWorkspacesAndChannels();
+            });
+
             // Nouveau DM
             newSocket.on('new-private-message', (message) => {
                 console.log('Nouveau DM reçu :', message);
@@ -101,6 +117,8 @@ function Chat() {
 
             return () => {
                 newSocket.off('joined');
+                newSocket.off('workspace-updated');
+                newSocket.off('workspace-removed');
                 newSocket.off('new-private-message');
                 newSocket.off('new-channel-message');
                 newSocket.disconnect();
@@ -284,24 +302,49 @@ function Chat() {
         }
     };
 
-    return (
-        <div style={{display: 'flex', flex: '1'}}>
-            <Sidebar
-                users={users}
-                myWorkspaces={myWorkspaces}
-                onSelectUser={handleSelectUser}
-                onSelectChannel={handleSelectChannel}
-                selectedUser={selectedUser}
-                selectedChannel={selectedChannel}
-            />
+    let canDelete = false;
+    if (selectedChannel) {
+        // 1) Trouver le workspace qui contient ce channel
+        const wsWithChannel = myWorkspaces.find(ws =>
+            ws.channels && ws.channels.some(ch => ch._id === selectedChannel)
+        );
+        if (wsWithChannel) {
+            // 2) Trouver le currentMember
+            const currentMember = wsWithChannel.members.find(m => m.user === userId ||
+                (typeof m.user === 'object' && m.user._id === userId)
+            );
+            if (currentMember) {
+                if (['owner','admin','moderator'].includes(currentMember.role)) {
+                    canDelete = true;
+                }
+            }
+        }
+    }
 
-            <div style={{display: 'flex', flexDirection: 'column', flexGrow: 1}}>
+    return (
+        <div className="chat-layout">
+            <div className="sidebar-layout">
+                <Sidebar
+                    userId={userId}
+                    users={users}
+                    myWorkspaces={myWorkspaces}
+                    onSelectUser={handleSelectUser}
+                    onSelectChannel={handleSelectChannel}
+                    selectedUser={selectedUser}
+                    selectedChannel={selectedChannel}
+                    onWorkspacesRefresh={fetchWorkspacesAndChannels}
+                />
+            </div>
+
+            <div className="chat-layout-main">
                 <ChatWindow
                     userId={userId}
                     messages={messages}
                     selectedUser={selectedUser}
                     selectedChannel={selectedChannel}
                     focusMessageId={focusMessageId}
+                    canDelete={canDelete}
+                    setMessages={setMessages}
                 />
                 <MessageInput
                     onSend={handleSendMessage}

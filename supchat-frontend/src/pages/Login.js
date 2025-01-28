@@ -14,7 +14,7 @@ function Login() {
             // Appel au backend : POST /api/auth/login
             const response = await axios.post('/api/auth/login', {
                 email,
-                password,pow
+                password,
             });
             // Suppose que le back renvoie : { token: "..." }
             const { token, user } = response.data;

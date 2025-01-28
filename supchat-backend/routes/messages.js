@@ -144,4 +144,50 @@ router.post('/:channelId/messages/:messageId/reactions', auth, async (req, res) 
     }
 });
 
+// @route   DELETE /api/channels/:channelId/messages/:messageId
+// @desc    Supprimer un message
+// @access  Privé (owner/admin/moderator)
+router.delete('/:channelId/messages/:messageId', auth, async (req, res) => {
+    try {
+        // 1) Retrouver le channel
+        const channel = await Channel.findById(req.params.channelId).populate('workspace');
+        if (!channel) {
+            return res.status(404).json({ msg: 'Channel not found' });
+        }
+
+        // 2) Retrouver le workspace
+        let workspaceId = channel.workspace;
+        // si .populate('workspace') => channel.workspace est un obj
+        if (channel.workspace._id) {
+            workspaceId = channel.workspace._id;
+        }
+        const workspace = await Workspace.findById(workspaceId);
+        if (!workspace) {
+            return res.status(404).json({ msg: 'Workspace not found' });
+        }
+
+        // 3) Vérifier qu'on est membre
+        const currentMember = workspace.members.find(m => m.user.toString() === req.user.id);
+        if (!currentMember) {
+            return res.status(403).json({ msg: 'You are not in this workspace' });
+        }
+
+        // 4) Rôles autorisés: owner, admin, moderator
+        if (!['owner','admin','moderator'].includes(currentMember.role)) {
+            return res.status(403).json({ msg: 'Only moderators/admin/owner can delete messages' });
+        }
+
+        // 5) On supprime le message
+        const message = await Message.findByIdAndDelete(req.params.messageId);
+        if (!message) {
+            return res.status(404).json({ msg: 'Message not found' });
+        }
+
+        res.json({ msg: 'Message deleted successfully' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;

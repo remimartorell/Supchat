@@ -4,12 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="- Modification de la recherche">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="- Derniers problèmes de la recherche réglés.">
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/WorkspaceSettings.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/models/Workspace.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/models/Workspace.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/channels.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/channels.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/messages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/messages.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/workspaces.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/workspaces.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/index.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/SearchResults.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/SearchResults.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +108,7 @@
       <workItem from="1736755946318" duration="8494000" />
       <workItem from="1736764902025" duration="22857000" />
       <workItem from="1737447086770" duration="22704000" />
-      <workItem from="1737966007707" duration="3238000" />
+      <workItem from="1737966007707" duration="15248000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -230,7 +238,15 @@
       <option name="project" value="LOCAL" />
       <updated>1737476109250</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="- Derniers problèmes de la recherche réglés.">
+      <option name="closed" value="true" />
+      <created>1737969322197</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1737969322197</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -263,6 +279,7 @@
     <MESSAGE value="- Mentions marchent avec notif de type &quot;alert&quot;&#10;- Notif &quot;alert&quot;&#10;- Connexion via un autre PC sur le même réseau&#10;- Bouton déconnexion&#10;- Affichage de la page revu, la barre de message est affichée en bas sans besoin de scroller&#10;- L'envoi de fichier marche&#10;- L'affichage de prévisualisation de l'image avant le message est correctement affiché&#10;- Possibilité de voir l'image envoyée de manière redimenssionnée dans le tchat&#10;- Possibilité de télécharger le fichier, qui n'est pas une image, dans le tchat" />
     <MESSAGE value="- Ajout de la recherche*&#10;- Les images et fichers du dossier uploads sont bien présents lors du redémarrage de l'application" />
     <MESSAGE value="- Modification de la recherche" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Modification de la recherche" />
+    <MESSAGE value="- Derniers problèmes de la recherche réglés." />
+    <option name="LAST_COMMIT_MESSAGE" value="- Derniers problèmes de la recherche réglés." />
   </component>
 </project>
