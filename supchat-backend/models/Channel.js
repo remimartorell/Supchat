@@ -15,6 +15,9 @@ const ChannelSchema = new mongoose.Schema({
         enum: ['public', 'private'],
         default: 'public',
     },
+    members: [
+        { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    ],
     createdAt: {
         type: Date,
         default: Date.now,

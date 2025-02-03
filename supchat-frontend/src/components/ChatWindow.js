@@ -41,6 +41,27 @@ function ChatWindow({
     const [editingMessageId, setEditingMessageId] = useState(null);
     const [editContent, setEditContent] = useState('');
 
+    const [showEmojiPickerFor, setShowEmojiPickerFor] = useState(null);
+
+    // -- Ouvrir le “mini panel” d’emojis
+    const openEmojiPickerForMessage = (m) => {
+        setShowEmojiPickerFor(m._id);
+    };
+
+    // -- Choisir un emoji => POST /reactions
+    const handleChooseEmoji = (m, chosenEmoji) => {
+        axios.post(`/api/channels/${m.channel}/messages/${m._id}/reactions`, {
+            emoji: chosenEmoji,
+        })
+            .then(() => {
+                // on ferme le panel
+                setShowEmojiPickerFor(null);
+            })
+            .catch((err) => {
+                console.error('Failed to add reaction', err);
+            });
+    };
+
     // Au montage ou quand focusMessageId change : auto-scroll jusqu'au message ciblé
     useEffect(() => {
         if (focusMessageId) {
@@ -191,16 +212,16 @@ function ChatWindow({
                         <div
                             key={m._id}
                             id={`msg-${m._id}`}
-                            style={{ margin: '8px', padding: '5px', background: bg }}
+                            style={{margin: '8px', padding: '5px', background: bg}}
                         >
                             <strong>From:</strong> {senderLabel}
-                            <br />
+                            <br/>
                             <strong>To:</strong> {receiverLabel}
-                            <br />
+                            <br/>
                             <strong>Content:</strong>{' '}
                             <div style={{display: 'inline-block', marginLeft: '5px'}}>
                                 {highlightMentions(m.content || '', valid)}{' '}
-                                {m.edited && <span style={{ marginLeft: 5, fontStyle: 'italic' }}>(Modifié)</span>}
+                                {m.edited && <span style={{marginLeft: 5, fontStyle: 'italic'}}>(Modifié)</span>}
                             </div>
                             <br/>
 
@@ -211,7 +232,7 @@ function ChatWindow({
                                         <img
                                             src={m.fileUrl}
                                             alt="file"
-                                            style={{ maxWidth: '200px', height: 'auto' }}
+                                            style={{maxWidth: '200px', height: 'auto'}}
                                         />
                                     </div>
                                 ) : (
@@ -228,17 +249,56 @@ function ChatWindow({
                             {canDelete && (
                                 <button
                                     onClick={() => handleDeleteMsg(m)}
-                                    style={{ marginLeft: '10px', backgroundColor: '#f88' }}
+                                    style={{marginLeft: '10px', backgroundColor: '#f88'}}
                                 >
                                     X
                                 </button>
+                            )}
+
+                            {/* Affichage des réactions */}
+                            {m.reactions && m.reactions.length > 0 && (
+                                <div style={{ margin: '5px 0' }}>
+                                    {m.reactions.map((react, i) => {
+                                        const who = (react.user && react.user.name) ? react.user.name : '(Inconnu)';
+                                        return (
+                                            <span
+                                                key={i}
+                                                style={{ marginRight:'5px' }}
+                                                title={`Réaction de ${who}`}
+                                            >
+                                                {react.emoji}
+                                            </span>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {/* Bouton “Réagir” */}
+                            <button onClick={() => openEmojiPickerForMessage(m)}>
+                                Réagir
+                            </button>
+
+                            {/* panel d’emojis */}
+                            {showEmojiPickerFor === m._id && (
+                                <div style={{background: '#eee', border: '1px solid #ccc', position: 'absolute'}}>
+                                    {/* ton panel ou un composant tiers */}
+                                    {['😃','👍','❤️','🔥','🎉'].map(e => (
+                                        <span
+                                            key={e}
+                                            style={{ fontSize:'20px', cursor:'pointer', margin:'5px' }}
+                                            onClick={() => handleChooseEmoji(m, e)}
+                                        >
+                                            {e}
+                                        </span>
+                                    ))}
+                                </div>
                             )}
 
                             {/* Bouton EDITER si c'est mon message */}
                             {isMe && (
                                 <button
                                     onClick={() => startEditingMessage(m)}
-                                    style={{ marginLeft: '10px', backgroundColor: '#ddf' }}
+                                    style={{marginLeft: '10px', backgroundColor: '#ddf'}}
                                 >
                                     Modifier
                                 </button>

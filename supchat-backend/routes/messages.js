@@ -30,10 +30,28 @@ router.post('/:channelId/messages', auth, upload.single('file'), async (req, res
 
     try {
         const channel = await Channel.findById(req.params.channelId);
-        const workspace = await Workspace.findById(channel.workspace);
         if (!channel) {
             return res.status(404).json({ msg: 'Channel not found' });
         }
+
+        // Vérifier qu'on est membre du workspace
+        const workspace = await Workspace.findById(channel.workspace);
+        if (!workspace) {
+            return res.status(404).json({ msg: 'Workspace not found' });
+        }
+        const isWorkspaceMember = workspace.members.some(m => m.user.toString() === req.user.id);
+        if (!isWorkspaceMember) {
+            return res.status(403).json({ msg: 'Access denied (not in workspace)' });
+        }
+
+        // Si channel.type === 'private' => vérifier channel.members
+        if (channel.type === 'private') {
+            const isInChannel = channel.members.some(u => u.toString() === req.user.id);
+            if (!isInChannel) {
+                return res.status(403).json({ msg: 'Access denied to private channel' });
+            }
+        }
+
 
         // On crée et sauvegarde le message
         const newMessage = new Message({
@@ -110,10 +128,29 @@ router.get('/:channelId/messages', auth, async (req, res) => {
             return res.status(404).json({ msg: 'Channel not found' });
         }
 
-        // Récupérer tous les messages du canal
+        // Vérifier qu'on est membre du workspace
+        const workspace = await Workspace.findById(channel.workspace);
+        if (!workspace) {
+            return res.status(404).json({ msg: 'Workspace not found' });
+        }
+        const isWorkspaceMember = workspace.members.some(m => m.user.toString() === req.user.id);
+        if (!isWorkspaceMember) {
+            return res.status(403).json({ msg: 'Access denied (not in workspace)' });
+        }
+
+        // Si le channel est private => vérifier qu'on fait partie de channel.members
+        if (channel.type === 'private') {
+            const isInChannel = channel.members.some(u => u.toString() === req.user.id);
+            if (!isInChannel) {
+                return res.status(403).json({ msg: 'Access denied to private channel' });
+            }
+        }
+
+        // Récupérer tous les messages
         const messages = await Message.find({ channel: req.params.channelId })
-            .populate('sender', 'name email') // Afficher le nom et l'email de l'auteur
-            .sort({ createdAt: 'asc' }); // Trier par date croissante
+            .populate('sender', 'name email')
+            .populate('reactions.user','name') // <= on peuple la clé user dans reactions
+            .sort({ createdAt: 'asc' });
 
         res.json(messages);
     } catch (err) {
@@ -127,23 +164,35 @@ router.get('/:channelId/messages', auth, async (req, res) => {
 // @access  Privé (membre uniquement)
 router.post('/:channelId/messages/:messageId/reactions', auth, async (req, res) => {
     const { emoji } = req.body;
-
     try {
-        const message = await Message.findById(req.params.messageId);
+        let message = await Message.findById(req.params.messageId);
         if (!message) {
             return res.status(404).json({ msg: 'Message not found' });
         }
-
-        // Ajouter une réaction
-        message.reactions.push({ emoji, user: req.user.id });
+        // Vérifier s’il existe déjà une réaction de cet utilisateur
+        const existingIdx = message.reactions.findIndex(r => String(r.user) === req.user.id);
+        if (existingIdx !== -1) {
+            message.reactions[existingIdx].emoji = emoji;
+        } else {
+            message.reactions.push({ emoji, user: req.user.id });
+        }
         await message.save();
-
+        // Peupler les données utilisateur dans la réaction de l'utilisateur courant
+        await message.populate('reactions.user', 'name');
+        const updatedReaction = message.reactions.find(r => String(r.user._id || r.user) === req.user.id);
+        const io = req.app.get('socketio');
+        io.to(req.params.channelId).emit('message-reacted', {
+            channelId: req.params.channelId,
+            messageId: message._id.toString(),
+            reaction: updatedReaction
+        });
         res.json(message);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
     }
 });
+
 
 // @route   DELETE /api/channels/:channelId/messages/:messageId
 // @desc    Supprimer un message

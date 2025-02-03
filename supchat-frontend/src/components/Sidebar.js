@@ -48,13 +48,18 @@ function Sidebar({
         }
     };
 
+
+    const [channelType, setChannelType] = useState('public');
+    const [channelMembers, setChannelMembers] = useState([]); // un array d'userIds si besoin
+
     // 2) Création channel
     const handleCreateChannel = async () => {
         if (!newChannelName.trim() || !targetWsId) return;
         try {
             await axios.post(`/api/workspaces/${targetWsId}/channels`, {
                 name: newChannelName.trim(),
-                type: 'public', // ou “private”
+                type: channelType,
+                members: (channelType === 'private') ? channelMembers : []
             });
             if (onWorkspacesRefresh) {
                 onWorkspacesRefresh();
@@ -172,47 +177,60 @@ function Sidebar({
                             </div>
 
                             <ul style={{ listStyle: 'none', paddingLeft: '20px', marginTop: '5px' }}>
-                                {ws.channels?.map((ch) => (
-                                    <li
-                                        key={ch._id}
-                                        onClick={() => onSelectChannel(ch._id)}
-                                        style={{
-                                            cursor: 'pointer',
-                                            margin: '3px 0',
-                                            background: ch._id === selectedChannel ? '#ddd' : '',
-                                            padding: '3px',
-                                        }}
-                                    >
-                                        {ch.name} ({ch.type})
-                                        {/* Optionnel: bouton (X) pour supprimer le channel si role=owner/admin */}
-                                        {(currentRole === 'owner' || currentRole === 'admin') && (
-                                            <button
-                                                onClick={async (e) => {
-                                                    e.stopPropagation();
-                                                    // pour ne pas “sélectionner” le channel en même temps
-                                                    const confirmDel = window.confirm(`Supprimer le channel "${ch.name}" ?`);
-                                                    if (!confirmDel) return;
-                                                    try {
-                                                        await axios.delete(`/api/workspaces/${ws._id}/channels/${ch._id}`);
-                                                        onWorkspacesRefresh && onWorkspacesRefresh();
-                                                    } catch (err) {
-                                                        console.error('Erreur suppression channel:', err);
-                                                        alert('Impossible de supprimer ce channel');
-                                                    }
-                                                }}
-                                                style={{
-                                                    marginLeft: '5px',
-                                                    cursor: 'pointer',
-                                                    background: '#f88',
-                                                    border: '1px solid #999',
-                                                    borderRadius: '4px',
-                                                    padding: '0 4px',
-                                                }}
-                                            >
-                                                X
-                                            </button>
-                                        )}
-                                    </li>
+                                {ws.channels
+                                    ?.filter(ch => {
+                                        // si public => OK
+                                        if (ch.type==='public') return true;
+                                        // si private => vérifier ch.members inclut userId
+                                        if (ch.type==='private') {
+                                            return ch.members?.some(m => {
+                                                if (typeof m === 'string') return m===userId;
+                                                return (m._id === userId);
+                                            });
+                                        }
+                                        return false;
+                                    })
+                                    ?.map((ch) => (
+                                        <li
+                                            key={ch._id}
+                                            onClick={() => onSelectChannel(ch._id)}
+                                            style={{
+                                                cursor: 'pointer',
+                                                margin: '3px 0',
+                                                background: ch._id === selectedChannel ? '#ddd' : '',
+                                                padding: '3px',
+                                            }}
+                                        >
+                                            {ch.name} ({ch.type})
+                                            {/* Optionnel: bouton (X) pour supprimer le channel si role=owner/admin */}
+                                            {(currentRole === 'owner' || currentRole === 'admin') && (
+                                                <button
+                                                    onClick={async (e) => {
+                                                        e.stopPropagation();
+                                                        // pour ne pas “sélectionner” le channel en même temps
+                                                        const confirmDel = window.confirm(`Supprimer le channel "${ch.name}" ?`);
+                                                        if (!confirmDel) return;
+                                                        try {
+                                                            await axios.delete(`/api/workspaces/${ws._id}/channels/${ch._id}`);
+                                                            onWorkspacesRefresh && onWorkspacesRefresh();
+                                                        } catch (err) {
+                                                            console.error('Erreur suppression channel:', err);
+                                                            alert('Impossible de supprimer ce channel');
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        marginLeft: '5px',
+                                                        cursor: 'pointer',
+                                                        background: '#f88',
+                                                        border: '1px solid #999',
+                                                        borderRadius: '4px',
+                                                        padding: '0 4px',
+                                                    }}
+                                                >
+                                                    X
+                                                </button>
+                                            )}
+                                        </li>
                                 ))}
                             </ul>
                         </div>
@@ -221,21 +239,50 @@ function Sidebar({
 
                 {/* Formulaire “Créer channel” (global, se base sur targetWsId) */}
                 {showCreateChannel && (
-                    <div style={{ marginTop: '10px', background: '#f5f5f5', padding: '5px' }}>
+                    <div style={{marginTop: '10px', background: '#f5f5f5', padding: '5px'}}>
                         <h5>Créer un channel dans workspace {targetWsId}</h5>
                         <input
                             type="text"
                             placeholder="Nom du channel"
                             value={newChannelName}
                             onChange={(e) => setNewChannelName(e.target.value)}
-                            style={{ marginRight: '5px' }}
+                            style={{marginRight: '5px'}}
                         />
+
+                        <div style={{margin: '5px 0'}}>
+                            <label>Type :</label>
+                            <select
+                                value={channelType}
+                                onChange={(e) => setChannelType(e.target.value)}
+                                style={{marginLeft: '5px'}}
+                            >
+                                <option value="public">Public</option>
+                                <option value="private">Privé</option>
+                            </select>
+                        </div>
+
+                        {channelType === 'private' && (
+                            <div>
+                                <label>Members à inviter (en dur ou multiple select) :</label>
+                                <select multiple onChange={(e) => {
+                                    const opts = Array.from(e.target.selectedOptions).map(o => o.value);
+                                    setChannelMembers(opts);
+                                }}>
+                                    {users.map(u => (
+                                        <option key={u._id} value={u._id}>
+                                            {u.name} ({u.email})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
                         <button onClick={handleCreateChannel}>Créer</button>
                         <button onClick={() => {
                             setShowCreateChannel(false);
                             setNewChannelName('');
                             setTargetWsId('');
-                        }} style={{ marginLeft: '5px' }}>
+                        }} style={{marginLeft: '5px'}}>
                             Annuler
                         </button>
                     </div>

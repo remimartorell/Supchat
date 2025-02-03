@@ -144,6 +144,62 @@ function Chat() {
                 }
             });
 
+            newSocket.on('message-reacted', (payload) => {
+                console.log('message-reacted', payload);
+                if (selectedChannel && payload.channelId === selectedChannel) {
+                    setMessages((prev) =>
+                        prev.map((msg) => {
+                            if (msg._id === payload.messageId) {
+                                const existingIndex = msg.reactions
+                                    ? msg.reactions.findIndex(r =>
+                                        (r.user._id && r.user._id === payload.reaction.user._id) ||
+                                        (typeof r.user === 'string' && r.user === payload.reaction.user)
+                                    )
+                                    : -1;
+                                let newReactions;
+                                if (existingIndex !== -1) {
+                                    // Remplacer la réaction existante
+                                    newReactions = [...msg.reactions];
+                                    newReactions[existingIndex] = payload.reaction;
+                                } else {
+                                    newReactions = [...(msg.reactions || []), payload.reaction];
+                                }
+                                return { ...msg, reactions: newReactions };
+                            }
+                            return msg;
+                        })
+                    );
+                }
+            });
+
+            newSocket.on('channel-added', (channel) => {
+                console.log('Nouveau canal ajouté:', channel);
+                setMyWorkspaces(prevWorkspaces =>
+                    prevWorkspaces.map(ws => {
+                        if (ws._id === channel.workspace.toString()) {
+                            // Ajoute le canal si non présent déjà
+                            const exists = ws.channels && ws.channels.some(ch => ch._id === channel._id);
+                            if (!exists) {
+                                return { ...ws, channels: [...(ws.channels || []), channel] };
+                            }
+                        }
+                        return ws;
+                    })
+                );
+            });
+
+            newSocket.on('channel-deleted', (data) => {
+                console.log('Canal supprimé:', data.channelId);
+                setMyWorkspaces(prevWorkspaces =>
+                    prevWorkspaces.map(ws => {
+                        if (ws.channels) {
+                            return { ...ws, channels: ws.channels.filter(ch => ch._id !== data.channelId) };
+                        }
+                        return ws;
+                    })
+                );
+            });
+
             return () => {
                 newSocket.off('joined');
                 newSocket.off('workspace-updated');
@@ -152,6 +208,7 @@ function Chat() {
                 newSocket.off('new-channel-message');
                 newSocket.off('channel-message-deleted');
                 newSocket.off('channel-message-updated');
+                newSocket.off('message-reacted');
                 newSocket.disconnect();
             };
         }
