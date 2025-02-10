@@ -186,5 +186,49 @@ router.delete('/:workspaceId/channels/:channelId', auth, async (req, res) => {
     }
 });
 
+router.delete('/:workspaceId/channels/:channelId/members/:userId', auth, async (req, res) => {
+    try {
+        // Récupérer le canal
+        const channel = await Channel.findById(req.params.channelId);
+        if (!channel) {
+            return res.status(404).json({ msg: 'Channel not found' });
+        }
+
+        // Récupérer le workspace
+        const workspace = await Workspace.findById(req.params.workspaceId);
+        if (!workspace) {
+            return res.status(404).json({ msg: 'Workspace not found' });
+        }
+
+        // Vérifier que l'utilisateur connecté dispose des droits nécessaires (seulement owner ou admin)
+        const currentMember = workspace.members.find(m => m.user.toString() === req.user.id);
+        if (!currentMember || !(['owner', 'admin'].includes(currentMember.role))) {
+            return res.status(403).json({ msg: 'Only workspace owner/admin can remove a member from this channel' });
+        }
+
+        // Retirer le membre du tableau "members" du canal
+        const originalLength = channel.members.length;
+        channel.members = channel.members.filter(m => m.toString() !== req.params.userId);
+        if (channel.members.length === originalLength) {
+            return res.status(404).json({ msg: 'Member not found in channel' });
+        }
+        await channel.save();
+
+        // (Optionnel) Émettre un événement Socket.IO pour notifier tous les membres du workspace que le canal a été mis à jour
+        const io = req.app.get('socketio');
+        const userSocketMap = req.app.get('userSocketMap');
+        workspace.members.forEach(member => {
+            const socketId = userSocketMap[member.user.toString()];
+            if (socketId) {
+                io.to(socketId).emit('channel-updated', channel);
+            }
+        });
+
+        res.json({ msg: 'Member removed from channel', channel });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
 
 module.exports = router;

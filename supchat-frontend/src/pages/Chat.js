@@ -6,11 +6,11 @@ import axios from '../services/axiosConfig';
 import Sidebar from '../components/Sidebar';
 import ChatWindow from '../components/ChatWindow';
 import MessageInput from '../components/MessageInput';
+import NotificationHub from '../components/NotificationHub';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
 function parseMentions(content) {
-    // Regex très simple pour @quelquechose (sans espaces)
     const regex = /@(\S+)/g;
     const matches = content.matchAll(regex);
     const mentionNames = [];
@@ -20,7 +20,6 @@ function parseMentions(content) {
     return mentionNames;
 }
 
-
 function Chat() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -28,35 +27,34 @@ function Chat() {
     const [userId, setUserId] = useState('');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    // Sélection courante : un user pour DM, ou un channel
+    // Sélection courante : un user pour DM ou un channel
     const [selectedUser, setSelectedUser] = useState('');
     const [selectedChannel, setSelectedChannel] = useState('');
 
-    // Les messages à afficher (DM ou channel)
+    // Messages à afficher (DM ou channel)
     const [messages, setMessages] = useState([]);
 
-    // Les listes d’utilisateurs et de channels à afficher dans la Sidebar
+    // Utilisateurs et workspaces
     const [users, setUsers] = useState([]);
-
-    // La liste de workspaces de l’utilisateur
     const [myWorkspaces, setMyWorkspaces] = useState([]);
 
-    // -- 1) Récupérer l’utilisateur connecté
+    const [focusMessageId, setFocusMessageId] = useState('');
+
+    // 1) Récupérer l'utilisateur connecté
     useEffect(() => {
+        const fetchUserId = async () => {
+            try {
+                const res = await axios.get('/api/auth/user');
+                setUserId(res.data._id);
+                setIsLoggedIn(true);
+            } catch (err) {
+                console.error('Erreur fetchUserId:', err);
+            }
+        };
         fetchUserId();
     }, []);
 
-    const fetchUserId = async () => {
-        try {
-            const res = await axios.get('/api/auth/user');
-            setUserId(res.data._id);
-            setIsLoggedIn(true);
-        } catch (err) {
-            console.error('Erreur fetchUserId:', err);
-        }
-    };
-
-    // -- 2) Initialiser Socket dès qu’on a le userId
+    // 2) Initialiser la socket dès que l'utilisateur est connecté
     useEffect(() => {
         if (isLoggedIn && userId) {
             const newSocket = io(process.env.REACT_APP_API_URL);
@@ -71,71 +69,55 @@ function Chat() {
                 console.log('Reçu "joined":', msg);
             });
 
-            // Écoute : workspace-updated
             newSocket.on('workspace-updated', (payload) => {
                 console.log('workspace-updated', payload);
-                // Ex : Re-fetch la liste pour voir si un membre a été ajouté, etc.
-                // -> (si on veut être optimal, on peut filtrer par workspaceId
-                //    pour seulement refetch le workspace concerné)
                 fetchWorkspacesAndChannels();
             });
 
-            // Écoute : workspace-removed
             newSocket.on('workspace-removed', (payload) => {
                 console.log('workspace-removed', payload);
-                // -> Retirer ce workspace de la liste
                 fetchWorkspacesAndChannels();
             });
 
-            // Nouveau DM
             newSocket.on('new-private-message', (message) => {
                 console.log('Nouveau DM reçu :', message);
-                // On l’affiche uniquement si c’est le “selectedUser”
                 if (
                     (message.sender === selectedUser && message.receiver === userId) ||
                     (message.sender === userId && message.receiver === selectedUser)
                 ) {
-                    setMessages((prev) => [...prev, message]);
+                    setMessages(prev => [...prev, message]);
                 }
             });
 
-            // Nouveau message channel
             newSocket.on('new-channel-message', (message) => {
                 console.log('Nouveau message channel :', message);
                 if (selectedChannel && message.channelId === selectedChannel) {
-                    // on force message.channel = message.channelId
+                    // On force message.channel pour être sûr
                     message.channel = message.channelId;
-                    setMessages((prev) => [...prev, message]);
+                    setMessages(prev => [...prev, message]);
                 }
             });
 
             newSocket.on('mention-notification', (notif) => {
                 alert(`
-                    Tu as été mentionné par ${notif.from}
-                    Dans le channel ${notif.channelName}
-                    Du workspace ${notif.workspaceName}
-                `);
+          Tu as été mentionné par ${notif.from}
+          Dans le channel ${notif.channelName}
+          Du workspace ${notif.workspaceName}
+        `);
             });
 
             newSocket.on('channel-message-deleted', (payload) => {
                 console.log('channel-message-deleted', payload);
-                // payload = { channelId, messageId }
-                // On vérifie qu'on est sur le canal concerné
                 if (selectedChannel === payload.channelId) {
-                    // On retire le message du state local
-                    setMessages((prev) =>
-                        prev.filter((m) => m._id !== payload.messageId)
-                    );
+                    setMessages(prev => prev.filter(m => m._id !== payload.messageId));
                 }
             });
 
-            // Et si tu fais l'édition :
             newSocket.on('channel-message-updated', (payload) => {
                 console.log('channel-message-updated', payload);
-                // payload = { channelId, messageId, newContent, edited }
                 if (selectedChannel === payload.channelId) {
-                    setMessages((prev) =>
-                        prev.map((m) =>
+                    setMessages(prev =>
+                        prev.map(m =>
                             m._id === payload.messageId
                                 ? { ...m, content: payload.newContent, edited: payload.edited }
                                 : m
@@ -147,8 +129,8 @@ function Chat() {
             newSocket.on('message-reacted', (payload) => {
                 console.log('message-reacted', payload);
                 if (selectedChannel && payload.channelId === selectedChannel) {
-                    setMessages((prev) =>
-                        prev.map((msg) => {
+                    setMessages(prev =>
+                        prev.map(msg => {
                             if (msg._id === payload.messageId) {
                                 const existingIndex = msg.reactions
                                     ? msg.reactions.findIndex(r =>
@@ -158,7 +140,6 @@ function Chat() {
                                     : -1;
                                 let newReactions;
                                 if (existingIndex !== -1) {
-                                    // Remplacer la réaction existante
                                     newReactions = [...msg.reactions];
                                     newReactions[existingIndex] = payload.reaction;
                                 } else {
@@ -174,10 +155,9 @@ function Chat() {
 
             newSocket.on('channel-added', (channel) => {
                 console.log('Nouveau canal ajouté:', channel);
-                setMyWorkspaces(prevWorkspaces =>
-                    prevWorkspaces.map(ws => {
+                setMyWorkspaces(prev =>
+                    prev.map(ws => {
                         if (ws._id === channel.workspace.toString()) {
-                            // Ajoute le canal si non présent déjà
                             const exists = ws.channels && ws.channels.some(ch => ch._id === channel._id);
                             if (!exists) {
                                 return { ...ws, channels: [...(ws.channels || []), channel] };
@@ -190,8 +170,8 @@ function Chat() {
 
             newSocket.on('channel-deleted', (data) => {
                 console.log('Canal supprimé:', data.channelId);
-                setMyWorkspaces(prevWorkspaces =>
-                    prevWorkspaces.map(ws => {
+                setMyWorkspaces(prev =>
+                    prev.map(ws => {
                         if (ws.channels) {
                             return { ...ws, channels: ws.channels.filter(ch => ch._id !== data.channelId) };
                         }
@@ -209,6 +189,8 @@ function Chat() {
                 newSocket.off('channel-message-deleted');
                 newSocket.off('channel-message-updated');
                 newSocket.off('message-reacted');
+                newSocket.off('channel-added');
+                newSocket.off('channel-deleted');
                 newSocket.disconnect();
             };
         }
@@ -221,7 +203,7 @@ function Chat() {
         }
     }, [socket, selectedChannel]);
 
-    // -- 3) Au montage (ou après login), récupérer la liste d’utilisateurs + workspaces
+    // 3) Récupérer la liste des utilisateurs et workspaces
     useEffect(() => {
         if (isLoggedIn && userId) {
             fetchUsers();
@@ -231,7 +213,6 @@ function Chat() {
 
     const fetchUsers = async () => {
         try {
-            // Appel vers /api/auth/allUsers pour avoir tous les utilisateurs
             const res = await axios.get('/api/auth/allUsers');
             setUsers(res.data);
         } catch (err) {
@@ -241,7 +222,6 @@ function Chat() {
 
     const fetchWorkspaces = async () => {
         try {
-            // Liste des workspaces où l’utilisateur connecté est membre
             const res = await axios.get('/api/workspaces');
             setMyWorkspaces(res.data);
         } catch (err) {
@@ -249,7 +229,7 @@ function Chat() {
         }
     };
 
-    // -- 4)
+    // 4) Récupérer workspaces et canaux
     useEffect(() => {
         if (isLoggedIn && userId) {
             fetchWorkspacesAndChannels();
@@ -258,81 +238,63 @@ function Chat() {
 
     const fetchWorkspacesAndChannels = async () => {
         try {
-            // 1) Récupérer la liste des workspaces
             const res = await axios.get('/api/workspaces');
-            const rawWorkspaces = res.data; // [ { _id, name, owner, ... }, ... ]
-
-            // 2) Pour chacun, fetch channels
+            const rawWorkspaces = res.data;
             const updated = [];
             for (const ws of rawWorkspaces) {
                 const r2 = await axios.get(`/api/workspaces/${ws._id}/channels`);
-                ws.channels = r2.data; // un array de channels
+                ws.channels = r2.data;
                 updated.push(ws);
             }
-
-            // 3) Stocker dans le state “myWorkspaces”
             setMyWorkspaces(updated);
         } catch (err) {
             console.error('Erreur fetchWorkspacesAndChannels:', err);
         }
     };
 
-    const [focusMessageId, setFocusMessageId] = useState('');
-
-    const queryParams = new URLSearchParams(location.search);
-    const paramChannelId = queryParams.get('channelId');
-    const paramUserId = queryParams.get('userId');
-    const paramFocusMsg = queryParams.get('focusMsg');
-
+    // 5) Surveiller les query parameters pour sélectionner un canal ou un utilisateur
     useEffect(() => {
-        // Si paramChannelId existe, on appelle handleSelectChannel(paramChannelId).
-        // Idem pour paramUserId => handleSelectUser
-        if (paramChannelId) {
-            handleSelectChannel(paramChannelId);
-        } else if (paramUserId) {
-            handleSelectUser(paramUserId);
+        const queryParams = new URLSearchParams(location.search);
+        const channelId = queryParams.get('channelId');
+        const focusMsg = queryParams.get('focusMsg');
+        const userParam = queryParams.get('userId');
+        if (channelId) {
+            handleSelectChannel(channelId, focusMsg);
+        } else if (userParam) {
+            handleSelectUser(userParam);
         }
-    }, []);
+    }, [location.search]);
 
-    const handleSelectChannel = async (chId) => {
+    // 6) Fonction de sélection d'un canal
+    const handleSelectChannel = async (chId, focusMsgParam) => {
         setSelectedChannel(chId);
         setSelectedUser('');
-
-        // === AJOUT ICI ===
         if (socket) {
             socket.emit('joinChannel', chId);
-            console.log('joinChannel sent with ', chId);
+            console.log('joinChannel sent with', chId);
         }
-
-        // j'utilise await pour fetchChannelHistory => on attend
         await fetchChannelHistory(chId);
-
-        // ensuite, si paramFocusMsg => setFocusMessageId
-        if (paramFocusMsg) {
-            setFocusMessageId(paramFocusMsg);
+        if (focusMsgParam) {
+            setFocusMessageId(focusMsgParam);
             const newParams = new URLSearchParams(location.search);
             newParams.delete('focusMsg');
             navigate(`${location.pathname}?${newParams.toString()}`, { replace: true });
         }
     };
 
-    // -- 5) Quand on clique sur un user ou un channel dans la Sidebar
-    // on fetch l’historique correspondant
+    // 7) Fonction de sélection d'un utilisateur
     const handleSelectUser = async (uId) => {
         setSelectedUser(uId);
         setSelectedChannel('');
         await fetchDMHistory(uId);
-
-        // si paramFocusMsg => setFocusMessageId
-        if (paramFocusMsg) {
-            setFocusMessageId(paramFocusMsg);
-            const newParams = new URLSearchParams(location.search);
-            newParams.delete('focusMsg');
-            navigate(`${location.pathname}?${newParams.toString()}`, { replace: true });
+        const queryParams = new URLSearchParams(location.search);
+        if (queryParams.has('focusMsg')) {
+            queryParams.delete('focusMsg');
+            navigate(`${location.pathname}?${queryParams.toString()}`, { replace: true });
         }
     };
 
-    // -- 6) Historique DM
+    // 8) Historique DM
     const fetchDMHistory = async (otherUserId) => {
         if (!otherUserId) return;
         try {
@@ -343,11 +305,10 @@ function Chat() {
         }
     };
 
-    // -- 7) Historique channel
+    // 9) Historique channel
     const fetchChannelHistory = async (channelId) => {
         if (!channelId) return;
         try {
-            // GET /api/channels/:channelId/messages
             const res = await axios.get(`/api/channels/${channelId}/messages`);
             setMessages(res.data);
         } catch (err) {
@@ -355,32 +316,20 @@ function Chat() {
         }
     };
 
-    // -- 8) Envoi d’un message (DM ou channel)
-// Extrait du code Chat.js
-
+    // 10) Envoi d’un message
     const handleSendMessage = async (content, file) => {
         try {
+            const mentions = parseMentions(content);
+            const formData = new FormData();
+            formData.append('content', content);
+            formData.append('mentions', JSON.stringify(mentions));
+            if (file) formData.append('file', file);
             if (selectedUser) {
-                // DM
-                const formData = new FormData();
-                const mentions = parseMentions(content);
                 formData.append('receiverId', selectedUser);
-                formData.append('content', content);
-                formData.append('mentions', JSON.stringify(mentions));
-                if (file) formData.append('file', file);
-
                 await axios.post('/api/direct-messages', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
-
             } else if (selectedChannel) {
-                // Channel
-                const formData = new FormData();
-                const mentions = parseMentions(content);
-                formData.append('content', content);
-                formData.append('mentions', JSON.stringify(mentions));
-                if (file) formData.append('file', file);
-
                 await axios.post(`/api/channels/${selectedChannel}/messages`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
@@ -390,21 +339,18 @@ function Chat() {
         }
     };
 
+    // 11) Déterminer si l'utilisateur peut supprimer un message
     let canDelete = false;
     if (selectedChannel) {
-        // 1) Trouver le workspace qui contient ce channel
         const wsWithChannel = myWorkspaces.find(ws =>
             ws.channels && ws.channels.some(ch => ch._id === selectedChannel)
         );
         if (wsWithChannel) {
-            // 2) Trouver le currentMember
-            const currentMember = wsWithChannel.members.find(m => m.user === userId ||
-                (typeof m.user === 'object' && m.user._id === userId)
+            const currentMember = wsWithChannel.members.find(m =>
+                m.user === userId || (typeof m.user === 'object' && m.user._id === userId)
             );
-            if (currentMember) {
-                if (['owner','admin','moderator'].includes(currentMember.role)) {
-                    canDelete = true;
-                }
+            if (currentMember && ['owner', 'admin', 'moderator'].includes(currentMember.role)) {
+                canDelete = true;
             }
         }
     }
@@ -423,8 +369,9 @@ function Chat() {
                     onWorkspacesRefresh={fetchWorkspacesAndChannels}
                 />
             </div>
-
             <div className="chat-layout-main">
+                {/* Afficher NotificationHub ici afin qu'il utilise la même instance de socket */}
+                <NotificationHub socket={socket} />
                 <ChatWindow
                     userId={userId}
                     messages={messages}

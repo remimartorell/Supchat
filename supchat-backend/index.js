@@ -25,6 +25,7 @@ app.use('/api/workspaces', require('./routes/channels'));
 app.use('/api/channels', require('./routes/messages'));
 app.use('/api/direct-messages', require('./routes/directMessages'));
 app.use('/api/search', require('./routes/search'));
+app.use('/api/notifications', require('./routes/notifications'));
 
 const server = http.createServer(app);
 

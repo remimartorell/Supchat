@@ -27,14 +27,13 @@ const upload = multer({ storage });
 // @access  Privé (membre du canal uniquement)
 router.post('/:channelId/messages', auth, upload.single('file'), async (req, res) => {
     const { content } = req.body;
-
     try {
         const channel = await Channel.findById(req.params.channelId);
         if (!channel) {
             return res.status(404).json({ msg: 'Channel not found' });
         }
 
-        // Vérifier qu'on est membre du workspace
+        // Vérifier que l'utilisateur est membre du workspace associé
         const workspace = await Workspace.findById(channel.workspace);
         if (!workspace) {
             return res.status(404).json({ msg: 'Workspace not found' });
@@ -44,7 +43,7 @@ router.post('/:channelId/messages', auth, upload.single('file'), async (req, res
             return res.status(403).json({ msg: 'Access denied (not in workspace)' });
         }
 
-        // Si channel.type === 'private' => vérifier channel.members
+        // Si le canal est privé, vérifier que l'utilisateur fait partie du canal
         if (channel.type === 'private') {
             const isInChannel = channel.members.some(u => u.toString() === req.user.id);
             if (!isInChannel) {
@@ -52,62 +51,60 @@ router.post('/:channelId/messages', auth, upload.single('file'), async (req, res
             }
         }
 
-
-        // On crée et sauvegarde le message
+        // Création du message
         const newMessage = new Message({
             content,
             fileUrl: req.file ? `http://localhost:3000/uploads/${req.file.filename}` : null,
             channel: req.params.channelId,
             sender: req.user.id,
         });
-
         const message = await newMessage.save();
 
-        // 3. Récup io & userSocketMap
+        // Récupérer Socket.IO et le mapping userSocketMap
         const io = req.app.get('socketio');
         const userSocketMap = req.app.get('userSocketMap');
 
+        // Gestion des mentions
         const mentions = JSON.parse(req.body.mentions || '[]');
-        const validMentions = []; // On va y mettre seulement les mentionNames qui existent
-
+        const validMentions = [];
         const fromUser = await User.findById(req.user.id).select('name');
 
         for (const mentionName of mentions) {
-            // On cherche un user par name
+            // Chercher un utilisateur par son nom
             const userMentioned = await User.findOne({ name: mentionName });
             if (userMentioned) {
-                validMentions.push(mentionName); // on l'ajoute à la liste
-
-                // Creer la notification
-                await Notification.create({
+                validMentions.push(mentionName);
+                // Créer la notification en incluant messageId
+                const newNotif = await Notification.create({
                     user: userMentioned._id,
                     type: 'mention',
                     channel: req.params.channelId,
-                    message: `${req.user.id} t'a mentionné dans le channel ${req.params.channelId}`
+                    message: `${fromUser.name} t'a mentionné dans le channel ${channel.name}`,
+                    messageId: message._id  // pour permettre la navigation vers le message
                 });
-
-                // Émettre un event mention-notification
-                const userSocketId = userSocketMap[userMentioned._id];
-                if (userSocketId) {
-                    io.to(userSocketId).emit('mention-notification', {
-                        from: fromUser?.name || 'Unknown',
+                const socketId = userSocketMap[userMentioned._id];
+                if (socketId) {
+                    io.to(socketId).emit('new-notification', newNotif);
+                    io.to(socketId).emit('mention-notification', {
+                        from: fromUser.name || 'Unknown',
                         channelName: channel.name,
-                        workspaceName: workspace?.name || '',
+                        workspaceName: workspace.name || '',
                         message: `@${mentionName} a été mentionné.`
                     });
                 }
             }
         }
 
+        // Émettre un événement à tous les membres du canal pour le nouveau message
         io.to(req.params.channelId).emit('new-channel-message', {
             _id: message._id,
             content: message.content,
             channelId: req.params.channelId,
             channel: req.params.channelId,
-            channelName: channel.name, // << on affiche #NomDuChannel
-            sender: req.user.id, // ou { _id: user._id, name: user.name }
+            channelName: channel.name,
+            sender: req.user.id,
             createdAt: message.createdAt,
-            validMentions, // on renvoie la liste des mentions valide
+            validMentions,
             fileUrl: message.fileUrl,
         });
 
