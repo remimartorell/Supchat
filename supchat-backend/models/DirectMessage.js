@@ -1,3 +1,4 @@
+// supchat-backend/models/DirectMessage.js
 const mongoose = require('mongoose');
 
 const DirectMessageSchema = new mongoose.Schema({
@@ -11,21 +12,27 @@ const DirectMessageSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
-    content: {
-        type: String,
-    },
-    fileUrl: {
-        type: String,
-    },
+    content: { type: String },
+    fileUrl: { type: String },
     reactions: [
         {
             emoji: { type: String },
             user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         },
     ],
+    readBy: [
+        {
+            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            readAt: { type: Date },
+        },
+    ],
     createdAt: {
         type: Date,
         default: Date.now,
+    },
+    edited: {
+        type: Boolean,
+        default: false
     },
 });
 

@@ -12,8 +12,8 @@ services:
     depends_on:
       - mongodb
     volumes:
-      # Monte le dossier local ./supchat-backend/uploads dans /app/uploads du container
-      - ./supchat-backend/uploads:/app/uploads
+      - "./supchat-backend/uploads:/app/uploads"
+
 
   frontend:
     build:

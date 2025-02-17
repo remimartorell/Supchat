@@ -5,7 +5,7 @@ const MessageSchema = new mongoose.Schema({
         type: String,
     },
     fileUrl: {
-        type: String, // Stocke le chemin du fichier envoyé
+        type: String,
     },
     channel: {
         type: mongoose.Schema.Types.ObjectId,
@@ -17,6 +17,13 @@ const MessageSchema = new mongoose.Schema({
         ref: 'User',
         required: true,
     },
+    deliveredAt: { type: Date }, // Date de délivrance
+    readBy: [
+        {
+            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            readAt: { type: Date }
+        }
+    ],
     reactions: [
         {
             emoji: { type: String },
@@ -26,6 +33,10 @@ const MessageSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now,
+    },
+    edited: {
+        type: Boolean,
+        default: false,
     },
 });
 

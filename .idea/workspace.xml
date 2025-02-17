@@ -4,21 +4,19 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="- Création d'un channel privé, ajout possible d'utilisateurs depuis la création&#10;- Ajout et suppression de membres dans le chanel privé via la page settings du workspace. Les owner et admin du workspace et le créateur du channel privé ont les droits admin sur ce channel privé&#10;- Maintenant il y a une actualisation en direct pour les membres ajoutés/supprimés d'un channel public ou privé.&#10;- Ajout des réactions sur les messages.&#10;- On ne peut réagir avec qu'un seul émoticone sur un message, si on en mets un autre il remplace l'ancien &#10;- On peut passer la souris sur un émoticone pour voir afficher qui a réagis avec cet emoticone&#10;- Les émoticones et noms affichés sont bien sûr affichés en direct automatiquement">
-      <change afterPath="$PROJECT_DIR$/supchat-backend/routes/notifications.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/components/NotificationHub.js" afterDir="false" />
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="- La suppression d'un membre d'un canal privé remarche&#10;- Ajout du hub de notification pour afficher les notifications de mentions&#10;- Affiche un nombre en rouge pour le nombre de notification non lues&#10;- Lors du clique sur la notification, cela ammène au message de la mention&#10;- Lors de l'ouverture du hub, cela affiche les notifications non lues en couleur&#10;- Lors du clique sur une nouvelle notification en couleur, cela la compte comme lue&#10;- Affichage en direct de la notif dans le hub et ajout du chiffre rouge sans besoin de recharger la page">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/models/Notification.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/models/Notification.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/channels.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/channels.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/models/DirectMessage.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/models/DirectMessage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/models/Message.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/models/Message.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/directMessages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/directMessages.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-backend/routes/messages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/messages.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/services/axiosConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/services/axiosConfig.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,6 +47,10 @@
     &quot;accountId&quot;: &quot;39a550c0-b14e-4748-9a4e-1ebd85ade2a8&quot;
   }
 }</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -60,28 +62,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Node.js.directMessages.js.executor": "Run",
-    "Node.js.index.js.executor": "Run",
-    "Node.js.workspaces.js.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/marto/Desktop/Cours/3e Année/3PROJ/Projet Final/Supchat",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Problems",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "vcs.Git",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Node.js.directMessages.js.executor&quot;: &quot;Run&quot;,
+    &quot;Node.js.index.js.executor&quot;: &quot;Run&quot;,
+    &quot;Node.js.workspaces.js.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/marto/Desktop/Cours/3e Année/3PROJ/Projet Final/Supchat&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Problems&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\marto\Desktop\Cours\3e Année\3PROJ\Projet Final\Supchat\supchat-frontend\src\pages" />
@@ -114,7 +116,9 @@
       <workItem from="1737447086770" duration="22704000" />
       <workItem from="1737966007707" duration="22212000" />
       <workItem from="1738571390175" duration="24293000" />
-      <workItem from="1739191875091" duration="11900000" />
+      <workItem from="1739191875091" duration="16459000" />
+      <workItem from="1739267177722" duration="12130000" />
+      <workItem from="1739779479734" duration="20785000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -276,7 +280,15 @@
       <option name="project" value="LOCAL" />
       <updated>1738597788259</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="- La suppression d'un membre d'un canal privé remarche&#10;- Ajout du hub de notification pour afficher les notifications de mentions&#10;- Affiche un nombre en rouge pour le nombre de notification non lues&#10;- Lors du clique sur la notification, cela ammène au message de la mention&#10;- Lors de l'ouverture du hub, cela affiche les notifications non lues en couleur&#10;- Lors du clique sur une nouvelle notification en couleur, cela la compte comme lue&#10;- Affichage en direct de la notif dans le hub et ajout du chiffre rouge sans besoin de recharger la page">
+      <option name="closed" value="true" />
+      <created>1739204219609</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1739204219609</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -313,6 +325,7 @@
     <MESSAGE value="- Ajout de boutons pour créer un workspace, créer un channel, supprimer un message.&#10;- Page settings d'un workspace, où on peut supprimer le workspace, renommer le workspace, ajouter un membre, modifier le rôle d'un membre.&#10;- Ajout de l'impossibilité pour un rôle inférieur de modifier un rôle supérieur à lui.&#10;- Ajout de l'actualisation en direct d'actions, comme création de workspace, ajout d'un membre, supprimer channel etc." />
     <MESSAGE value="- La suppression de messages fonctionne correctement et est actualisé en direct pour celui qui supprime et ceux dans le même chanel.&#10;- On peut éditer ses propres messages (et seulement les siens même si on est owner ou admin) et il est actualisé en direct pour celui qui modifie et ceux dans le channel.&#10;- Affiche  &quot;(Modifié)&quot; en italique à la fin des messages modifiés" />
     <MESSAGE value="- Création d'un channel privé, ajout possible d'utilisateurs depuis la création&#10;- Ajout et suppression de membres dans le chanel privé via la page settings du workspace. Les owner et admin du workspace et le créateur du channel privé ont les droits admin sur ce channel privé&#10;- Maintenant il y a une actualisation en direct pour les membres ajoutés/supprimés d'un channel public ou privé.&#10;- Ajout des réactions sur les messages.&#10;- On ne peut réagir avec qu'un seul émoticone sur un message, si on en mets un autre il remplace l'ancien &#10;- On peut passer la souris sur un émoticone pour voir afficher qui a réagis avec cet emoticone&#10;- Les émoticones et noms affichés sont bien sûr affichés en direct automatiquement" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Création d'un channel privé, ajout possible d'utilisateurs depuis la création&#10;- Ajout et suppression de membres dans le chanel privé via la page settings du workspace. Les owner et admin du workspace et le créateur du channel privé ont les droits admin sur ce channel privé&#10;- Maintenant il y a une actualisation en direct pour les membres ajoutés/supprimés d'un channel public ou privé.&#10;- Ajout des réactions sur les messages.&#10;- On ne peut réagir avec qu'un seul émoticone sur un message, si on en mets un autre il remplace l'ancien &#10;- On peut passer la souris sur un émoticone pour voir afficher qui a réagis avec cet emoticone&#10;- Les émoticones et noms affichés sont bien sûr affichés en direct automatiquement" />
+    <MESSAGE value="- La suppression d'un membre d'un canal privé remarche&#10;- Ajout du hub de notification pour afficher les notifications de mentions&#10;- Affiche un nombre en rouge pour le nombre de notification non lues&#10;- Lors du clique sur la notification, cela ammène au message de la mention&#10;- Lors de l'ouverture du hub, cela affiche les notifications non lues en couleur&#10;- Lors du clique sur une nouvelle notification en couleur, cela la compte comme lue&#10;- Affichage en direct de la notif dans le hub et ajout du chiffre rouge sans besoin de recharger la page" />
+    <option name="LAST_COMMIT_MESSAGE" value="- La suppression d'un membre d'un canal privé remarche&#10;- Ajout du hub de notification pour afficher les notifications de mentions&#10;- Affiche un nombre en rouge pour le nombre de notification non lues&#10;- Lors du clique sur la notification, cela ammène au message de la mention&#10;- Lors de l'ouverture du hub, cela affiche les notifications non lues en couleur&#10;- Lors du clique sur une nouvelle notification en couleur, cela la compte comme lue&#10;- Affichage en direct de la notif dans le hub et ajout du chiffre rouge sans besoin de recharger la page" />
   </component>
 </project>

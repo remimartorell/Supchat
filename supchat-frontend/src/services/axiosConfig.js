@@ -10,4 +10,19 @@ if (token) {
     axios.defaults.headers.common['x-auth-token'] = token;
 }
 
+// Intercepteur global
+axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            // Supprime le token invalide
+            localStorage.removeItem('token');
+            // Et redirige vers la page de login
+            window.location.href = '/login';
+        }
+        return Promise.reject(error);
+    }
+);
+
+
 export default axios;

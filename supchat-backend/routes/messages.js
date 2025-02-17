@@ -146,8 +146,10 @@ router.get('/:channelId/messages', auth, async (req, res) => {
         // Récupérer tous les messages
         const messages = await Message.find({ channel: req.params.channelId })
             .populate('sender', 'name email')
-            .populate('reactions.user','name') // <= on peuple la clé user dans reactions
+            .populate('reactions.user', 'name')
+            .populate('readBy.user', 'name') // <--- AJOUTER ICI
             .sort({ createdAt: 'asc' });
+
 
         res.json(messages);
     } catch (err) {
@@ -281,5 +283,46 @@ router.put('/:channelId/messages/:messageId', auth, async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
+
+// @route   PUT /api/channels/:channelId/messages/:messageId/markAsRead
+router.put('/:channelId/messages/:messageId/markAsRead', auth, async (req, res) => {
+    try {
+        const { channelId, messageId } = req.params;
+
+        // Vérifier l'existence du channel + droits
+        const channel = await Channel.findById(channelId);
+        if (!channel) return res.status(404).json({ msg: 'Channel not found' });
+
+        // Vérifier qu'on fait partie du workspace etc.
+        // (Copier-coller la même logique que vous avez dans POST /:channelId/messages)
+
+        // Récupérer le message
+        let message = await Message.findById(messageId);
+        if (!message) {
+            return res.status(404).json({ msg: 'Message not found' });
+        }
+
+        // Ajouter l'utilisateur dans readBy s'il n'y est pas déjà
+        const already = message.readBy.some((rb) => String(rb.user) === req.user.id);
+        if (!already) {
+            message.readBy.push({ user: req.user.id, readAt: new Date() });
+            await message.save();
+        }
+
+        // Émettre un event Socket.IO "message-read" pour mettre à jour en direct
+        const io = req.app.get('socketio');
+        io.to(channelId).emit('message-read', {
+            channelId,
+            messageId,
+            userId: req.user.id
+        });
+
+        return res.json({ msg: 'ok', message });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
 
 module.exports = router;

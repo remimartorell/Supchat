@@ -40,29 +40,28 @@ const io = socketIo(server, {
 // On stocke ici le mapping userId -> socketId
 const userSocketMap = {};
 
-// Ajouter Socket.IO à l'application
+// --- Ajout de la gestion des statuts en ligne ---
+// Objet qui contiendra pour chaque userId son socketId (pour le statut "online")
+const onlineUsers = {};
+
 app.set('socketio', io);
 app.set('userSocketMap', userSocketMap);
 
-// Événements Socket.IO
 io.on('connection', (socket) => {
   console.log(`Nouvel utilisateur connecté : ${socket.id}`);
 
-  /**
-   * Quand un utilisateur “s’identifie” ou fait un “join”
-   * (peu importe comment vous l’appelez),
-   * on stocke dans userSocketMap l’association userId -> socket.id
-   */
   socket.on('join', (userId) => {
-    // Au lieu de “join room”, on stocke juste la correspondance
     if (!userId) {
       console.log("Erreur : Aucun userId fourni lors de l'événement 'join'");
       return;
     }
     userSocketMap[userId] = socket.id;
+    onlineUsers[userId] = socket.id;
     console.log(`L'utilisateur ${userId} est maintenant associé au socket ${socket.id}`);
 
-    // On peut renvoyer un événement de confirmation
+    // IMPORTANT : on émet "user-status-changed"
+    io.emit('user-status-changed', { userId, status: 'online' });
+
     socket.emit('joined', {
       message: `Ok, userId ${userId} associé à socketId ${socket.id}`,
     });
@@ -73,18 +72,16 @@ io.on('connection', (socket) => {
     console.log(`Socket ${socket.id} joined channel ${channelId}`);
   });
 
-  // Écouter la déconnexion
   socket.on('disconnect', () => {
     console.log(`Socket déconnecté : ${socket.id}`);
-
-    // Facultatif : on peut chercher le userId qui avait ce socketId et l’enlever
-    // pour éviter un mapping obsolète
-    const userIdToRemove = Object.keys(userSocketMap).find(
-        (uId) => userSocketMap[uId] === socket.id
+    const userIdToRemove = Object.keys(onlineUsers).find(
+        (id) => onlineUsers[id] === socket.id
     );
     if (userIdToRemove) {
+      delete onlineUsers[userIdToRemove];
       delete userSocketMap[userIdToRemove];
-      console.log(`Relation userId->socketId supprimée pour l'utilisateur : ${userIdToRemove}`);
+      console.log(`L'utilisateur ${userIdToRemove} est maintenant offline`);
+      io.emit('user-status-changed', { userId: userIdToRemove, status: 'offline' });
     }
   });
 });
