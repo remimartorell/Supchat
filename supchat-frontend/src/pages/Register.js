@@ -1,7 +1,7 @@
 // src/pages/Register.js
 import React, { useState } from 'react';
 import axios from '../services/axiosConfig';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Register() {
     const [name, setName] = useState('');
@@ -13,24 +13,29 @@ function Register() {
         e.preventDefault();
         try {
             // POST /api/auth/register
-            // Ton backend doit être configuré pour accepter { name, email, password }
             const response = await axios.post('/api/auth/register', {
                 name,
                 email,
                 password,
             });
 
-            // Suppose qu'il renvoie { token: "..." }
-            const { token } = response.data;
+            // On récupère token et user éventuels
+            const { token, user } = response.data || {};
 
             if (token) {
                 // On stocke le token
                 localStorage.setItem('token', token);
                 axios.defaults.headers.common['x-auth-token'] = token;
+
+                // stocker userId si dispo
+                if (user && user._id) {
+                    localStorage.setItem('userId', user._id);
+                }
+
+                // Rediriger
                 navigate('/chat');
             } else {
-                // Si pas de token, on redirige sur /login (au choix)
-                navigate('/login');
+                alert('Register: no token returned');
             }
         } catch (err) {
             console.error('Erreur register :', err);
@@ -39,38 +44,48 @@ function Register() {
     };
 
     return (
-        <div style={{ margin: '20px' }}>
-            <h2>Register</h2>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Name : </label>
+        <div className="register-container">
+            <div className="register-box">
+                <h2 className="register-title">Créer un compte</h2>
+
+                <form onSubmit={handleSubmit} className="register-form">
                     <input
                         type="text"
+                        placeholder="Votre nom..."
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         required
+                        className="register-input"
                     />
-                </div>
-                <div>
-                    <label>Email : </label>
                     <input
                         type="email"
+                        placeholder="Adresse mail..."
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        className="register-input"
                     />
-                </div>
-                <div>
-                    <label>Password : </label>
                     <input
                         type="password"
+                        placeholder="Mot de passe..."
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         required
+                        className="register-input"
                     />
+
+                    <button type="submit" className="register-submit-btn">
+                        Inscription
+                    </button>
+                </form>
+
+                <div className="register-footer-link">
+                    <span>Déjà un compte ? </span>
+                    <Link to="/login" style={{ color: '#fff', textDecoration: 'underline' }}>
+                        Se connecter
+                    </Link>
                 </div>
-                <button type="submit">S'enregistrer</button>
-            </form>
+            </div>
         </div>
     );
 }

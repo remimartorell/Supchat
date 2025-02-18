@@ -1,0 +1,58 @@
+/* =========================
+   SearchResults.css
+   ========================= */
+
+/* Conteneur global de la page */
+.search-results-container {
+    padding: 10px;
+}
+
+/* Formulaire de recherche centré */
+.search-results-form-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px; /* Espace sous la barre de recherche */
+}
+
+.search-results-form {
+    display: flex;
+    gap: 5px;
+}
+
+.search-results-input {
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Titre */
+.search-results-title {
+    margin-bottom: 10px;
+}
+
+/* Conteneur flexible pour les “cartes” de résultats */
+.search-results-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px; /* Pour espacer entre chaque bloc (Channels, Users, etc.) */
+}
+
+/* Style de chaque “carte” */
+.search-results-card {
+    border: 1px solid #ccc;
+    padding: 8px;
+    width: 280px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-results-card:hover {
+    background: #f0f0f0;
+}
+
+/* Petit texte subtil (ex: Channel ID, email...) */
+.search-results-subtext {
+    font-size: 0.9em;
+    color: #555;
+}

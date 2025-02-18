@@ -26,6 +26,7 @@ function App() {
 
     return (
         <div id="root-app">
+            {/* NAVBAR */}
             <div className="navbar">
                 <nav
                     style={{
@@ -46,7 +47,9 @@ function App() {
                         {token && (
                             <>
                                 <Link to="/chat" style={{ marginRight: '10px' }}>Chat</Link>
-                                <button onClick={handleLogout} className="logout" style={{ marginRight: '10px' }}>Logout</button>
+                                <button onClick={handleLogout} className="logout" style={{ marginRight: '10px' }}>
+                                    Logout
+                                </button>
                                 <form onSubmit={handleSearchSubmit} style={{ display: 'inline-block', marginRight: '10px' }}>
                                     <input
                                         type="text"
@@ -60,18 +63,65 @@ function App() {
                             </>
                         )}
                     </div>
-                    {/* NotificationHub n'est plus rendu ici */}
                 </nav>
             </div>
+
+            {/* ROUTES */}
             <div className="app-container">
                 <Routes>
+                    <Route
+                        path="/"
+                        element={
+                            <div style={{ textAlign: 'center', marginTop: '40px' }}>
+                                <h2>Accueil ou Chat</h2>
+                                <p>Bienvenue sur Supchat!</p>
+                                <div style={{ marginTop: '20px' }}>
+                                    <button
+                                        onClick={() => navigate('/login')}
+                                        style={{ marginRight: '10px', padding: '10px 20px', cursor: 'pointer' }}
+                                    >
+                                        Aller à Login
+                                    </button>
+                                    <button
+                                        onClick={() => navigate('/register')}
+                                        style={{ padding: '10px 20px', cursor: 'pointer' }}
+                                    >
+                                        Aller à Register
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/chat" element={<PrivateRoute><Chat /></PrivateRoute>} />
-                    <Route path="/search" element={<PrivateRoute><SearchResults /></PrivateRoute>} />
-                    <Route path="/workspace/:workspaceId/settings" element={<PrivateRoute><WorkspaceSettings /></PrivateRoute>} />
-                    <Route path="/" element={<div>Accueil</div>} />
-                    <Route path="*" element={<div>404 Not Found</div>} />
+
+                    {/* pages protégées => PrivateRoute */}
+                    <Route
+                        path="/chat"
+                        element={
+                            <PrivateRoute>
+                                <Chat />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/search"
+                        element={
+                            <PrivateRoute>
+                                <SearchResults />
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/workspace/:workspaceId/settings"
+                        element={
+                            <PrivateRoute>
+                                <WorkspaceSettings />
+                            </PrivateRoute>
+                        }
+                    />
+
+                    <Route path="*" element={<div style={{ textAlign: 'center', marginTop: '40px' }}>404 Not Found</div>} />
                 </Routes>
             </div>
         </div>

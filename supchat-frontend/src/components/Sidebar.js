@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../services/axiosConfig';
+import './Sidebar.css'; // On importe le style fourni par votre collègue
 
 function Sidebar({
                      userId,
@@ -12,37 +13,46 @@ function Sidebar({
                      selectedUser,
                      selectedChannel,
                      onWorkspacesRefresh,
-                     // Assurez-vous de recevoir également la socket en prop si vous l’utilisez
-                     socket,
+                     socket, // Nécessaire pour écouter "user-status-changed"
                  }) {
     const navigate = useNavigate();
 
-    // État pour la création de workspace
+    // =========================
+    // État création workspace
+    // =========================
     const [showCreateWs, setShowCreateWs] = useState(false);
     const [newWsName, setNewWsName] = useState('');
 
-    // État pour la création de channel
+    // =========================
+    // État création channel
+    // =========================
     const [showCreateChannel, setShowCreateChannel] = useState(false);
     const [targetWsId, setTargetWsId] = useState('');
     const [newChannelName, setNewChannelName] = useState('');
+    const [channelType, setChannelType] = useState('public');
+    const [channelMembers, setChannelMembers] = useState([]);
 
-    // Nouvel état pour les statuts (online/offline) des utilisateurs
+    // =========================
+    // Statuts en ligne/offline
+    // =========================
     const [userStatuses, setUserStatuses] = useState({});
 
-    // Écoute de l’événement "user-status-changed" sur la socket
+    // On écoute "user-status-changed" pour mettre à jour userStatuses
     useEffect(() => {
-        if (socket) {
-            const handleStatusChange = ({ userId, status }) => {
-                setUserStatuses(prev => ({ ...prev, [userId]: status }));
-            };
-            socket.on('user-status-changed', handleStatusChange);
-            return () => {
-                socket.off('user-status-changed', handleStatusChange);
-            };
-        }
+        if (!socket) return;
+        const handleStatusChange = ({ userId, status }) => {
+            setUserStatuses(prev => ({ ...prev, [userId]: status }));
+        };
+        socket.on('user-status-changed', handleStatusChange);
+
+        return () => {
+            socket.off('user-status-changed', handleStatusChange);
+        };
     }, [socket]);
 
-    // Fonction de création de workspace
+    // =========================
+    // Créer un workspace
+    // =========================
     const handleCreateWorkspace = async () => {
         if (!newWsName.trim()) return;
         try {
@@ -58,9 +68,9 @@ function Sidebar({
         }
     };
 
-    // État et fonction pour la création de channel
-    const [channelType, setChannelType] = useState('public');
-    const [channelMembers, setChannelMembers] = useState([]);
+    // =========================
+    // Créer un channel
+    // =========================
     const handleCreateChannel = async () => {
         if (!newChannelName.trim() || !targetWsId) return;
         try {
@@ -72,6 +82,7 @@ function Sidebar({
             if (onWorkspacesRefresh) {
                 onWorkspacesRefresh();
             }
+            // Reset
             setNewChannelName('');
             setTargetWsId('');
             setShowCreateChannel(false);
@@ -82,171 +93,175 @@ function Sidebar({
     };
 
     return (
-        <div style={{ width: '250px', background: '#fafafa', borderRight: '1px solid #ccc' }}>
-            <h3 style={{ padding: '10px' }}>Sidebar</h3>
-            <div style={{ padding: '0 10px' }}>
+        <div className="sidebar">
+            <h3>Sidebar</h3>
+
+            <div className="sidebar-content">
+                {/* ==== Liste des Users ==== */}
                 <h4>Users</h4>
-                <ul style={{ listStyle: 'none', padding: 0 }}>
-                    {users.map((u) => (
-                        <li
-                            key={u._id}
-                            onClick={() => onSelectUser(u._id)}
-                            style={{
-                                cursor: 'pointer',
-                                margin: '5px 0',
-                                background: u._id === selectedUser ? '#ddd' : '',
-                                padding: '5px',
-                                display: 'flex',
-                                alignItems: 'center',
-                            }}
-                        >
-              <span
-                  style={{
-                      display: 'inline-block',
-                      width: '10px',
-                      height: '10px',
-                      borderRadius: '50%',
-                      backgroundColor: userStatuses[u._id] === 'online' ? 'green' : 'gray',
-                      marginRight: '5px',
-                  }}
-              ></span>
-                            {u.name} ({u.email})
-                        </li>
-                    ))}
+                <ul>
+                    {users.map(u => {
+                        const isSelected = (u._id === selectedUser);
+                        return (
+                            <li
+                                key={u._id}
+                                className={`sidebar-item ${isSelected ? 'sidebar-item-selected' : ''}`}
+                                onClick={() => onSelectUser(u._id)}
+                                style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+                            >
+                                {/* Pastille de statut en ligne/offline */}
+                                <span
+                                    style={{
+                                        display: 'inline-block',
+                                        width: '10px',
+                                        height: '10px',
+                                        borderRadius: '50%',
+                                        backgroundColor:
+                                            userStatuses[u._id] === 'online'
+                                                ? 'green'
+                                                : 'gray',
+                                    }}
+                                />
+                                {u.name} ({u.email})
+                            </li>
+                        );
+                    })}
                 </ul>
 
-                {/* Formulaire de création de workspace */}
-                <div style={{ marginTop: '15px' }}>
-                    {!showCreateWs ? (
-                        <button
-                            onClick={() => setShowCreateWs(true)}
-                            style={{ margin: '5px 0', cursor: 'pointer', background: '#ccc', border: '1px solid #999' }}
-                        >
-                            + Créer un workspace
+                {/* ==== Bouton/form pour créer un workspace ==== */}
+                {!showCreateWs && (
+                    <button className="sidebar-button" onClick={() => setShowCreateWs(true)}>
+                        + Créer un workspace
+                    </button>
+                )}
+                {showCreateWs && (
+                    <div className="sidebar-form">
+                        <input
+                            type="text"
+                            placeholder="Nom du workspace"
+                            value={newWsName}
+                            onChange={(e) => setNewWsName(e.target.value)}
+                            className="sidebar-input"
+                        />
+                        <button className="sidebar-button" onClick={handleCreateWorkspace}>
+                            Créer
                         </button>
-                    ) : (
-                        <div style={{ marginTop: '5px' }}>
-                            <input
-                                type="text"
-                                placeholder="Nom du workspace"
-                                value={newWsName}
-                                onChange={(e) => setNewWsName(e.target.value)}
-                                style={{ marginRight: '5px' }}
-                            />
-                            <button onClick={handleCreateWorkspace}>Créer</button>
-                            <button onClick={() => setShowCreateWs(false)} style={{ marginLeft: '5px' }}>
-                                Annuler
-                            </button>
-                        </div>
-                    )}
-                </div>
+                        <button className="sidebar-button" onClick={() => setShowCreateWs(false)}>
+                            Annuler
+                        </button>
+                    </div>
+                )}
 
+                {/* ==== Liste des Workspaces + Channels ==== */}
                 <h4 style={{ marginTop: '20px' }}>Workspaces + Channels</h4>
-                {myWorkspaces.map((ws) => {
-                    const currentMember = ws.members.find(
-                        (m) => m.user === userId || (typeof m.user === 'object' && m.user._id === userId)
+                {myWorkspaces.map(ws => {
+                    // On cherche si l'utilisateur est membre
+                    const currentMember = ws.members.find(m =>
+                        m.user === userId ||
+                        (typeof m.user === 'object' && m.user._id === userId)
                     );
                     const currentRole = currentMember ? currentMember.role : '';
+
                     return (
                         <div key={ws._id} style={{ marginBottom: '15px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                                 <strong>{ws.name}</strong>
                                 <small>({ws._id})</small>
+
+                                {/* Bouton Settings */}
                                 <button
+                                    className="sidebar-button"
                                     onClick={() => navigate(`/workspace/${ws._id}/settings`)}
-                                    style={{
-                                        cursor: 'pointer',
-                                        background: '#ddd',
-                                        border: '1px solid #999',
-                                        borderRadius: '4px',
-                                        padding: '2px 6px',
-                                    }}
                                 >
                                     Settings
                                 </button>
+
+                                {/* Si user est owner ou admin => +Channel */}
                                 {(currentRole === 'owner' || currentRole === 'admin') && (
                                     <button
+                                        className="sidebar-button"
                                         onClick={() => {
                                             setShowCreateChannel(true);
                                             setTargetWsId(ws._id);
-                                        }}
-                                        style={{
-                                            cursor: 'pointer',
-                                            background: '#eee',
-                                            border: '1px solid #999',
-                                            borderRadius: '4px',
-                                            padding: '2px 4px',
                                         }}
                                     >
                                         +Channel
                                     </button>
                                 )}
                             </div>
-                            <ul style={{ listStyle: 'none', paddingLeft: '20px', marginTop: '5px' }}>
-                                {ws.channels
-                                    ?.filter((ch) => {
+
+                            <ul style={{ paddingLeft: '20px', marginTop: '5px' }}>
+                                {(ws.channels || [])
+                                    .filter(ch => {
                                         if (ch.type === 'public') return true;
+                                        // channel privé => check si userId est dedans
                                         if (ch.type === 'private') {
-                                            return ch.members?.some((m) => {
+                                            return ch.members?.some(m => {
                                                 if (typeof m === 'string') return m === userId;
                                                 return m._id === userId;
                                             });
                                         }
                                         return false;
                                     })
-                                    ?.map((ch) => (
-                                        <li
-                                            key={ch._id}
-                                            onClick={() => onSelectChannel(ch._id)}
-                                            style={{
-                                                cursor: 'pointer',
-                                                margin: '3px 0',
-                                                background: ch._id === selectedChannel ? '#ddd' : '',
-                                                padding: '3px',
-                                            }}
-                                        >
-                                            {ch.name} ({ch.type})
-                                            {(currentRole === 'owner' || currentRole === 'admin') && (
-                                                <button
-                                                    onClick={async (e) => {
-                                                        e.stopPropagation();
-                                                        const confirmDel = window.confirm(`Supprimer le channel "${ch.name}" ?`);
-                                                        if (!confirmDel) return;
-                                                        try {
-                                                            await axios.delete(`/api/workspaces/${ws._id}/channels/${ch._id}`);
-                                                            onWorkspacesRefresh && onWorkspacesRefresh();
-                                                        } catch (err) {
-                                                            console.error('Erreur suppression channel:', err);
-                                                            alert('Impossible de supprimer ce channel');
-                                                        }
-                                                    }}
-                                                    style={{
-                                                        marginLeft: '5px',
-                                                        cursor: 'pointer',
-                                                        background: '#f88',
-                                                        border: '1px solid #999',
-                                                        borderRadius: '4px',
-                                                        padding: '0 4px',
-                                                    }}
-                                                >
-                                                    X
-                                                </button>
-                                            )}
-                                        </li>
-                                    ))}
+                                    .map(ch => {
+                                        const isChSelected = (ch._id === selectedChannel);
+                                        return (
+                                            <li
+                                                key={ch._id}
+                                                className={`sidebar-item ${isChSelected ? 'sidebar-item-selected' : ''}`}
+                                                onClick={() => onSelectChannel(ch._id)}
+                                                style={{ margin: '3px 0' }}
+                                            >
+                                                {ch.name} ({ch.type})
+                                                {/* Si owner/admin => bouton X pour supprimer */}
+                                                {(currentRole === 'owner' || currentRole === 'admin') && (
+                                                    <button
+                                                        onClick={async (e) => {
+                                                            e.stopPropagation();
+                                                            const confirmDel = window.confirm(
+                                                                `Supprimer le channel "${ch.name}" ?`
+                                                            );
+                                                            if (!confirmDel) return;
+                                                            try {
+                                                                await axios.delete(
+                                                                    `/api/workspaces/${ws._id}/channels/${ch._id}`
+                                                                );
+                                                                onWorkspacesRefresh && onWorkspacesRefresh();
+                                                            } catch (err) {
+                                                                console.error('Erreur suppression channel:', err);
+                                                                alert('Impossible de supprimer ce channel');
+                                                            }
+                                                        }}
+                                                        style={{
+                                                            marginLeft: '5px',
+                                                            cursor: 'pointer',
+                                                            background: '#f88',
+                                                            border: '1px solid #999',
+                                                            borderRadius: '4px',
+                                                            padding: '0 4px',
+                                                        }}
+                                                    >
+                                                        X
+                                                    </button>
+                                                )}
+                                            </li>
+                                        );
+                                    })}
                             </ul>
                         </div>
                     );
                 })}
 
+                {/* ==== Formulaire de création de channel (global) ==== */}
                 {showCreateChannel && (
-                    <div style={{ marginTop: '10px', background: '#f5f5f5', padding: '5px' }}>
+                    <div style={{ marginTop: '10px', background: '#2c2c2c', padding: '5px' }}>
                         <h5>Créer un channel dans workspace {targetWsId}</h5>
                         <input
                             type="text"
                             placeholder="Nom du channel"
                             value={newChannelName}
                             onChange={(e) => setNewChannelName(e.target.value)}
+                            className="sidebar-input"
                             style={{ marginRight: '5px' }}
                         />
                         <div style={{ margin: '5px 0' }}>
@@ -263,12 +278,14 @@ function Sidebar({
                         {channelType === 'private' && (
                             <div>
                                 <label>Members à inviter :</label>
+                                <br />
                                 <select
                                     multiple
                                     onChange={(e) => {
                                         const opts = Array.from(e.target.selectedOptions).map(o => o.value);
                                         setChannelMembers(opts);
                                     }}
+                                    style={{ marginTop: '5px' }}
                                 >
                                     {users.map(u => (
                                         <option key={u._id} value={u._id}>
@@ -278,13 +295,30 @@ function Sidebar({
                                 </select>
                             </div>
                         )}
-                        <button onClick={handleCreateChannel}>Créer</button>
-                        <button onClick={() => { setShowCreateChannel(false); setNewChannelName(''); setTargetWsId(''); }} style={{ marginLeft: '5px' }}>
+                        <button className="sidebar-button" onClick={handleCreateChannel}>
+                            Créer
+                        </button>
+                        <button
+                            className="sidebar-button"
+                            onClick={() => {
+                                setShowCreateChannel(false);
+                                setNewChannelName('');
+                                setTargetWsId('');
+                            }}
+                            style={{ marginLeft: '5px' }}
+                        >
                             Annuler
                         </button>
                     </div>
                 )}
             </div>
+
+            {/*
+                IMPORTANT : On NE VEUT PAS intégrer la partie "sidebar-footer"
+                (barre de recherche, bouton Chat, bouton Logout)
+                qui est dans la version de votre collègue.
+                On supprime donc cette section.
+            */}
         </div>
     );
 }

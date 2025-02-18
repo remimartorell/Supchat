@@ -1,0 +1,276 @@
+/* src/global.css */
+/* ====================================== */
+/* 1) Reset basique & variables globales  */
+/* ====================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --color-bg-dark: #0f1522;     /* fond principal sombre */
+    --color-bg-lighter: #111b26; /* fond un peu plus clair */
+    --color-primary: #286ef1;    /* couleur d’accent (bouton) */
+    --color-accent: #ff5555;     /* autre accent */
+    --font-family-main: 'Roboto', sans-serif;
+}
+
+/* ====================================== */
+/* 2) Style général du body & #root       */
+/* ====================================== */
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    font-family: var(--font-family-main), sans-serif;
+    background-color: var(--color-bg-dark);
+    color: #fff; /* texte en clair */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* ====================================== */
+/* 3) Barre de navigation (si besoin)     */
+/* ====================================== */
+
+.navbar {
+    background: #eee;
+    padding: 10px;
+    flex-shrink: 0;
+    color: #000; /* car #eee en fond => texte noir */
+}
+
+/* ====================================== */
+/* 4) Layout pour Chat, si besoin        */
+/* ====================================== */
+
+.chat-layout {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+.sidebar-layout {
+    width: 250px;
+    min-width: 250px;
+    background: #fafafa;
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+    position: relative;
+    z-index: 2;
+}
+
+.chat-layout-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.logout {
+    margin-left: 10px;
+    color: red;
+}
+
+/* ====================================== */
+/* 5) Page de LOGIN                       */
+/* ====================================== */
+
+.login-container {
+    width: 100%;
+    height: 100vh;
+    /* On veut qu’elle prenne tout l’écran */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-color: var(--color-bg-dark); si besoin distinct */
+}
+
+.login-box {
+    width: 350px;
+    padding: 2rem;
+    border-radius: 8px;
+    background-color: var(--color-bg-lighter);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.login-title {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+.login-avatar-circle {
+    width: 80px;
+    height: 80px;
+    background-color: #ccc;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+}
+
+.login-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.login-input {
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #1c1c1c;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.login-options {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.forgot-link {
+    color: var(--color-primary);
+    font-size: 0.8rem;
+    text-decoration: none;
+}
+
+.login-submit-btn {
+    background-color: var(--color-primary);
+    color: #fff;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.login-submit-btn:hover {
+    background-color: #1a4fbf; /* nuance plus foncée */
+}
+
+/* Séparateur "OU" */
+.login-separator {
+    margin: 1.2rem 0;
+    color: #aaa;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Boutons Google/Facebook */
+.login-socials {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.social-btn {
+    flex: 1;
+    padding: 0.7rem;
+    border: 1px solid #888;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: #222;
+}
+
+.google-btn {
+    background-color: #4285F4;
+    border: none;
+}
+
+.facebook-btn {
+    background-color: #3b5998;
+    border: none;
+}
+
+.login-footer-link {
+    margin-top: 0.8rem;
+    font-size: 0.8rem;
+    color: #ddd;
+    text-align: center;
+}
+
+
+/* ================
+   REGISTER PAGE
+   ================ */
+.register-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-bg-dark);
+}
+
+.register-box {
+    width: 350px;
+    padding: 2rem;
+    border-radius: 8px;
+    background-color: var(--color-bg-lighter);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.register-title {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+.register-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.register-input {
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #1c1c1c;
+    color: #fff;
+    font-size: 0.9rem;
+}
+
+.register-submit-btn {
+    background-color: var(--color-primary);
+    color: #fff;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.register-submit-btn:hover {
+    background-color: #1a4fbf; /* nuance plus foncée */
+}
+
+.register-footer-link {
+    margin-top: 1.2rem;
+    font-size: 0.8rem;
+    color: #ddd;
+    text-align: center;
+}
