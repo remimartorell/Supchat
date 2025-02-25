@@ -1,7 +1,9 @@
 /* =========================
    SearchResults.css
    ========================= */
-
+*{
+    --color-bg-dark: #0f1522;
+}
 /* Conteneur global de la page */
 .search-results-container {
     padding: 10px;

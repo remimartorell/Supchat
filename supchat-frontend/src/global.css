@@ -1,104 +1,175 @@
-/* src/global.css */
-/* ====================================== */
-/* 1) Reset basique & variables globales  */
-/* ====================================== */
-
+/* =================
+   1) RESET & VARS
+================= */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
-
 :root {
-    --color-bg-dark: #0f1522;     /* fond principal sombre */
-    --color-bg-lighter: #111b26; /* fond un peu plus clair */
-    --color-primary: #286ef1;    /* couleur d’accent (bouton) */
-    --color-accent: #ff5555;     /* autre accent */
+    --color-bg-dark: #0f1522;
+    --color-bg-lighter: #111b26;
+    --color-primary: #286ef1;
+    --color-accent: #ff5555;
     --font-family-main: 'Roboto', sans-serif;
 }
-
-/* ====================================== */
-/* 2) Style général du body & #root       */
-/* ====================================== */
-
 html, body {
     width: 100%;
     height: 100%;
 }
-
 body {
-    font-family: var(--font-family-main), sans-serif;
+    font-family: var(--font-family-main);
     background-color: var(--color-bg-dark);
-    color: #fff; /* texte en clair */
+    color: #fff;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* PAS de padding-top ici ! */
+    overflow-y: auto; /* pour éviter débordement blanc */
 }
-
 #root {
     display: flex;
     flex-direction: column;
     height: 100vh;
 }
 
-/* ====================================== */
-/* 3) Barre de navigation (si besoin)     */
-/* ====================================== */
-
+/* ==============================
+   2) NAVBAR FIXE (SI BESOIN)
+============================== */
 .navbar {
-    background: #eee;
-    padding: 10px;
-    flex-shrink: 0;
-    color: #000; /* car #eee en fond => texte noir */
+    background: #0f1522;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%;
+    z-index: 1000;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.nav-search {
+    display: flex;
+    align-items: center;
+    background: rgba(255,255,255,0.2);
+    padding: 5px 12px;
+    border-radius: 30px;
+    transition: all 0.3s;
+}
+.nav-search input {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: #fff;
+    padding: 5px 10px;
+    width: 220px;
+    font-size: 14px;
+}
+.nav-search input::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+.nav-search button {
+    background: rgba(255,255,255,0.3);
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    transition: background 0.3s, transform 0.3s;
+}
+.nav-search button:hover {
+    background: #fff;
+    color: #6e8efb;
+    transform: scale(1.05);
 }
 
-/* ====================================== */
-/* 4) Layout pour Chat, si besoin        */
-/* ====================================== */
+/* ==============================
+   3) SCROLLBAR CUSTOM
+============================== */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #1c1f2b;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #3a3e4b;
+}
 
+/* ==============================
+   4) BOUTONS GLOBAUX
+============================== */
+button {
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 80px;
+}
+button+button {
+    margin-left: 12px;
+}
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+button:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.logout-btn {
+    background: #ff4d4d;
+    /* ... */
+}
+.chat-link {
+    padding: 10px 18px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    /* ... */
+}
+
+/* ==============================
+   5) LAYOUT SI BESOIN (CHAT)
+============================== */
 .chat-layout {
     flex: 1;
     display: flex;
     overflow: hidden;
 }
-
 .sidebar-layout {
     width: 250px;
-    min-width: 250px;
-    background: #fafafa;
-    border-right: 1px solid #ccc;
-    overflow-y: auto;
-    position: relative;
-    z-index: 2;
+    /* ... */
 }
-
 .chat-layout-main {
     flex: 1;
     display: flex;
     flex-direction: column;
-    position: relative;
-    z-index: 1;
-    overflow: hidden;
+    /* ... */
 }
 
-.logout {
-    margin-left: 10px;
-    color: red;
-}
-
-/* ====================================== */
-/* 5) Page de LOGIN                       */
-/* ====================================== */
-
+/* ==============================
+   6) FORMATS LOGIN/REGISTER
+============================== */
+/* -- RÉINSÉRER l’ancien code -- */
 .login-container {
     width: 100%;
     height: 100vh;
-    /* On veut qu’elle prenne tout l’écran */
     display: flex;
     align-items: center;
     justify-content: center;
-    /* background-color: var(--color-bg-dark); si besoin distinct */
+    /* event. background: var(--color-bg-dark); si désiré */
 }
-
 .login-box {
     width: 350px;
     padding: 2rem;
@@ -107,14 +178,12 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
-
 .login-title {
     font-size: 1.3rem;
     margin-bottom: 1rem;
 }
-
 .login-avatar-circle {
     width: 80px;
     height: 80px;
@@ -122,13 +191,11 @@ body {
     border-radius: 50%;
     margin-bottom: 1rem;
 }
-
 .login-form {
     width: 100%;
     display: flex;
     flex-direction: column;
 }
-
 .login-input {
     margin-bottom: 1rem;
     padding: 0.8rem;
@@ -138,19 +205,16 @@ body {
     color: #fff;
     font-size: 0.9rem;
 }
-
 .login-options {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 1rem;
 }
-
 .forgot-link {
     color: var(--color-primary);
     font-size: 0.8rem;
     text-decoration: none;
 }
-
 .login-submit-btn {
     background-color: var(--color-primary);
     color: #fff;
@@ -161,26 +225,20 @@ body {
     font-size: 1rem;
     margin-bottom: 1rem;
 }
-
 .login-submit-btn:hover {
-    background-color: #1a4fbf; /* nuance plus foncée */
+    background-color: #1a4fbf;
 }
-
-/* Séparateur "OU" */
 .login-separator {
     margin: 1.2rem 0;
     color: #aaa;
     font-size: 0.9rem;
     text-align: center;
 }
-
-/* Boutons Google/Facebook */
 .login-socials {
     display: flex;
     gap: 0.5rem;
     margin-bottom: 1rem;
 }
-
 .social-btn {
     flex: 1;
     padding: 0.7rem;
@@ -191,17 +249,14 @@ body {
     font-size: 0.9rem;
     background-color: #222;
 }
-
 .google-btn {
     background-color: #4285F4;
     border: none;
 }
-
 .facebook-btn {
     background-color: #3b5998;
     border: none;
 }
-
 .login-footer-link {
     margin-top: 0.8rem;
     font-size: 0.8rem;
@@ -209,10 +264,7 @@ body {
     text-align: center;
 }
 
-
-/* ================
-   REGISTER PAGE
-   ================ */
+/* REGISTER PAGE */
 .register-container {
     width: 100%;
     height: 100vh;
@@ -221,7 +273,6 @@ body {
     justify-content: center;
     background-color: var(--color-bg-dark);
 }
-
 .register-box {
     width: 350px;
     padding: 2rem;
@@ -230,20 +281,17 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
-
 .register-title {
     font-size: 1.3rem;
     margin-bottom: 1rem;
 }
-
 .register-form {
     width: 100%;
     display: flex;
     flex-direction: column;
 }
-
 .register-input {
     margin-bottom: 1rem;
     padding: 0.8rem;
@@ -253,7 +301,6 @@ body {
     color: #fff;
     font-size: 0.9rem;
 }
-
 .register-submit-btn {
     background-color: var(--color-primary);
     color: #fff;
@@ -263,11 +310,9 @@ body {
     cursor: pointer;
     font-size: 1rem;
 }
-
 .register-submit-btn:hover {
-    background-color: #1a4fbf; /* nuance plus foncée */
+    background-color: #1a4fbf;
 }
-
 .register-footer-link {
     margin-top: 1.2rem;
     font-size: 0.8rem;

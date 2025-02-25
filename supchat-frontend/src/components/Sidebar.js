@@ -40,8 +40,8 @@ function Sidebar({
     // On écoute "user-status-changed" pour mettre à jour userStatuses
     useEffect(() => {
         if (!socket) return;
-        const handleStatusChange = ({ userId, status }) => {
-            setUserStatuses(prev => ({ ...prev, [userId]: status }));
+        const handleStatusChange = ({ userId: changedUserId, status }) => {
+            setUserStatuses((prev) => ({ ...prev, [changedUserId]: status }));
         };
         socket.on('user-status-changed', handleStatusChange);
 
@@ -97,11 +97,11 @@ function Sidebar({
             <h3>Sidebar</h3>
 
             <div className="sidebar-content">
-                {/* ==== Liste des Users ==== */}
+                {/* ==== Liste des Users (sans afficher l'email) ==== */}
                 <h4>Users</h4>
                 <ul>
-                    {users.map(u => {
-                        const isSelected = (u._id === selectedUser);
+                    {users.map((u) => {
+                        const isSelected = u._id === selectedUser;
                         return (
                             <li
                                 key={u._id}
@@ -117,12 +117,10 @@ function Sidebar({
                                         height: '10px',
                                         borderRadius: '50%',
                                         backgroundColor:
-                                            userStatuses[u._id] === 'online'
-                                                ? 'green'
-                                                : 'gray',
+                                            userStatuses[u._id] === 'online' ? 'green' : 'gray',
                                     }}
                                 />
-                                {u.name} ({u.email})
+                                {u.name}
                             </li>
                         );
                     })}
@@ -154,19 +152,20 @@ function Sidebar({
 
                 {/* ==== Liste des Workspaces + Channels ==== */}
                 <h4 style={{ marginTop: '20px' }}>Workspaces + Channels</h4>
-                {myWorkspaces.map(ws => {
+                {myWorkspaces.map((ws) => {
                     // On cherche si l'utilisateur est membre
-                    const currentMember = ws.members.find(m =>
-                        m.user === userId ||
-                        (typeof m.user === 'object' && m.user._id === userId)
+                    const currentMember = ws.members.find(
+                        (m) =>
+                            m.user === userId ||
+                            (typeof m.user === 'object' && m.user._id === userId)
                     );
                     const currentRole = currentMember ? currentMember.role : '';
 
                     return (
                         <div key={ws._id} style={{ marginBottom: '15px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                                {/* On supprime l'affichage du ws._id */}
                                 <strong>{ws.name}</strong>
-                                <small>({ws._id})</small>
 
                                 {/* Bouton Settings */}
                                 <button
@@ -192,19 +191,19 @@ function Sidebar({
 
                             <ul style={{ paddingLeft: '20px', marginTop: '5px' }}>
                                 {(ws.channels || [])
-                                    .filter(ch => {
+                                    .filter((ch) => {
                                         if (ch.type === 'public') return true;
                                         // channel privé => check si userId est dedans
                                         if (ch.type === 'private') {
-                                            return ch.members?.some(m => {
+                                            return ch.members?.some((m) => {
                                                 if (typeof m === 'string') return m === userId;
                                                 return m._id === userId;
                                             });
                                         }
                                         return false;
                                     })
-                                    .map(ch => {
-                                        const isChSelected = (ch._id === selectedChannel);
+                                    .map((ch) => {
+                                        const isChSelected = ch._id === selectedChannel;
                                         return (
                                             <li
                                                 key={ch._id}
@@ -212,6 +211,7 @@ function Sidebar({
                                                 onClick={() => onSelectChannel(ch._id)}
                                                 style={{ margin: '3px 0' }}
                                             >
+                                                {/* On affiche plus l'id, juste nom + type */}
                                                 {ch.name} ({ch.type})
                                                 {/* Si owner/admin => bouton X pour supprimer */}
                                                 {(currentRole === 'owner' || currentRole === 'admin') && (
@@ -282,14 +282,14 @@ function Sidebar({
                                 <select
                                     multiple
                                     onChange={(e) => {
-                                        const opts = Array.from(e.target.selectedOptions).map(o => o.value);
+                                        const opts = Array.from(e.target.selectedOptions).map((o) => o.value);
                                         setChannelMembers(opts);
                                     }}
                                     style={{ marginTop: '5px' }}
                                 >
-                                    {users.map(u => (
+                                    {users.map((u) => (
                                         <option key={u._id} value={u._id}>
-                                            {u.name} ({u.email})
+                                            {u.name}
                                         </option>
                                     ))}
                                 </select>
@@ -313,12 +313,7 @@ function Sidebar({
                 )}
             </div>
 
-            {/*
-                IMPORTANT : On NE VEUT PAS intégrer la partie "sidebar-footer"
-                (barre de recherche, bouton Chat, bouton Logout)
-                qui est dans la version de votre collègue.
-                On supprime donc cette section.
-            */}
+            {/* AUCUN footer ici (on retire la barre de recherche, etc.) */}
         </div>
     );
 }

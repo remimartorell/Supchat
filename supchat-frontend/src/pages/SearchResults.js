@@ -76,19 +76,6 @@ function SearchResults() {
     return (
         <div className="search-results-container">
             {/* Barre de recherche en haut (form design) */}
-            <div className="search-results-form-wrapper">
-                <form onSubmit={handleSearchSubmit} className="search-results-form">
-                    <input
-                        type="text"
-                        placeholder="Rechercher..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="search-results-input"
-                    />
-                    <button type="submit">Go</button>
-                </form>
-            </div>
-
             <h2 className="search-results-title">
                 Résultats de la recherche pour : "{query}"
             </h2>
