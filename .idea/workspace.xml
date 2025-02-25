@@ -4,20 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="- Ajout d'une pastille à côté de chaque pseudo de chaque conversation; grise si l'utilisateur est déconnecté et verte s'il est connecté.&#10;- Pour les messages en channel, lors de la lecture d'un message par une personne, affiche en direct &quot;lu par 1 personne&quot; et ainsi de suite, sans compter l'envoyeur. &#10;- Pour &quot;lu par X personnes&quot;, lors du passage de la souris dessus, affiche le nom du ou des utilisateurs ayant lu le message.&#10;- En message privé, ajout d'une pastille verte lorsque le message a été lu par l'autre (avec écrit &quot;lu par l'autre&quot; au passage de la souris sur la pastille verte) mais pour l'instant l'envoyeur doit recharger la page pour voir la pastille verte s'afficher&#10;- Ajout pour les messages privés de la fonctionnalité réaction avec émoticone ainsi que modification du message, tous deux actualisés en direct comme pour les channels">
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/WorkspaceSettings.css" afterDir="false" />
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Problèmes réglés du premier commit d'Hugo qui étaient : &#10;- Pages login et register sans css&#10;- Barre du haut affichée sur / , /login et /register &#10;- Absence de la barre du haut lors de la connexion et une fois dans le chat&#10;- Impossibilité de se connecter via la page localhost (on était obligé d'aller sur la page de notre IP)">
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/global.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/global.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/SearchResults.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/SearchResults.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/SearchResults.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/SearchResults.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/WorkspaceSettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/WorkspaceSettings.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/services/axiosConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/services/axiosConfig.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +112,7 @@
       <workItem from="1739191875091" duration="16459000" />
       <workItem from="1739267177722" duration="12130000" />
       <workItem from="1739779479734" duration="23146000" />
-      <workItem from="1740471456351" duration="5196000" />
+      <workItem from="1740471456351" duration="6948000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -298,7 +290,15 @@
       <option name="project" value="LOCAL" />
       <updated>1739803750480</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="Problèmes réglés du premier commit d'Hugo qui étaient : &#10;- Pages login et register sans css&#10;- Barre du haut affichée sur / , /login et /register &#10;- Absence de la barre du haut lors de la connexion et une fois dans le chat&#10;- Impossibilité de se connecter via la page localhost (on était obligé d'aller sur la page de notre IP)">
+      <option name="closed" value="true" />
+      <created>1740477296588</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1740477296588</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -337,6 +337,7 @@
     <MESSAGE value="- Création d'un channel privé, ajout possible d'utilisateurs depuis la création&#10;- Ajout et suppression de membres dans le chanel privé via la page settings du workspace. Les owner et admin du workspace et le créateur du channel privé ont les droits admin sur ce channel privé&#10;- Maintenant il y a une actualisation en direct pour les membres ajoutés/supprimés d'un channel public ou privé.&#10;- Ajout des réactions sur les messages.&#10;- On ne peut réagir avec qu'un seul émoticone sur un message, si on en mets un autre il remplace l'ancien &#10;- On peut passer la souris sur un émoticone pour voir afficher qui a réagis avec cet emoticone&#10;- Les émoticones et noms affichés sont bien sûr affichés en direct automatiquement" />
     <MESSAGE value="- La suppression d'un membre d'un canal privé remarche&#10;- Ajout du hub de notification pour afficher les notifications de mentions&#10;- Affiche un nombre en rouge pour le nombre de notification non lues&#10;- Lors du clique sur la notification, cela ammène au message de la mention&#10;- Lors de l'ouverture du hub, cela affiche les notifications non lues en couleur&#10;- Lors du clique sur une nouvelle notification en couleur, cela la compte comme lue&#10;- Affichage en direct de la notif dans le hub et ajout du chiffre rouge sans besoin de recharger la page" />
     <MESSAGE value="- Ajout d'une pastille à côté de chaque pseudo de chaque conversation; grise si l'utilisateur est déconnecté et verte s'il est connecté.&#10;- Pour les messages en channel, lors de la lecture d'un message par une personne, affiche en direct &quot;lu par 1 personne&quot; et ainsi de suite, sans compter l'envoyeur. &#10;- Pour &quot;lu par X personnes&quot;, lors du passage de la souris dessus, affiche le nom du ou des utilisateurs ayant lu le message.&#10;- En message privé, ajout d'une pastille verte lorsque le message a été lu par l'autre (avec écrit &quot;lu par l'autre&quot; au passage de la souris sur la pastille verte) mais pour l'instant l'envoyeur doit recharger la page pour voir la pastille verte s'afficher&#10;- Ajout pour les messages privés de la fonctionnalité réaction avec émoticone ainsi que modification du message, tous deux actualisés en direct comme pour les channels" />
-    <option name="LAST_COMMIT_MESSAGE" value="- Ajout d'une pastille à côté de chaque pseudo de chaque conversation; grise si l'utilisateur est déconnecté et verte s'il est connecté.&#10;- Pour les messages en channel, lors de la lecture d'un message par une personne, affiche en direct &quot;lu par 1 personne&quot; et ainsi de suite, sans compter l'envoyeur. &#10;- Pour &quot;lu par X personnes&quot;, lors du passage de la souris dessus, affiche le nom du ou des utilisateurs ayant lu le message.&#10;- En message privé, ajout d'une pastille verte lorsque le message a été lu par l'autre (avec écrit &quot;lu par l'autre&quot; au passage de la souris sur la pastille verte) mais pour l'instant l'envoyeur doit recharger la page pour voir la pastille verte s'afficher&#10;- Ajout pour les messages privés de la fonctionnalité réaction avec émoticone ainsi que modification du message, tous deux actualisés en direct comme pour les channels" />
+    <MESSAGE value="Problèmes réglés du premier commit d'Hugo qui étaient : &#10;- Pages login et register sans css&#10;- Barre du haut affichée sur / , /login et /register &#10;- Absence de la barre du haut lors de la connexion et une fois dans le chat&#10;- Impossibilité de se connecter via la page localhost (on était obligé d'aller sur la page de notre IP)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Problèmes réglés du premier commit d'Hugo qui étaient : &#10;- Pages login et register sans css&#10;- Barre du haut affichée sur / , /login et /register &#10;- Absence de la barre du haut lors de la connexion et une fois dans le chat&#10;- Impossibilité de se connecter via la page localhost (on était obligé d'aller sur la page de notre IP)" />
   </component>
 </project>

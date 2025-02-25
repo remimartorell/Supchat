@@ -1,0 +1,63 @@
+/* src/components/MessageInput.css */
+
+/* Conteneur principal de la barre d'envoi */
+.message-input-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    border-top: 1px solid #444;    /* Ligne discrète */
+    padding: 8px 12px;
+    background-color: #1f1f2f;     /* Couleur sombre */
+}
+
+/* Champ texte */
+.message-input-field {
+    flex: 1;                      /* Prend tout l’espace dispo */
+    background-color: #2c2c44;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 0.95rem;
+}
+
+/* Champ file */
+.message-input-file {
+    background-color: #2c2c44;
+    color: #aaa;
+    border: 1px solid #555;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    padding: 4px;
+    cursor: pointer;
+    width: 120px;  /* Ajuste la largeur selon préférence */
+}
+
+/* Bouton “Envoyer” */
+.message-input-button {
+    background-color: #5865f2;   /* Couleur style Discord */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.message-input-button:hover {
+    background-color: #4752c4;
+}
+
+/* Conteneur de prévisualisation */
+.message-input-preview {
+    margin-top: 10px;  /* Pour séparer de la barre */
+}
+
+/* Image en prévisualisation */
+.message-input-preview img {
+    max-width: 200px;
+    height: auto;
+    border-radius: 4px;
+    border: 1px solid #333;
+}

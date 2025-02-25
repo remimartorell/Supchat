@@ -1,48 +1,53 @@
 // src/components/MessageInput.js
 import React, { useState } from 'react';
-import axios from '../services/axiosConfig';
+import './MessageInput.css'; // <-- On importe le fichier CSS
 
 function MessageInput({ onSend, disabled }) {
     const [text, setText] = useState('');
     const [file, setFile] = useState(null);
 
-    const handleSend = async () => {
+    const handleSend = () => {
         if (!text.trim() && !file) return;
-
-        // On appelle la fonction de parent OU on gère directement ici
         onSend(text.trim(), file);
-
         setText('');
         setFile(null);
     };
 
     return (
-        <div style={{ borderTop: '1px solid #ccc', padding: '10px' }}>
+        <div className="message-input-container">
+            {/* Champ texte */}
             <input
                 type="text"
                 placeholder="Tapez votre message..."
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 disabled={disabled}
-                style={{ width: '40%', marginRight: '10px' }}
+                className="message-input-field"
             />
+
+            {/* Champ pour fichier */}
             <input
                 type="file"
                 onChange={(e) => setFile(e.target.files[0])}
                 disabled={disabled}
-                style={{ marginRight: '10px' }}
+                className="message-input-file"
             />
-            <button onClick={handleSend} disabled={disabled}>
+
+            {/* Bouton Envoyer */}
+            <button
+                onClick={handleSend}
+                disabled={disabled}
+                className="message-input-button"
+            >
                 Envoyer
             </button>
 
-            {/* PRÉVIEW IMAGE */}
+            {/* Prévisualisation d’image si on a choisi un fichier image */}
             {file && file.type.startsWith('image/') && (
-                <div style={{ marginTop: '10px' }}>
+                <div className="message-input-preview">
                     <img
                         src={URL.createObjectURL(file)}
                         alt="preview"
-                        style={{ maxWidth: '200px', height: 'auto' }}
                     />
                 </div>
             )}

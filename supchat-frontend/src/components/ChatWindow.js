@@ -1,6 +1,6 @@
-// src/components/ChatWindow.js
 import React, { useEffect, useRef, useState } from 'react';
 import axios from '../services/axiosConfig';
+import { IoMdCheckmarkCircle } from 'react-icons/io';
 import './ChatWindow.css';
 
 function highlightMentions(content, validMentions) {
@@ -20,94 +20,82 @@ function highlightMentions(content, validMentions) {
     });
 }
 
-function formatTimestamp(timestamp) {
-    const dateObj = new Date(timestamp);
-    const hours = dateObj.getHours().toString().padStart(2, '0');
-    const minutes = dateObj.getMinutes().toString().padStart(2, '0');
-    const now = new Date();
-    const diff = now.getTime() - dateObj.getTime();
-    const oneDay = 24 * 60 * 60 * 1000;
-    let labelJour = '';
-    if (diff < oneDay && dateObj.getDate() === now.getDate()) {
-        labelJour = "Aujourd'hui";
-    } else if (diff < 2 * oneDay && dateObj.getDate() === now.getDate() - 1) {
-        labelJour = 'Hier';
-    } else {
-        const day = dateObj.getDate().toString().padStart(2, '0');
-        const month = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-        labelJour = `${day}/${month}`;
-    }
-    return `${labelJour} à ${hours}:${minutes}`;
-}
-
 function ChatWindow({
                         userId,
                         messages,
-                        users,
-                        selectedUser,
-                        selectedChannel,
+                        users, // Tableau d'utilisateurs avec {_id, name, …}
+                        selectedUser,     // Défini pour DM
+                        selectedChannel,  // Défini pour channel
                         focusMessageId,
-                        canDelete,
-                        setMessages,
+                        canDelete,        // Permet la suppression (si admin/owner)
+                        setMessages       // Callback pour mettre à jour les messages
                     }) {
     const listRef = useRef(null);
     const [editingMessageId, setEditingMessageId] = useState(null);
     const [editContent, setEditContent] = useState('');
     const [showEmojiPickerFor, setShowEmojiPickerFor] = useState(null);
 
+    // Ouvre le panel emoji pour un message
     const openEmojiPickerForMessage = (m) => {
         setShowEmojiPickerFor(m._id);
     };
 
+    // Gère le choix d'un emoji selon qu'il s'agisse d'un channel ou d'un DM
     const handleChooseEmoji = (m, chosenEmoji) => {
         if (selectedChannel) {
             axios
-                .post(`/api/channels/${m.channel}/messages/${m._id}/reactions`, { emoji: chosenEmoji })
+                .post(`/api/channels/${m.channel}/messages/${m._id}/reactions`, {
+                    emoji: chosenEmoji,
+                })
                 .then(() => setShowEmojiPickerFor(null))
-                .catch((err) => {
-                    console.error('Channel reaction error:', err);
-                });
+                .catch(err => console.error('Channel reaction error:', err));
         } else if (selectedUser) {
             axios
-                .post(`/api/direct-messages/${m._id}/reactions`, { emoji: chosenEmoji })
+                .post(`/api/direct-messages/${m._id}/reactions`, {
+                    emoji: chosenEmoji,
+                })
                 .then(() => setShowEmojiPickerFor(null))
-                .catch((err) => {
-                    console.error('DM reaction error:', err);
-                });
+                .catch(err => console.error('DM reaction error:', err));
         }
     };
 
-    // Auto-scroll sur le dernier message
-    useEffect(() => {
-        if (listRef.current) {
-            listRef.current.scrollTop = listRef.current.scrollHeight;
-        }
-    }, [messages]);
-
+    // Auto-scroll vers le message focus
     useEffect(() => {
         if (focusMessageId) {
             setTimeout(() => {
                 const el = document.getElementById(`msg-${focusMessageId}`);
                 if (el) {
                     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    el.classList.add('highlight-focus');
+                    el.classList.add('highlight');
                     setTimeout(() => {
-                        el.classList.remove('highlight-focus');
+                        el.classList.remove('highlight');
                     }, 2000);
                 }
             }, 100);
         }
     }, [focusMessageId, messages]);
 
+    // Format du timestamp
+    const formatTimestamp = (timestamp) => {
+        return new Date(timestamp).toLocaleString();
+    };
+
+    // Récupère le nom du sender depuis la prop users
+    const getSenderLabel = (m) => {
+        if (m.sender && typeof m.sender === 'object' && m.sender.name) {
+            return m.sender.name;
+        } else if (typeof m.sender === 'string') {
+            const foundUser = users ? users.find(u => u._id === m.sender) : null;
+            return foundUser ? foundUser.name : m.sender;
+        }
+        return '(Sans nom)';
+    };
+
     const handleDeleteMsg = async (m) => {
         if (!window.confirm('Supprimer ce message ?')) return;
         try {
-            if (selectedChannel) {
-                await axios.delete(`/api/channels/${m.channel}/messages/${m._id}`);
-                setMessages((prev) => prev.filter((msg) => msg._id !== m._id));
-            } else {
-                alert("Suppression d'un DM non implémentée.");
-            }
+            await axios.delete(`/api/channels/${m.channel}/messages/${m._id}`);
+            setMessages(prev => prev.filter(msg => msg._id !== m._id));
         } catch (err) {
             console.error('Erreur suppression message:', err);
             alert('Impossible de supprimer ce message');
@@ -151,81 +139,72 @@ function ChatWindow({
         <div className="chat-window-container">
             <div ref={listRef} className="chat-window-messages">
                 {messages.map((m) => {
-                    const isMe =
-                        (m.sender && typeof m.sender === 'object' && m.sender._id === userId) ||
-                        m.sender === userId;
-
-                    let senderLabel = '';
-                    if (m.sender && typeof m.sender === 'object') {
-                        senderLabel = m.sender.name || '(Sans nom)';
-                    } else {
-                        senderLabel = m.sender || '';
-                    }
-
+                    const isMe = (m.sender && typeof m.sender === 'object' && m.sender._id === userId) || (m.sender === userId);
+                    const senderLabel = getSenderLabel(m);
+                    const timestamp = formatTimestamp(m.createdAt);
                     const validMentions = m.validMentions || [];
 
                     if (m._id === editingMessageId) {
                         return (
-                            <div key={m._id} id={`msg-${m._id}`} className="chat-message editing">
-                                <div className="chat-message-header">
-                                    <span className="chat-message-sender">{senderLabel}</span>
-                                    <span className="chat-message-timestamp">{formatTimestamp(m.createdAt)}</span>
+                            <div key={m._id} id={`msg-${m._id}`} className={`message-container ${isMe ? 'message-bg-me' : 'message-bg-other'}`}>
+                                <div className="message-header">
+                                    <span className="sender">{senderLabel}</span>
+                                    <span className="timestamp">{timestamp}</span>
                                 </div>
                                 <textarea
-                                    className="chat-message-edit-input"
+                                    className="message-edit-textarea"
                                     value={editContent}
                                     onChange={(e) => setEditContent(e.target.value)}
                                 />
-                                <div className="chat-message-edit-buttons">
-                                    <button onClick={() => handleSaveEdit(m)}>Enregistrer</button>
-                                    <button onClick={handleCancelEdit}>Annuler</button>
+                                <div className="message-edit-buttons">
+                                    <button className="action-button" onClick={() => handleSaveEdit(m)}>Enregistrer</button>
+                                    <button className="action-button" onClick={handleCancelEdit}>Annuler</button>
                                 </div>
                             </div>
                         );
                     }
 
                     return (
-                        <div key={m._id} id={`msg-${m._id}`} className="chat-message" style={{ backgroundColor: isMe ? '#23243a' : '#1e1f2f' }}>
-                            <div className="chat-message-header">
-                                <span className="chat-message-sender">{senderLabel}</span>
-                                <span className="chat-message-timestamp">{formatTimestamp(m.createdAt)}</span>
+                        <div key={m._id} id={`msg-${m._id}`} className={`message-container ${isMe ? 'message-bg-me' : 'message-bg-other'}`}>
+                            <div className="message-header">
+                                <span className="sender">{senderLabel}</span>
+                                <span className="timestamp">{timestamp}</span>
                             </div>
-                            <div className="chat-message-content">
+                            <div className="message-content">
                                 {highlightMentions(m.content || '', validMentions)}
-                                {m.edited && <span className="chat-message-edited">(Modifié)</span>}
+                                {m.edited && <span className="message-edited">(Modifié)</span>}
                             </div>
                             {m.fileUrl && (
-                                <div className="chat-message-file">
-                                    {/\.(png|jpe?g|gif)$/i.test(m.fileUrl) ? (
-                                        <img src={m.fileUrl} alt="file" />
+                                m.fileUrl.match(/\.(png|jpe?g|gif)$/i)
+                                    ? (
+                                        <div className="message-file">
+                                            <img src={m.fileUrl} alt="file" style={{ maxWidth: '200px', height: 'auto' }} />
+                                        </div>
                                     ) : (
-                                        <a href={m.fileUrl} target="_blank" rel="noreferrer">
-                                            Télécharger le fichier
-                                        </a>
-                                    )}
-                                </div>
+                                        <div className="message-file">
+                                            <a href={m.fileUrl} target="_blank" rel="noreferrer">Télécharger le fichier</a>
+                                        </div>
+                                    )
                             )}
-                            {m.reactions && m.reactions.length > 0 && (
-                                <div className="chat-message-reactions">
-                                    {m.reactions.map((react, i) => {
-                                        const who = react.user?.name || '(Inconnu)';
-                                        return (
-                                            <span key={i} className="chat-reaction" title={`Réaction de ${who}`}>
-                        {react.emoji}
-                      </span>
-                                        );
-                                    })}
-                                </div>
-                            )}
-                            <div className="chat-message-buttons">
-                                <button onClick={() => openEmojiPickerForMessage(m)}>Réagir</button>
-                                {isMe && <button onClick={() => startEditingMessage(m)}>Modifier</button>}
-                                {canDelete && selectedChannel && <button onClick={() => handleDeleteMsg(m)} style={{ backgroundColor: '#f88' }}>X</button>}
+                            <div className="message-actions">
+                                <button className="action-button" onClick={() => openEmojiPickerForMessage(m)}>Réagir</button>
+                                {isMe && <button className="action-button" onClick={() => startEditingMessage(m)}>Modifier</button>}
+                                {canDelete && <button className="action-button delete-button" onClick={() => handleDeleteMsg(m)}>X</button>}
+                            </div>
+                            <div className="message-reactions">
+                                {m.reactions && m.reactions.map((react, i) => {
+                                    const who = (react.user && react.user.name) ? react.user.name : '(Inconnu)';
+                                    return (
+                                        <span key={i} className="reaction" title={`Réaction de ${who}`}>
+                      {react.emoji}
+                    </span>
+                                    );
+                                })}
                             </div>
                             {showEmojiPickerFor === m._id && (
-                                <div className="chat-emoji-picker">
+                                <div className="emoji-picker">
                                     {['😃', '👍', '❤️', '🔥', '🎉'].map((emoji) => (
-                                        <span key={emoji} className="chat-emoji" onClick={() => handleChooseEmoji(m, emoji)}>
+                                        <span key={emoji} className="emoji" onClick={() => handleChooseEmoji(m, emoji)}>
                       {emoji}
                     </span>
                                     ))}

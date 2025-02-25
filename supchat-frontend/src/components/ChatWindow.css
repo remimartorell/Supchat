@@ -1,201 +1,157 @@
-/* src/pages/WorkspaceSettings.css */
-
-.workspace-settings-container {
-    background-color: #2F3136; /* Couleur sombre inspirée de Discord */
-    color: #fff;
-    padding: 30px;
-    min-height: 100vh;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 1.05rem; /* Légèrement agrandi */
-    line-height: 1.5;
-}
-
-.workspace-settings-title {
-    font-size: 1.7rem;
-    margin-bottom: 25px;
-    color: #fff;
-}
-
-.workspace-settings-title span {
-    color: #bfaaff;
-}
-
-.settings-section {
-    background-color: #36393F;
-    margin-bottom: 30px;
-    padding: 20px;
-    border-radius: 6px;
-}
-
-.settings-section h3 {
-    margin-top: 0;
-    margin-bottom: 12px;
-    color: #fff;
-    font-size: 1.3rem;
-    font-weight: bold;
-}
-
-.settings-input {
-    padding: 8px;
-    margin-left: 8px;
-    border: 1px solid #555;
-    border-radius: 4px;
-    background-color: #202225;
-    color: #fff;
-    font-size: 1rem;
-}
-
-.settings-button {
-    background-color: #5865F2;
-    border: none;
-    padding: 8px 14px;
-    margin-left: 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    color: #fff;
-    font-size: 1rem;
-}
-
-.settings-button:hover {
-    background-color: #4752c4;
-}
-
-.settings-select {
-    padding: 7px;
-    background-color: #202225;
-    color: #fff;
-    border: 1px solid #555;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.members-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.member-item {
+.chat-window-container {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    background: #2C2F33;
+    flex-direction: column;
     padding: 10px;
-    border-radius: 4px;
+    overflow-y: auto;
+    font-family: "Lucida Console", monospace;
 }
 
-.member-info {
-    display: flex;
+.chat-window-messages {
+    height: 70vh;
+    overflow-y: auto;
+    border: 1px solid #444;
+    padding: 5px;
+}
+
+/* Conteneur de chaque message */
+.message-container {
+    margin: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    color: #fff;
+    position: relative;
+}
+
+/* Fond pour les messages envoyés par l'utilisateur */
+.message-bg-me {
+    background-color: #2c2c44;
+}
+
+/* Fond pour les messages des autres */
+.message-bg-other {
+    background-color: #1f1f2f;
+}
+
+/* En-tête du message : pseudo et date côte à côte */
+.message-header {
+    display: inline-flex; /* Affichage en ligne */
     align-items: center;
-    gap: 10px;
+    gap: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
 }
 
-.member-name {
+.sender {
     font-weight: bold;
-    color: #fff;
-    font-size: 1.05rem;
 }
 
-.member-email {
-    color: #999;
-    font-size: 0.95rem;
+.timestamp {
+    color: #ccc;
+    font-size: 0.85rem;
 }
 
-.member-role {
-    margin-left: 10px;
-    font-size: 0.95rem;
+/* Contenu du message */
+.message-content {
+    font-size: 1rem;
+    margin-bottom: 5px;
 }
 
-.remove-member-button {
-    background-color: #f44;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    color: #fff;
+/* Indicateur de modification */
+.message-edited {
+    margin-left: 5px;
+    font-style: italic;
     font-size: 0.9rem;
 }
 
-.remove-member-button:hover {
-    background-color: #d33;
+/* Zone des fichiers */
+.message-file {
+    margin-top: 5px;
 }
 
-.add-member-form {
-    margin-top: 15px;
-    background: #2C2F33;
-    padding: 15px;
-    border-radius: 4px;
-}
-
-.add-member-controls {
+/* Boutons d'actions */
+.message-actions {
+    margin-top: 5px;
     display: flex;
-    align-items: center;
     gap: 10px;
 }
 
-.danger-description {
-    margin: 8px 0;
-    font-size: 0.95rem;
-    color: #bbb;
-}
-
-.delete-workspace-button {
-    background-color: #f44336;
+.action-button {
+    padding: 4px 8px;
+    background-color: #5865f2;
     border: none;
-    padding: 8px 14px;
     border-radius: 4px;
-    color: #fff;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    color: #fff;
+    transition: background-color 0.3s;
 }
 
-.delete-workspace-button:hover {
+.action-button:hover {
+    background-color: #4752c4;
+}
+
+.delete-button {
+    background-color: #f44336;
+}
+
+.delete-button:hover {
     background-color: #e53935;
 }
 
-.private-channel-container {
-    background: #2C2F33;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 4px;
+/* Réactions */
+.message-reactions {
+    margin-top: 5px;
 }
 
-.private-channel-container h4 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 1.1rem;
+.reaction {
+    margin-right: 5px;
+    font-size: 1.2rem;
 }
 
-.channel-members-list {
-    list-style: none;
-    margin: 10px 0;
-    padding: 0;
-}
-
-.channel-member-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-    background: #202225;
-    padding: 8px;
-    border-radius: 4px;
-}
-
-.channel-member-item span {
-    margin-right: 10px;
-    font-size: 1rem;
-}
-
-.add-channel-member-form {
-    margin-top: 10px;
-}
-
-/* Loading */
-.workspace-settings-loading {
-    padding: 30px;
-    font-size: 1.1rem;
-    text-align: center;
-    background-color: #2F3136;
+/* Panel emoji */
+.emoji-picker {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #333;
     color: #fff;
+    border: 1px solid #666;
+    padding: 5px;
+    z-index: 9999;
+    white-space: nowrap;
+}
+
+.emoji {
+    display: inline-block;
+    font-size: 20px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+/* Zone d'édition */
+.message-edit-textarea {
+    width: 100%;
+    margin-top: 5px;
+    background: #333;
+    color: #fff;
+    border: 1px solid #666;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.message-edit-buttons {
+    margin-top: 5px;
+    display: flex;
+    gap: 10px;
+}
+
+/* Pour les mentions */
+.highlight-mention {
+    color: blue;
+    font-weight: bold;
+}
+
+/* Effet de surbrillance */
+.highlight {
+    background-color: #3a3af2 !important;
 }
