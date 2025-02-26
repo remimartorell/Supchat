@@ -37,7 +37,7 @@ function Sidebar({
     // =========================
     const [userStatuses, setUserStatuses] = useState({});
 
-    // On écoute "user-status-changed" pour mettre à jour userStatuses
+    // Écoute le status des utilisateurs
     useEffect(() => {
         if (!socket) return;
         const handleStatusChange = ({ userId: changedUserId, status }) => {
@@ -50,9 +50,7 @@ function Sidebar({
         };
     }, [socket]);
 
-    // =========================
     // Créer un workspace
-    // =========================
     const handleCreateWorkspace = async () => {
         if (!newWsName.trim()) return;
         try {
@@ -68,9 +66,7 @@ function Sidebar({
         }
     };
 
-    // =========================
     // Créer un channel
-    // =========================
     const handleCreateChannel = async () => {
         if (!newChannelName.trim() || !targetWsId) return;
         try {
@@ -116,8 +112,7 @@ function Sidebar({
                                         width: '10px',
                                         height: '10px',
                                         borderRadius: '50%',
-                                        backgroundColor:
-                                            userStatuses[u._id] === 'online' ? 'green' : 'gray',
+                                        backgroundColor: userStatuses[u._id] === 'online' ? 'green' : 'gray',
                                     }}
                                 />
                                 {u.name}
@@ -160,50 +155,56 @@ function Sidebar({
                             (typeof m.user === 'object' && m.user._id === userId)
                     );
                     const currentRole = currentMember ? currentMember.role : '';
-
+                    // Limiter le nom du workspace à 20 caractères
+                    const displayedWsName =
+                        ws.name.length > 20 ? ws.name.slice(0, 20) + '…' : ws.name;
                     return (
                         <div key={ws._id} style={{ marginBottom: '15px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                                {/* On supprime l'affichage du ws._id */}
-                                <strong>{ws.name}</strong>
-
-                                {/* Bouton Settings */}
-                                <button
-                                    className="sidebar-button"
-                                    onClick={() => navigate(`/workspace/${ws._id}/settings`)}
-                                >
-                                    Settings
-                                </button>
-
-                                {/* Si user est owner ou admin => +Channel */}
-                                {(currentRole === 'owner' || currentRole === 'admin') && (
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                {/* Ligne 1 : Nom du workspace tronqué */}
+                                <div>
+                                    <strong>{displayedWsName}</strong>
+                                </div>
+                                {/* Ligne 2 : Boutons */}
+                                <div style={{ marginTop: '5px', display: 'flex', gap: '5px' }}>
                                     <button
                                         className="sidebar-button"
-                                        onClick={() => {
-                                            setShowCreateChannel(true);
-                                            setTargetWsId(ws._id);
-                                        }}
+                                        onClick={() => navigate(`/workspace/${ws._id}/settings`)}
                                     >
-                                        +Channel
+                                        Settings
                                     </button>
-                                )}
+                                    {(currentRole === 'owner' || currentRole === 'admin') && (
+                                        <button
+                                            className="sidebar-button"
+                                            onClick={() => {
+                                                setShowCreateChannel(true);
+                                                setTargetWsId(ws._id);
+                                            }}
+                                        >
+                                            +Channel
+                                        </button>
+                                    )}
+                                </div>
                             </div>
 
+                            {/* Liste des channels */}
                             <ul style={{ paddingLeft: '20px', marginTop: '5px' }}>
                                 {(ws.channels || [])
                                     .filter((ch) => {
                                         if (ch.type === 'public') return true;
-                                        // channel privé => check si userId est dedans
+                                        // Pour channel privé : vérifier que l'utilisateur est membre
                                         if (ch.type === 'private') {
-                                            return ch.members?.some((m) => {
-                                                if (typeof m === 'string') return m === userId;
-                                                return m._id === userId;
-                                            });
+                                            return ch.members?.some((m) =>
+                                                typeof m === 'string' ? m === userId : m._id === userId
+                                            );
                                         }
                                         return false;
                                     })
                                     .map((ch) => {
                                         const isChSelected = ch._id === selectedChannel;
+                                        // Limiter le nom du channel à 20 caractères
+                                        const displayedChName =
+                                            ch.name.length > 20 ? ch.name.slice(0, 20) + '…' : ch.name;
                                         return (
                                             <li
                                                 key={ch._id}
@@ -211,39 +212,45 @@ function Sidebar({
                                                 onClick={() => onSelectChannel(ch._id)}
                                                 style={{ margin: '3px 0' }}
                                             >
-                                                {/* On affiche plus l'id, juste nom + type */}
-                                                {ch.name} ({ch.type})
-                                                {/* Si owner/admin => bouton X pour supprimer */}
-                                                {(currentRole === 'owner' || currentRole === 'admin') && (
-                                                    <button
-                                                        onClick={async (e) => {
-                                                            e.stopPropagation();
-                                                            const confirmDel = window.confirm(
-                                                                `Supprimer le channel "${ch.name}" ?`
-                                                            );
-                                                            if (!confirmDel) return;
-                                                            try {
-                                                                await axios.delete(
-                                                                    `/api/workspaces/${ws._id}/channels/${ch._id}`
-                                                                );
-                                                                onWorkspacesRefresh && onWorkspacesRefresh();
-                                                            } catch (err) {
-                                                                console.error('Erreur suppression channel:', err);
-                                                                alert('Impossible de supprimer ce channel');
-                                                            }
-                                                        }}
-                                                        style={{
-                                                            marginLeft: '5px',
-                                                            cursor: 'pointer',
-                                                            background: '#f88',
-                                                            border: '1px solid #999',
-                                                            borderRadius: '4px',
-                                                            padding: '0 4px',
-                                                        }}
-                                                    >
-                                                        X
-                                                    </button>
-                                                )}
+                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                    {/* Ligne 1 : Nom du channel et type */}
+                                                    <div>
+                                                        <strong>{displayedChName}</strong> <small>({ch.type})</small>
+                                                    </div>
+                                                    {/* Ligne 2 : Bouton de suppression si applicable */}
+                                                    {(currentRole === 'owner' || currentRole === 'admin') && (
+                                                        <div style={{ marginTop: '5px' }}>
+                                                            <button
+                                                                onClick={async (e) => {
+                                                                    e.stopPropagation();
+                                                                    const confirmDel = window.confirm(
+                                                                        `Supprimer le channel "${ch.name}" ?`
+                                                                    );
+                                                                    if (!confirmDel) return;
+                                                                    try {
+                                                                        await axios.delete(
+                                                                            `/api/workspaces/${ws._id}/channels/${ch._id}`
+                                                                        );
+                                                                        onWorkspacesRefresh && onWorkspacesRefresh();
+                                                                    } catch (err) {
+                                                                        console.error('Erreur suppression channel:', err);
+                                                                        alert('Impossible de supprimer ce channel');
+                                                                    }
+                                                                }}
+                                                                style={{
+                                                                    marginLeft: '5px',
+                                                                    cursor: 'pointer',
+                                                                    background: '#f88',
+                                                                    border: '1px solid #999',
+                                                                    borderRadius: '4px',
+                                                                    padding: '0 4px',
+                                                                }}
+                                                            >
+                                                                X
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </li>
                                         );
                                     })}
@@ -312,8 +319,6 @@ function Sidebar({
                     </div>
                 )}
             </div>
-
-            {/* AUCUN footer ici (on retire la barre de recherche, etc.) */}
         </div>
     );
 }

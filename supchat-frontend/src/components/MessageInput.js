@@ -13,6 +13,13 @@ function MessageInput({ onSend, disabled }) {
         setFile(null);
     };
 
+    // Gestion de l'appui sur la touche
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            handleSend();
+        }
+    };
+
     return (
         <div className="message-input-container">
             {/* Champ texte */}
@@ -21,6 +28,7 @@ function MessageInput({ onSend, disabled }) {
                 placeholder="Tapez votre message..."
                 value={text}
                 onChange={(e) => setText(e.target.value)}
+                onKeyDown={handleKeyDown} // <-- Ajout de l'écouteur pour Enter
                 disabled={disabled}
                 className="message-input-field"
             />
@@ -45,10 +53,7 @@ function MessageInput({ onSend, disabled }) {
             {/* Prévisualisation d’image si on a choisi un fichier image */}
             {file && file.type.startsWith('image/') && (
                 <div className="message-input-preview">
-                    <img
-                        src={URL.createObjectURL(file)}
-                        alt="preview"
-                    />
+                    <img src={URL.createObjectURL(file)} alt="preview" />
                 </div>
             )}
         </div>

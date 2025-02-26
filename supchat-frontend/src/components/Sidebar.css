@@ -1,11 +1,16 @@
-/* ============================
-   SIDEBAR STYLES
-   ============================ */
+/* src/components/Sidebar.css */
 
 /* Conteneur principal de la sidebar */
 .sidebar {
-    width: 250px;
-    background-color: #1e1e30; /* Couleur de fond sombre */
+    height: 100vh;              /* Prend toute la hauteur de la fenêtre */
+    width: 250px;               /* Largeur fixe */
+    position: fixed;            /* Fixe sur l'écran */
+    top: 0;
+    left: 0;
+    bottom: 0;
+    overflow-y: auto;           /* Scroll vertical interne */
+    overflow-x: hidden;         /* Pas de scroll horizontal */
+    background-color: #1e1e30;
     color: #fff;
     border-right: 1px solid #444;
     display: flex;
@@ -18,14 +23,15 @@
     padding: 10px;
 }
 
-/* Conteneur principal du contenu (users, workspaces...) */
+/* Conteneur principal du contenu (users, workspaces, etc.) */
 .sidebar-content {
     flex: 1;
     padding: 0 10px;
-    overflow-y: auto; /* Scroll si le contenu dépasse */
+    overflow-y: auto;   /* Défilement vertical interne */
+    overflow-x: hidden;
 }
 
-/* Liste d’items (users, channels...) */
+/* Liste d’items (users, channels, …) */
 .sidebar-content ul {
     list-style: none;
     padding: 0;
@@ -49,7 +55,7 @@
     background-color: #3b3b50;
 }
 
-/* Les boutons “généraux” */
+/* Les boutons généraux */
 .sidebar-button {
     cursor: pointer;
     background: #555;
@@ -64,7 +70,7 @@
     background-color: #666;
 }
 
-/* Les forms (ex: création workspace, channel, recherche) */
+/* Formulaires (création workspace, channel, etc.) */
 .sidebar-form {
     margin-top: 5px;
     display: flex;
@@ -72,7 +78,7 @@
     gap: 5px;
 }
 
-/* Input dans la sidebar */
+/* Champs input dans la sidebar */
 .sidebar-input {
     padding: 4px;
     border: 1px solid #999;
@@ -81,7 +87,7 @@
     color: #fff;
 }
 
-/* Conteneur en bas de la sidebar pour la recherche / chat / logout */
+/* Conteneur en bas de la sidebar (footer, par exemple pour la recherche ou logout) */
 .sidebar-footer {
     padding: 10px;
     border-top: 1px solid #444;
@@ -90,8 +96,15 @@
     gap: 10px;
 }
 
-/* Barre de recherche */
+/* Si tu as une barre de recherche dans le footer */
 .sidebar-footer form {
     display: flex;
     gap: 5px;
+}
+.workspace-name-truncate {
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
 }

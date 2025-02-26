@@ -1,14 +1,18 @@
+/*
+src/components/ChatWindows.css
+*/
+
 .chat-window-container {
     display: flex;
     flex-direction: column;
     padding: 10px;
-    overflow-y: auto;
+    overflow-y: auto; /* Pour scroller si besoin dans la zone container */
     font-family: "Lucida Console", monospace;
 }
 
 .chat-window-messages {
     height: 70vh;
-    overflow-y: auto;
+    overflow-y: auto; /* Scroll vertical des messages */
     border: 1px solid #444;
     padding: 5px;
 }

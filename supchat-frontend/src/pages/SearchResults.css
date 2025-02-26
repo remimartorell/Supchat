@@ -1,7 +1,6 @@
-/* =========================
-   SearchResults.css
-   ========================= */
-*{
+/* src/pages/SearchResults.css */
+
+* {
     --color-bg-dark: #0f1522;
 }
 /* Conteneur global de la page */

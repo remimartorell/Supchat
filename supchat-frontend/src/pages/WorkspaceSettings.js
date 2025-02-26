@@ -28,12 +28,10 @@ function WorkspaceSettings() {
     useEffect(() => {
         if (workspace) {
             setWorkspaceName(workspace.name);
-            // Debug : Afficher l'ID du propriétaire
             console.log('Workspace owner:', workspace.owner);
         }
     }, [workspace]);
 
-    // Récupère un workspace avec ses membres populés
     const fetchWorkspace = async () => {
         try {
             const res = await axios.get(`/api/workspaces/${workspaceId}`);
@@ -43,7 +41,6 @@ function WorkspaceSettings() {
         }
     };
 
-    // Récupère les channels d’un workspace
     const fetchChannels = async () => {
         try {
             const res = await axios.get(`/api/workspaces/${workspaceId}/channels`);
@@ -53,7 +50,6 @@ function WorkspaceSettings() {
         }
     };
 
-    // Récupère tous les utilisateurs
     const fetchAllUsers = async () => {
         try {
             const res = await axios.get('/api/auth/allUsers');
@@ -63,7 +59,6 @@ function WorkspaceSettings() {
         }
     };
 
-    // Changer le rôle d'un membre
     const handleRoleChange = async (memberId, newRole) => {
         try {
             console.log('Attempting to update role for member:', memberId, 'to', newRole);
@@ -75,7 +70,6 @@ function WorkspaceSettings() {
         }
     };
 
-    // Ajouter un membre au workspace
     const handleAddMember = async () => {
         if (!selectedUserId) return;
         try {
@@ -92,7 +86,6 @@ function WorkspaceSettings() {
         }
     };
 
-    // Retirer un membre
     const handleRemoveMember = async (memberId) => {
         try {
             await axios.delete(`/api/workspaces/${workspaceId}/members/${memberId}`);
@@ -103,12 +96,9 @@ function WorkspaceSettings() {
         }
     };
 
-    // Renommer le workspace (seulement possible si l'utilisateur est le propriétaire)
     const handleRenameWorkspace = async () => {
         try {
-            await axios.put(`/api/workspaces/${workspaceId}`, {
-                name: workspaceName,
-            });
+            await axios.put(`/api/workspaces/${workspaceId}`, { name: workspaceName });
             fetchWorkspace();
         } catch (err) {
             console.error('Error renaming workspace', err);
@@ -116,7 +106,6 @@ function WorkspaceSettings() {
         }
     };
 
-    // Supprimer le workspace (seulement pour le propriétaire)
     const handleDeleteWorkspace = async () => {
         const confirmDel = window.confirm('Supprimer ce workspace ?');
         if (!confirmDel) return;
@@ -130,7 +119,6 @@ function WorkspaceSettings() {
         }
     };
 
-    // Ajouter un membre à un channel privé
     const addUserToChannel = async (channelId, userId) => {
         if (!userId) return;
         try {
@@ -142,7 +130,6 @@ function WorkspaceSettings() {
         }
     };
 
-    // Retirer un membre d'un channel privé
     const removeUserFromChannel = async (channelId, userId) => {
         try {
             await axios.delete(`/api/workspaces/${workspaceId}/channels/${channelId}/members/${userId}`);
@@ -183,34 +170,36 @@ function WorkspaceSettings() {
             {/* Section : Membres */}
             <div className="settings-section">
                 <h3>Membres</h3>
-                <ul className="members-list">
-                    {workspace.members.map((m) => (
-                        <li key={m.user._id} className="member-item">
-                            <div className="member-info">
-                                <span className="member-name">{m.user.name}</span>
-                                {/* Suppression de l'affichage de l'email */}
-                                <span className="member-role">
-                  Rôle :
-                  <select
-                      value={m.role}
-                      onChange={(e) => handleRoleChange(m.user._id, e.target.value)}
-                      className="settings-select"
-                  >
-                    <option value="owner">Owner</option>
-                    <option value="admin">Admin</option>
-                    <option value="moderator">Moderator</option>
-                    <option value="member">Member</option>
-                  </select>
-                </span>
-                            </div>
-                            {m.role !== 'owner' && (
-                                <button className="remove-member-button" onClick={() => handleRemoveMember(m.user._id)}>
-                                    Retirer
-                                </button>
-                            )}
-                        </li>
-                    ))}
-                </ul>
+                {/* Conteneur scrollable pour la liste des membres */}
+                <div className="scrollable-section">
+                    <ul className="members-list">
+                        {workspace.members.map((m) => (
+                            <li key={m.user._id} className="member-item">
+                                <div className="member-info">
+                                    <span className="member-name">{m.user.name}</span>
+                                    <span className="member-role">
+                    Rôle :
+                    <select
+                        value={m.role}
+                        onChange={(e) => handleRoleChange(m.user._id, e.target.value)}
+                        className="settings-select"
+                    >
+                      <option value="owner">Owner</option>
+                      <option value="admin">Admin</option>
+                      <option value="moderator">Moderator</option>
+                      <option value="member">Member</option>
+                    </select>
+                  </span>
+                                </div>
+                                {m.role !== 'owner' && (
+                                    <button className="remove-member-button" onClick={() => handleRemoveMember(m.user._id)}>
+                                        Retirer
+                                    </button>
+                                )}
+                            </li>
+                        ))}
+                    </ul>
+                </div>
 
                 {/* Ajouter un membre */}
                 <div className="add-member-form">
@@ -262,8 +251,6 @@ function WorkspaceSettings() {
                     .map((ch) => (
                         <div key={ch._id} className="private-channel-container">
                             <h4>{ch.name}</h4>
-                            {/* On ne montre plus l'ID */}
-                            {/* Membres du channel */}
                             <ul className="channel-members-list">
                                 {ch.members?.map((mem) => {
                                     const memId = mem._id || mem;
@@ -278,7 +265,6 @@ function WorkspaceSettings() {
                                     );
                                 })}
                             </ul>
-                            {/* Ajout d'un membre au channel */}
                             <div className="add-channel-member-form">
                                 <select
                                     defaultValue=""

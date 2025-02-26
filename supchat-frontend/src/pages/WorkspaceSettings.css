@@ -1,19 +1,22 @@
-/* src/pages/WorkspaceSettings.css */
+/* WorkspaceSettings.css */
 
-/* Conteneur principal */
+/* On retire min-height et on fixe un max-height + overflow */
 .workspace-settings-container {
-    background-color: #2F3136; /* Couleurs sombres façon Discord */
+    background-color: #2F3136;
     color: #fff;
-    padding: 30px; /* marge un peu plus grande */
-    min-height: 100vh;
+    padding: 30px;
+
+    /* Au lieu de min-height: 100vh, on met : */
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 1.05rem; /* Agrandir un peu la police */
+    font-size: 1.05rem;
     line-height: 1.5;
 }
 
-/* Titre principal */
 .workspace-settings-title {
-    font-size: 1.7rem; /* plus grand */
+    font-size: 1.7rem;
     margin-bottom: 25px;
     color: #fff;
 }
@@ -24,9 +27,9 @@
 /* Sections */
 .settings-section {
     background-color: #36393F;
-    margin-bottom: 30px; /* plus d'espace */
-    padding: 20px; /* plus de padding */
-    border-radius: 6px; /* angle légèrement arrondi */
+    margin-bottom: 30px;
+    padding: 20px;
+    border-radius: 6px;
 }
 
 /* Sous-titres */
@@ -34,7 +37,7 @@
     margin-top: 0;
     margin-bottom: 12px;
     color: #fff;
-    font-size: 1.3rem; /* un peu plus grand */
+    font-size: 1.3rem;
     font-weight: bold;
 }
 
@@ -48,9 +51,8 @@
     color: #fff;
     font-size: 1rem;
 }
-
 .settings-button {
-    background-color: #5865F2; /* Couleur d'accent Discord approx */
+    background-color: #5865F2;
     border: none;
     padding: 8px 14px;
     margin-left: 12px;
@@ -62,7 +64,6 @@
 .settings-button:hover {
     background-color: #4752c4;
 }
-
 .settings-select {
     padding: 7px;
     background-color: #202225;
@@ -72,7 +73,7 @@
     font-size: 1rem;
 }
 
-/* Membres du workspace */
+/* Membres */
 .members-list {
     list-style: none;
     margin: 0;
@@ -96,10 +97,6 @@
     color: #fff;
     font-size: 1.05rem;
 }
-.member-email {
-    color: #999;
-    font-size: 0.95rem;
-}
 .member-role {
     margin-left: 10px;
     font-size: 0.95rem;
@@ -117,7 +114,7 @@
     background-color: #d33;
 }
 
-/* Ajout d'un membre */
+/* Ajout membre */
 .add-member-form {
     margin-top: 15px;
     background: #2C2F33;

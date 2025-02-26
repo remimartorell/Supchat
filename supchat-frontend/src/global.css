@@ -1,6 +1,6 @@
-/* =================
-   1) RESET & VARS
-================= */
+/* src/global.css */
+
+/* 1) RESET & VARIABLES */
 * {
     margin: 0;
     padding: 0;
@@ -13,19 +13,22 @@
     --color-accent: #ff5555;
     --font-family-main: 'Roboto', sans-serif;
 }
+
+/* 2) HTML / BODY => plus de scrollbar globale */
 html, body {
     width: 100%;
     height: 100%;
-}
-body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* IMPORTANT: supprime la scrollbar générale */
     font-family: var(--font-family-main);
     background-color: var(--color-bg-dark);
     color: #fff;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* PAS de padding-top ici ! */
-    overflow-y: auto; /* pour éviter débordement blanc */
 }
+
+/* #root : container principal React */
 #root {
     display: flex;
     flex-direction: column;
@@ -33,7 +36,7 @@ body {
 }
 
 /* ==============================
-   2) NAVBAR FIXE (SI BESOIN)
+   NAVBAR FIXE (SI BESOIN)
 ============================== */
 .navbar {
     background: #0f1522;
@@ -82,7 +85,7 @@ body {
 }
 
 /* ==============================
-   3) SCROLLBAR CUSTOM
+   SCROLLBAR CUSTOM (POUR LES DIVS)
 ============================== */
 ::-webkit-scrollbar {
     width: 8px;
@@ -99,7 +102,7 @@ body {
 }
 
 /* ==============================
-   4) BOUTONS GLOBAUX
+   BOUTONS GLOBAUX
 ============================== */
 button {
     background: linear-gradient(135deg, #6e8efb, #a777e3);
@@ -118,7 +121,7 @@ button {
     gap: 6px;
     min-width: 80px;
 }
-button+button {
+button + button {
     margin-left: 12px;
 }
 button:hover {
@@ -129,46 +132,77 @@ button:active {
     transform: scale(0.95);
     box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
+
+/* Bouton Logout */
 .logout-btn {
     background: #ff4d4d;
-    /* ... */
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
+.logout-btn:hover {
+    transform: translateY(-2px);
+    background: #ff1f1f;
+    box-shadow: 0 4px 10px rgba(255, 77, 77, 0.3);
+}
+.logout-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 6px rgba(255, 77, 77, 0.2);
+}
+
+/* Bouton Chat (lien) */
 .chat-link {
     padding: 10px 18px;
     background: linear-gradient(135deg, #007bff, #0056b3);
-    /* ... */
+    border-radius: 20px;
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s;
+    box-shadow: 0px 3px 6px rgba(0, 123, 255, 0.5);
+    display: inline-block;
+}
+.chat-link:hover {
+    background: linear-gradient(135deg, #0056b3, #003f80);
+    transform: scale(1.05);
+}
+.chat-link:active {
+    transform: scale(0.95);
 }
 
 /* ==============================
-   5) LAYOUT SI BESOIN (CHAT)
+   LAYOUT (CHAT)
 ============================== */
 .chat-layout {
     flex: 1;
     display: flex;
-    overflow: hidden;
+    overflow: hidden; /* Pas de scroll global */
 }
 .sidebar-layout {
     width: 250px;
-    /* ... */
+    /* Le scroll est géré dans .sidebar elle-même */
 }
 .chat-layout-main {
     flex: 1;
     display: flex;
     flex-direction: column;
-    /* ... */
+    /* Pas de overflow global */
 }
 
 /* ==============================
-   6) FORMATS LOGIN/REGISTER
+   FORMATS LOGIN/REGISTER
 ============================== */
-/* -- RÉINSÉRER l’ancien code -- */
+/* Login container */
 .login-container {
     width: 100%;
     height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* event. background: var(--color-bg-dark); si désiré */
 }
 .login-box {
     width: 350px;
@@ -264,7 +298,7 @@ button:active {
     text-align: center;
 }
 
-/* REGISTER PAGE */
+/* Register page */
 .register-container {
     width: 100%;
     height: 100vh;
