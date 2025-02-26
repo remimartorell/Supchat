@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from '../services/axiosConfig';
 import { IoMdNotificationsOutline } from 'react-icons/io';
 import { useNavigate } from 'react-router-dom';
+import './NotificationHub.css';
 
 const NotificationHub = ({ socket }) => {
     const [notifications, setNotifications] = useState([]);
@@ -63,66 +64,40 @@ const NotificationHub = ({ socket }) => {
         setShowDropdown(false);
     };
 
+
     return (
-        // Conteneur positionné absolument pour forcer l'affichage en haut à droite
-        <div style={{
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-            zIndex: 200
-        }}>
-            {/* Icône de notification avec couleur explicite */}
+        <div className="notification-hub-container">
+            {/* Icône cloche */}
             <IoMdNotificationsOutline
-                size={28}
-                style={{ cursor: 'pointer', color: '#000' }}
+                size={24}
+                className="notification-bell-icon"
                 onClick={() => setShowDropdown(prev => !prev)}
             />
             {unreadCount > 0 && (
-                <div style={{
-                    position: 'absolute',
-                    top: '-5px',
-                    right: '-5px',
-                    background: 'red',
-                    color: 'white',
-                    borderRadius: '50%',
-                    width: '18px',
-                    height: '18px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '12px'
-                }}>
+                <div className="notification-badge">
                     {unreadCount}
                 </div>
             )}
             {showDropdown && (
-                <div style={{
-                    position: 'absolute',
-                    top: '35px',
-                    right: 0,
-                    width: '300px',
-                    maxHeight: '400px',
-                    overflowY: 'auto',
-                    background: 'white',
-                    border: '1px solid #ccc',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-                    zIndex: 210
-                }}>
+                <div className="notification-dropdown">
                     {notifications.length === 0 ? (
-                        <div style={{ padding: '10px' }}>Aucune notification</div>
+                        <div className="notification-item">
+                            Aucune notification
+                        </div>
                     ) : (
                         notifications.map(notif => (
-                            <div key={notif._id}
-                                 style={{
-                                     padding: '10px',
-                                     background: notif.read ? '#f9f9f9' : '#d6bbff', // Fond violet pour les non lues, gris pour les lues
-                                     borderBottom: '1px solid #ddd',
-                                     cursor: 'pointer'
-                                 }}
-                                 onClick={() => handleNotificationClick(notif)}
+                            <div
+                                key={notif._id}
+                                className="notification-item"
+                                style={{
+                                    background: notif.read ? '#444' : '#6858c4'
+                                }}
+                                onClick={() => handleNotificationClick(notif)}
                             >
-                                <div style={{ fontSize: '14px' }}>{notif.message}</div>
-                                <div style={{ fontSize: '10px', color: '#999' }}>
+                                <div style={{ fontSize: '14px' }}>
+                                    {notif.message}
+                                </div>
+                                <div style={{ fontSize: '10px', color: '#ccc' }}>
                                     {new Date(notif.createdAt).toLocaleString()}
                                 </div>
                             </div>

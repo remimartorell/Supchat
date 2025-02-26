@@ -183,7 +183,7 @@ function ChatWindow({
                             {m.fileUrl &&
                                 (m.fileUrl.match(/\.(png|jpe?g|gif)$/i) ? (
                                     <div className="message-file">
-                                        <img src={m.fileUrl} alt="file" style={{ maxWidth: '200px', height: 'auto' }} />
+                                        <img src={ process.env.REACT_APP_API_URL + m.fileUrl } alt="file" style={{ maxWidth: '200px', height: 'auto' }} />
                                     </div>
                                 ) : (
                                     <div className="message-file">

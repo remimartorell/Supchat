@@ -1,0 +1,68 @@
+/* src/components/NotificationHub.css */
+.notification-hub-container {
+    position: relative;
+    /* place la cloche sur la même “ligne” que le bouton Logout */
+    display: inline-flex;
+    align-items: center;
+
+    /* marge horizontale entre la cloche et le bouton Logout */
+    margin-right: 10px;
+
+    /* si elle est trop haute/basse,
+       on peut la “descendre” un peu en jouant avec margin-top
+       (ex. margin-top: 3px)
+       OU on laisse align-items: center et un container parent gère la hauteur. */
+}
+
+.notification-bell-icon {
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.2s;
+    /* Si tu veux un mini-espacement à gauche de la cloche pour l’éloigner du bord, ajoute éventuellement :
+       margin-left: 5px; */
+}
+
+.notification-bell-icon:hover {
+    transform: scale(1.1);
+}
+
+/* BADGE pour le nombre de notifs */
+.notification-badge {
+    position: absolute;
+    top: -4px;   /* On peut baisser à -3 ou -4 pour coller */
+    right: -2px; /* On rapproche un peu à gauche */
+    background: red;
+    color: #fff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-dropdown {
+    position: absolute;
+    top: 30px;
+    right: 0;
+    width: 250px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 10px;
+    z-index: 210;
+}
+
+.notification-item {
+    border-bottom: 1px solid #444;
+    padding: 8px;
+    cursor: pointer;
+}
+
+.notification-item:hover {
+    background: #444;
+}

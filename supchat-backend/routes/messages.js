@@ -54,7 +54,7 @@ router.post('/:channelId/messages', auth, upload.single('file'), async (req, res
         // Création du message
         const newMessage = new Message({
             content,
-            fileUrl: req.file ? `http://localhost:3000/uploads/${req.file.filename}` : null,
+            fileUrl: req.file ? `/uploads/${req.file.filename}` : null,
             channel: req.params.channelId,
             sender: req.user.id,
         });

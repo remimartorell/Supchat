@@ -6,7 +6,6 @@ import axios from '../services/axiosConfig';
 import Sidebar from '../components/Sidebar';
 import ChatWindow from '../components/ChatWindow';
 import MessageInput from '../components/MessageInput';
-import NotificationHub from '../components/NotificationHub';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -21,7 +20,7 @@ function parseMentions(content) {
     return mentionNames;
 }
 
-function Chat() {
+function Chat({ onSocketReady }) {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -70,6 +69,10 @@ function Chat() {
 
         const newSocket = io(process.env.REACT_APP_API_URL);
         setSocket(newSocket);
+
+        if (onSocketReady) {
+            onSocketReady(newSocket);
+        }
 
         // Quand la connexion est établie
         newSocket.on('connect', () => {
@@ -350,10 +353,11 @@ function Chat() {
             newSocket.off('channel-added', handleChannelAdded);
             newSocket.off('channel-deleted', handleChannelDeleted);
             newSocket.off('message-read', handleMessageRead);
+            newSocket.close();
 
             newSocket.disconnect();
         };
-    }, [isLoggedIn, userId, selectedUser, selectedChannel]);
+    }, [isLoggedIn, userId, selectedUser, selectedChannel, onSocketReady]);
 
     //----------------------------------------------------------------
     // 3) Rejoindre la room socket si selectedChannel
@@ -613,7 +617,6 @@ function Chat() {
             </div>
 
             <div className="chat-layout-main">
-                <NotificationHub socket={socket} />
 
                 <ChatWindow
                     userId={userId}

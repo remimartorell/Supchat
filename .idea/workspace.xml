@@ -5,20 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Problèmes réglés du premier commit d'Hugo qui étaient : &#10;- Pages login et register sans css&#10;- Barre du haut affichée sur / , /login et /register &#10;- Absence de la barre du haut lors de la connexion et une fois dans le chat&#10;- Impossibilité de se connecter via la page localhost (on était obligé d'aller sur la page de notre IP)">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/components/NotificationHub.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/directMessages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/directMessages.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/messages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/messages.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/NotificationHub.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/NotificationHub.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/global.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/global.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/SearchResults.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/SearchResults.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/WorkspaceSettings.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/WorkspaceSettings.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/WorkspaceSettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/WorkspaceSettings.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

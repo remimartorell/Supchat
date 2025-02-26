@@ -8,6 +8,7 @@ import PrivateRoute from './components/PrivateRoute';
 import SearchResults from './pages/SearchResults';
 import WorkspaceSettings from './pages/WorkspaceSettings';
 import { Navigate } from 'react-router-dom';
+import NotificationHub from './components/NotificationHub';
 import './App.css';
 
 function App() {
@@ -16,6 +17,8 @@ function App() {
 
     const [searchInput, setSearchInput] = useState('');
     const token = localStorage.getItem('token') || '';
+
+    const [theSocket, setTheSocket] = useState(null);
 
     // On définit les chemins où l'on veut CACHER la navbar :
     const hideNavbarPaths = ['/', '/login', '/register'];
@@ -45,8 +48,8 @@ function App() {
                             <Link to="/chat" className="chat-link">Chat</Link>
                         ) : (
                             <>
-                                <Link to="/login" style={{ color: '#fff', marginRight: 12 }}>Login</Link>
-                                <Link to="/register" style={{ color: '#fff' }}>Register</Link>
+                                <Link to="/login" style={{color: '#fff', marginRight: 12}}>Login</Link>
+                                <Link to="/register" style={{color: '#fff'}}>Register</Link>
                             </>
                         )}
                     </div>
@@ -66,17 +69,21 @@ function App() {
                     </div>
 
                     <div className="nav-right">
+                        {/* => On affiche la cloche + logout si token */}
                         {token && (
-                            <button onClick={handleLogout} className="logout-btn">
-                                Logout
-                            </button>
+                            <>
+                                <NotificationHub socket={theSocket}/>
+                                <button onClick={handleLogout} className="logout-btn">
+                                    Logout
+                                </button>
+                            </>
                         )}
                     </div>
                 </div>
             )}
 
             {/* On décale de 60px le contenu SEULEMENT si la navbar est visible */}
-            <div className="app-container" style={{ marginTop: shouldHideNavbar ? 0 : '60px' }}>
+            <div className="app-container" style={{marginTop: shouldHideNavbar ? 0 : '60px'}}>
                 <Routes>
                     <Route
                         path="/"
@@ -111,7 +118,14 @@ function App() {
                     <Route path="/register" element={<Register />} />
 
                     {/* Pages protégées => PrivateRoute */}
-                    <Route path="/chat" element={<PrivateRoute><Chat /></PrivateRoute>} />
+                    <Route
+                        path="/chat"
+                        element={
+                            <PrivateRoute>
+                                <Chat onSocketReady={setTheSocket} />
+                            </PrivateRoute>
+                        }
+                    />
                     <Route path="/search" element={<PrivateRoute><SearchResults /></PrivateRoute>} />
                     <Route
                         path="/workspace/:workspaceId/settings"

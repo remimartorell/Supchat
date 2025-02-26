@@ -49,6 +49,10 @@ html, body {
     align-items: center;
     justify-content: space-between;
 }
+.nav-right {
+    display: flex;
+    align-items: center;
+}
 .nav-search {
     display: flex;
     align-items: center;
