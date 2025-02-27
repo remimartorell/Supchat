@@ -1,0 +1,133 @@
+/* src/pages/ProfileSettings.css */
+
+/* Conteneur principal */
+.profile-settings-container {
+    width: 420px;
+    margin: 40px auto;
+    padding: 24px;
+    background-color: #2c2f33;
+    color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+}
+
+/* Titre */
+.profile-settings-container h2 {
+    margin-bottom: 16px;
+    font-size: 1.5rem;
+}
+
+/* Groupes de champs */
+.profile-form-group {
+    margin-bottom: 16px;
+}
+.profile-form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+.profile-form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #1f1f2f;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+/* Séparateurs */
+hr {
+    border: none;
+    border-top: 1px solid #444;
+    margin: 20px 0;
+}
+
+/* Bouton Enregistrer */
+.save-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    color: #fff;
+    transition: background 0.3s, transform 0.3s;
+}
+.save-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Bouton "Changer le mot de passe" */
+.toggle-password-btn {
+    display: inline-block;
+    background: #5865F2;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #fff;
+    transition: background 0.3s;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+.toggle-password-btn:hover {
+    background: #4752c4;
+}
+
+/* Le conteneur du bloc mot de passe */
+.password-form {
+    margin-bottom: 16px;
+}
+
+/* GESTION DES RADIOS THEME */
+.theme-radio-group {
+    margin-top: 10px;
+}
+
+.theme-radio-group p {
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+/* On affiche chaque radio option en ligne ou en colonne ? */
+.theme-radio-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.theme-radio-option input[type="radio"] {
+    appearance: none; /* On masque l'UI par défaut */
+    width: 18px;
+    height: 18px;
+    border: 2px solid #888;
+    border-radius: 50%;
+    margin-right: 10px;
+    position: relative;
+    outline: none;
+    cursor: pointer;
+    background-color: #1f1f2f;
+}
+
+/* Quand c'est coché, on affiche un rond intérieur */
+.theme-radio-option input[type="radio"]:checked::before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #6e8efb; /* Couleur du point */
+}
+
+/* Ajustez si vous voulez un style plus flashy */
+.theme-radio-option span {
+    font-size: 0.95rem;
+}

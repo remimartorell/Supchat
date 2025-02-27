@@ -1,14 +1,16 @@
 // src/App.js
 import React, { useState } from 'react';
-import { Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Chat from './pages/Chat';
 import PrivateRoute from './components/PrivateRoute';
 import SearchResults from './pages/SearchResults';
 import WorkspaceSettings from './pages/WorkspaceSettings';
-import { Navigate } from 'react-router-dom';
 import NotificationHub from './components/NotificationHub';
+import UserMenu from './components/UserMenu'; // Nouvel import du menu utilisateur
+import ProfileSettings from './pages/ProfileSettings'; // Nouvelle page de paramètres
+import About from './pages/About'; // Nouvelle page À propos
 import './App.css';
 
 function App() {
@@ -24,12 +26,6 @@ function App() {
     const hideNavbarPaths = ['/', '/login', '/register'];
     // Si le pathname courant est dans hideNavbarPaths, on masque la navbar :
     const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
-
-    // Logout => remove token => go /login
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        navigate('/login');
-    };
 
     // Soumission barre de recherche
     const handleSearchSubmit = (e) => {
@@ -48,8 +44,8 @@ function App() {
                             <Link to="/chat" className="chat-link">Chat</Link>
                         ) : (
                             <>
-                                <Link to="/login" style={{color: '#fff', marginRight: 12}}>Login</Link>
-                                <Link to="/register" style={{color: '#fff'}}>Register</Link>
+                                <Link to="/login" style={{ color: '#fff', marginRight: 12 }}>Login</Link>
+                                <Link to="/register" style={{ color: '#fff' }}>Register</Link>
                             </>
                         )}
                     </div>
@@ -69,13 +65,11 @@ function App() {
                     </div>
 
                     <div className="nav-right">
-                        {/* => On affiche la cloche + logout si token */}
+                        {/* On affiche la cloche de notification et le menu utilisateur si token */}
                         {token && (
                             <>
-                                <NotificationHub socket={theSocket}/>
-                                <button onClick={handleLogout} className="logout-btn">
-                                    Logout
-                                </button>
+                                <NotificationHub socket={theSocket} />
+                                <UserMenu />
                             </>
                         )}
                     </div>
@@ -83,7 +77,7 @@ function App() {
             )}
 
             {/* On décale de 60px le contenu SEULEMENT si la navbar est visible */}
-            <div className="app-container" style={{marginTop: shouldHideNavbar ? 0 : '60px'}}>
+            <div className="app-container" style={{ marginTop: shouldHideNavbar ? 0 : '60px' }}>
                 <Routes>
                     <Route
                         path="/"
@@ -131,6 +125,10 @@ function App() {
                         path="/workspace/:workspaceId/settings"
                         element={<PrivateRoute><WorkspaceSettings /></PrivateRoute>}
                     />
+                    {/* Nouvelle route pour les paramètres du profil */}
+                    <Route path="/profile-settings" element={<PrivateRoute><ProfileSettings /></PrivateRoute>} />
+                    {/* Nouvelle route pour la page À propos */}
+                    <Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
 
                     {/* 404 */}
                     <Route

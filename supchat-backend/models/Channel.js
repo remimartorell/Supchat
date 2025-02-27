@@ -1,3 +1,4 @@
+// supchat-backend/models/Channel.js
 const mongoose = require('mongoose');
 
 const ChannelSchema = new mongoose.Schema({

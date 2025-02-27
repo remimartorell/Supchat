@@ -1,0 +1,164 @@
+/* src/styles/themes.css */
+
+/* ======================
+   THEME DEFAULT (Sombre actuel)
+   ====================== */
+/* Si votre design par défaut est déjà défini ailleurs,
+   vous pouvez laisser .theme-default vide.
+   Ou alors rapatrier ici les couleurs actuelles. */
+body.theme-default {
+    /* exemple de fond global */
+    background-color: #0f1522;
+    color: #fff;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* override sidebar, navbar, etc. si besoin */
+body.theme-default .sidebar {
+    background-color: #1e1e30;
+    color: #fff;
+}
+
+body.theme-default .navbar {
+    background-color: #111b26;
+    color: #fff;
+}
+
+body.theme-default .chat-layout-main {
+    background-color: #0f1522;
+    color: #fff;
+}
+
+/* Les boutons */
+body.theme-default button {
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: #fff;
+}
+
+/* Les formulaires */
+body.theme-default input,
+body.theme-default textarea,
+body.theme-default select {
+    background-color: #2c2c44;
+    color: #fff;
+    border: 1px solid #444;
+}
+
+/* ProfileSettings container */
+body.theme-default .profile-settings-container {
+    background-color: #2c2f33;
+    color: #fff;
+}
+
+/* ======================
+   THEME BLANC
+   ====================== */
+body.theme-white {
+    background-color: #ffffff;
+    color: #000000;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Sidebar */
+body.theme-white .sidebar {
+    background-color: #f0f0f0;
+    color: #000;
+}
+
+/* Navbar */
+body.theme-white .navbar {
+    background-color: #f8f8f8;
+    color: #000;
+}
+
+/* Zone chat */
+body.theme-white .chat-layout-main {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+/* Boutons */
+body.theme-white button {
+    background-color: #e0e0e0;
+    color: #000;
+    border: 1px solid #ccc;
+    /* ou gardez un style gradient plus clair si vous le souhaitez */
+}
+
+/* Inputs, textarea, select */
+body.theme-white input,
+body.theme-white textarea,
+body.theme-white select {
+    background-color: #ffffff;
+    color: #000;
+    border: 1px solid #ccc;
+}
+
+/* ProfileSettings container */
+body.theme-white .profile-settings-container {
+    background-color: #ffffff;
+    color: #000;
+}
+
+/* Message containers */
+body.theme-white .message-container {
+    background-color: #f9f9f9;
+    color: #000;
+    border: 1px solid #ddd;
+}
+
+/* ======================
+   THEME CONTRAST (Ex: Violet sombre)
+   ====================== */
+body.theme-contrast {
+    background-color: #2e003e;
+    color: #fff;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Sidebar */
+body.theme-contrast .sidebar {
+    background-color: #3b054f; /* un violet plus clair */
+    color: #fff;
+}
+
+/* Navbar */
+body.theme-contrast .navbar {
+    background-color: #4b065e;
+    color: #fff;
+}
+
+/* Zone de chat */
+body.theme-contrast .chat-layout-main {
+    background-color: #2e003e;
+    color: #fff;
+}
+
+/* Boutons */
+body.theme-contrast button {
+    background-color: #6d0b8c;
+    color: #fff;
+    border: 1px solid #a020f0;
+}
+
+/* Inputs, textarea, select */
+body.theme-contrast input,
+body.theme-contrast textarea,
+body.theme-contrast select {
+    background-color: #4a1068;
+    color: #fff;
+    border: 1px solid #6e2d92;
+}
+
+/* ProfileSettings container */
+body.theme-contrast .profile-settings-container {
+    background-color: #3b054f;
+    color: #fff;
+}
+
+/* Par exemple pour un message container */
+body.theme-contrast .message-container {
+    background-color: #4a1068;
+    color: #fff;
+    border: 1px solid #6e2d92;
+}
