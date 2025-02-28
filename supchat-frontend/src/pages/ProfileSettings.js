@@ -99,12 +99,7 @@ const ProfileSettings = () => {
                 />
             </div>
 
-            {/* BOUTON ENREGISTRER sous pseudo + email */}
-            <button onClick={handleSave} className="save-button">
-                Enregistrer
-            </button>
 
-            <hr />
 
             {/* CHANGER MOT DE PASSE */}
             {!changePassword ? (
@@ -144,7 +139,12 @@ const ProfileSettings = () => {
             )}
 
             <hr />
+            {/* BOUTON ENREGISTRER sous pseudo + email */}
+            <button onClick={handleSave} className="save-button">
+                Enregistrer
+            </button>
 
+            <hr />
             {/* THEME */}
             <div className="theme-radio-group">
                 <p>Thème :</p>
