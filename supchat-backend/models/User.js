@@ -3,13 +3,22 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    name:    { type: String, required: true },
+    email:   { type: String, required: true, unique: true },
+    password:{ type: String, required: true },
+
+    isVerified: { type: Boolean, default: false },
+
+    emailVerificationToken:   { type: String },
+    emailVerificationExpires: { type: Date },
+
+    resetPasswordToken:   { type: String },
+    resetPasswordExpires: { type: Date },
+
     date: { type: Date, default: Date.now },
 });
 
-// Avant de sauvegarder, on hache le mot de passe si modifié
+// Hash du mot de passe
 UserSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     const salt = await bcrypt.genSalt(10);

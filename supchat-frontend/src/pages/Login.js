@@ -38,7 +38,11 @@ function Login() {
             navigate('/chat');
         } catch (err) {
             console.error('Erreur login :', err);
-            alert('Login failed');
+            if (err.response && err.response.data && err.response.data.msg) {
+                alert(err.response.data.msg);
+            } else {
+                alert('Login failed');
+            }
         }
     };
 
@@ -70,9 +74,7 @@ function Login() {
 
                     <div className="login-options">
                         {/* Lien “Mot de passe oublié ?” (facultatif) */}
-                        <a href="#" className="forgot-link">
-                            Mot de passe oublié ?
-                        </a>
+                        <Link to="/forgot-password">Mot de passe oublié ?</Link>
                     </div>
 
                     <button type="submit" className="login-submit-btn">

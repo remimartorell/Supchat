@@ -13,29 +13,20 @@ function Register() {
         e.preventDefault();
         try {
             // POST /api/auth/register
-            const response = await axios.post('/api/auth/register', {
-                name,
-                email,
-                password,
-            });
-
-            // On récupère token et user éventuels
-            const { token, user } = response.data || {};
-
-            if (token) {
-                // On stocke le token
-                localStorage.setItem('token', token);
-                axios.defaults.headers.common['x-auth-token'] = token;
-
-                // stocker userId si dispo
-                if (user && user._id) {
-                    localStorage.setItem('userId', user._id);
-                }
-
-                // Rediriger
-                navigate('/chat');
+            const response = await axios.post('/api/auth/register', { name, email, password });
+            // On vérifie si un token est retourné
+            if (!response.data.token) {
+                // Aucun token n'est retourné : c'est normal, on affiche le message de confirmation
+                alert(response.data.msg || 'Inscription réussie ! Veuillez vérifier votre email pour activer votre compte.');
+                navigate('/login'); // Rediriger vers la page de connexion
             } else {
-                alert('Register: no token returned');
+                // Cas rare si le serveur renvoie un token (optionnel)
+                localStorage.setItem('token', response.data.token);
+                axios.defaults.headers.common['x-auth-token'] = response.data.token;
+                if (response.data.user && response.data.user._id) {
+                    localStorage.setItem('userId', response.data.user._id);
+                }
+                navigate('/chat');
             }
         } catch (err) {
             console.error('Erreur register :', err);

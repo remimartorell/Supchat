@@ -11,6 +11,8 @@ import NotificationHub from './components/NotificationHub';
 import UserMenu from './components/UserMenu'; // Nouvel import du menu utilisateur
 import ProfileSettings from './pages/ProfileSettings'; // Nouvelle page de paramètres
 import About from './pages/About'; // Nouvelle page À propos
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import './App.css';
 
 function App() {
@@ -23,7 +25,7 @@ function App() {
     const [theSocket, setTheSocket] = useState(null);
 
     // On définit les chemins où l'on veut CACHER la navbar :
-    const hideNavbarPaths = ['/', '/login', '/register'];
+    const hideNavbarPaths = ['/', '/login', '/register', '/forgot-password', '/reset-password'];
     // Si le pathname courant est dans hideNavbarPaths, on masque la navbar :
     const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
 
@@ -110,6 +112,8 @@ function App() {
                     {/* Login / Register accessibles tout le temps */}
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
 
                     {/* Pages protégées => PrivateRoute */}
                     <Route

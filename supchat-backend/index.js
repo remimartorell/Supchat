@@ -4,6 +4,7 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const connectDB = require('./db');
+require('dotenv').config();
 
 const app = express();
 connectDB();
