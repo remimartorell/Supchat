@@ -1,19 +1,16 @@
-/* src/components/MessageInput.css */
-
-/* Conteneur principal de la barre d'envoi */
+/*MessageInput.css*/
 .message-input-container {
     display: flex;
     align-items: center;
     gap: 8px;
 
-    border-top: 1px solid #444;    /* Ligne discrète */
+    border-top: 1px solid #444;
     padding: 8px 12px;
-    background-color: #1f1f2f;     /* Couleur sombre */
+    background-color: #1f1f2f;
 }
 
-/* Champ texte */
 .message-input-field {
-    flex: 1;                      /* Prend tout l’espace dispo */
+    flex: 1;
     background-color: #2c2c44;
     color: #fff;
     border: 1px solid #555;
@@ -22,21 +19,44 @@
     font-size: 0.95rem;
 }
 
-/* Champ file */
-.message-input-file {
-    background-color: #2c2c44;
-    color: #aaa;
+/* Label trombone */
+.message-clip-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin-right: 2px;
     border: 1px solid #555;
     border-radius: 4px;
-    font-size: 0.8rem;
-    padding: 4px;
     cursor: pointer;
-    width: 120px;  /* Ajuste la largeur selon préférence */
+    background-color: #2c2c44;
+    transition: background-color 0.3s;
+}
+.message-clip-label:hover {
+    background-color: #3c3c5c;
 }
 
-/* Bouton “Envoyer” */
+/* Bouton "GIF/Emoji" */
+.gif-emoji-toggle-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    background-color: #2c2c44;
+    border: 1px solid #555;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.gif-emoji-toggle-btn:hover {
+    background-color: #3c3c5c;
+}
+
+/* Bouton envoyer */
 .message-input-button {
-    background-color: #5865f2;   /* Couleur style Discord */
+    background-color: #5865f2;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -44,20 +64,98 @@
     font-size: 0.9rem;
     cursor: pointer;
 }
-
 .message-input-button:hover {
     background-color: #4752c4;
 }
 
-/* Conteneur de prévisualisation */
-.message-input-preview {
-    margin-top: 10px;  /* Pour séparer de la barre */
+/* Sous-menu GIF/Emoji */
+.gif-emoji-menu {
+    position: absolute; /* pour flotter au-dessus (ou position: relative dans un container) */
+    bottom: 60px; /* Ajuste selon la hauteur de la barre d’envoi */
+    left: 50%;
+    transform: translateX(-50%);
+
+    background: #2c2c44;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 10px;
+    z-index: 9999;
+    width: 300px; /* Ajuste la largeur */
 }
 
-/* Image en prévisualisation */
+/* Header de tabs (GIF / Emoji) */
+.gif-emoji-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+.gif-emoji-tab {
+    flex: 1;
+    border: 1px solid #555;
+    background: #3c3c5c;
+    color: #fff;
+    padding: 6px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+}
+.gif-emoji-tab.active {
+    background: #5865f2;
+    border-color: #4752c4;
+}
+
+/* Panel GIF */
+.gif-panel {
+    color: #fff;
+}
+.gif-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+.gif-gallery img {
+    width: 80px;
+    height: auto;
+    cursor: pointer;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: transform 0.2s;
+}
+.gif-gallery img:hover {
+    transform: scale(1.05);
+    border-color: #aaa;
+}
+
+/* Panel Emoji */
+.emoji-panel {
+    color: #fff;
+}
+.emoji-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+.emoji-item {
+    cursor: pointer;
+    font-size: 1.4rem;
+    transition: transform 0.2s;
+}
+.emoji-item:hover {
+    transform: scale(1.2);
+}
+
+/* Preview d’image */
+.message-input-preview {
+    position: absolute;
+    bottom: 55px;
+    right: 10px;
+    background: #333;
+    padding: 5px;
+    border-radius: 4px;
+}
 .message-input-preview img {
     max-width: 200px;
     height: auto;
     border-radius: 4px;
-    border: 1px solid #333;
+    border: 1px solid #666;
 }

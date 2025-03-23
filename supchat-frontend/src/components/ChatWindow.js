@@ -1,9 +1,11 @@
 // src/components/ChatWindow.js
+
 import React, { useEffect, useRef, useState } from 'react';
 import axios from '../services/axiosConfig';
 import { IoMdCheckmarkCircle } from 'react-icons/io';
 import './ChatWindow.css';
 
+// Déjà existant : highlightMentions
 function highlightMentions(content, validMentions) {
     if (!content) return content;
     return content.split(/\s+/).map((word, i) => {
@@ -12,8 +14,8 @@ function highlightMentions(content, validMentions) {
             if (validMentions.includes(mentionName)) {
                 return (
                     <span key={i} className="highlight-mention">
-            {word}{' '}
-          </span>
+                        {word}{' '}
+                    </span>
                 );
             }
         }
@@ -24,24 +26,23 @@ function highlightMentions(content, validMentions) {
 function ChatWindow({
                         userId,
                         messages,
-                        users, // Tableau d'utilisateurs avec {_id, name, …}
-                        selectedUser, // Défini pour DM
-                        selectedChannel, // Défini pour channel
+                        users,
+                        selectedUser,
+                        selectedChannel,
                         focusMessageId,
-                        canDelete, // Permet la suppression (si admin/owner)
-                        setMessages, // Callback pour mettre à jour les messages
+                        canDelete,
+                        setMessages,
                     }) {
     const listRef = useRef(null);
     const [editingMessageId, setEditingMessageId] = useState(null);
     const [editContent, setEditContent] = useState('');
     const [showEmojiPickerFor, setShowEmojiPickerFor] = useState(null);
 
-    // Ouvre le panel emoji pour un message
+    // --- inchangé : openEmojiPickerForMessage, handleChooseEmoji, etc. ---
     const openEmojiPickerForMessage = (m) => {
         setShowEmojiPickerFor(m._id);
     };
 
-    // Gère le choix d'un emoji
     const handleChooseEmoji = (m, chosenEmoji) => {
         if (selectedChannel) {
             axios
@@ -56,7 +57,7 @@ function ChatWindow({
         }
     };
 
-    // Si un message est ciblé (via focusMessageId), le scroll vers lui
+    // --- inchangé : focusMessageId, auto-scroll, formatTimestamp, etc. ---
     useEffect(() => {
         if (focusMessageId) {
             setTimeout(() => {
@@ -72,19 +73,16 @@ function ChatWindow({
         }
     }, [focusMessageId, messages]);
 
-    // Auto-scroll vers le bas lorsque les messages changent et qu'aucun message particulier n'est focalisé
     useEffect(() => {
         if (!focusMessageId && listRef.current) {
             listRef.current.scrollTop = listRef.current.scrollHeight;
         }
     }, [messages, focusMessageId]);
 
-    // Format du timestamp
     const formatTimestamp = (timestamp) => {
         return new Date(timestamp).toLocaleString();
     };
 
-    // Récupère le nom de l'expéditeur
     const getSenderLabel = (m) => {
         if (m.sender && typeof m.sender === 'object' && m.sender.name) {
             return m.sender.name;
@@ -95,6 +93,7 @@ function ChatWindow({
         return '(Sans nom)';
     };
 
+    // --- inchangé : handleDeleteMsg, startEditingMessage, handleSaveEdit, handleCancelEdit ---
     const handleDeleteMsg = async (m) => {
         if (!window.confirm('Supprimer ce message ?')) return;
         try {
@@ -146,9 +145,14 @@ function ChatWindow({
                     const timestamp = formatTimestamp(m.createdAt);
                     const validMentions = m.validMentions || [];
 
+                    // Cas 1 : Édition en cours
                     if (m._id === editingMessageId) {
                         return (
-                            <div key={m._id} id={`msg-${m._id}`} className={`message-container ${isMe ? 'message-bg-me' : 'message-bg-other'}`}>
+                            <div
+                                key={m._id}
+                                id={`msg-${m._id}`}
+                                className={`message-container ${isMe ? 'message-bg-me' : 'message-bg-other'}`}
+                            >
                                 <div className="message-header">
                                     <span className="sender">{senderLabel}</span>
                                     <span className="timestamp">{timestamp}</span>
@@ -170,20 +174,47 @@ function ChatWindow({
                         );
                     }
 
+                    // Cas 2 : Affichage normal
                     return (
-                        <div key={m._id} id={`msg-${m._id}`} className={`message-container ${isMe ? 'message-bg-me' : 'message-bg-other'}`}>
+                        <div
+                            key={m._id}
+                            id={`msg-${m._id}`}
+                            className={`message-container ${isMe ? 'message-bg-me' : 'message-bg-other'}`}
+                        >
                             <div className="message-header">
                                 <span className="sender">{senderLabel}</span>
                                 <span className="timestamp">{timestamp}</span>
                             </div>
+
+                            {/* Affichage du contenu = GIF si l'URL correspond */}
                             <div className="message-content">
-                                {highlightMentions(m.content || '', validMentions)}
+                                {
+                                    // Test : si c'est un lien complet .gif / .png / .jpg / .jpeg
+                                    /^https?:\/\/.*\.(gif|png|jpe?g)$/i.test(m.content)
+                                        ? (
+                                            <img
+                                                src={m.content}
+                                                alt="img"
+                                                style={{ maxWidth: '200px', height: 'auto', borderRadius: '4px' }}
+                                            />
+                                        )
+                                        : (
+                                            // Sinon on utilise la fonction highlightMentions
+                                            highlightMentions(m.content || '', validMentions)
+                                        )
+                                }
                                 {m.edited && <span className="message-edited">(Modifié)</span>}
                             </div>
+
+                            {/* Gestion éventuelle de fileUrl */}
                             {m.fileUrl &&
                                 (m.fileUrl.match(/\.(png|jpe?g|gif)$/i) ? (
                                     <div className="message-file">
-                                        <img src={ process.env.REACT_APP_API_URL + m.fileUrl } alt="file" style={{ maxWidth: '200px', height: 'auto' }} />
+                                        <img
+                                            src={process.env.REACT_APP_API_URL + m.fileUrl}
+                                            alt="file"
+                                            style={{ maxWidth: '200px', height: 'auto' }}
+                                        />
                                     </div>
                                 ) : (
                                     <div className="message-file">
@@ -191,7 +222,9 @@ function ChatWindow({
                                             Télécharger le fichier
                                         </a>
                                     </div>
-                                ))}
+                                ))
+                            }
+
                             <div className="message-actions">
                                 <button className="action-button" onClick={() => openEmojiPickerForMessage(m)}>
                                     Réagir
@@ -202,28 +235,37 @@ function ChatWindow({
                                     </button>
                                 )}
                                 {canDelete && (
-                                    <button className="action-button delete-button" onClick={() => handleDeleteMsg(m)}>
+                                    <button
+                                        className="action-button delete-button"
+                                        onClick={() => handleDeleteMsg(m)}
+                                    >
                                         X
                                     </button>
                                 )}
                             </div>
+
                             <div className="message-reactions">
                                 {m.reactions &&
                                     m.reactions.map((react, i) => {
                                         const who = react.user && react.user.name ? react.user.name : '(Inconnu)';
                                         return (
                                             <span key={i} className="reaction" title={`Réaction de ${who}`}>
-                        {react.emoji}
-                      </span>
+                                                {react.emoji}
+                                            </span>
                                         );
                                     })}
                             </div>
+
                             {showEmojiPickerFor === m._id && (
                                 <div className="emoji-picker">
                                     {['😃', '👍', '❤️', '🔥', '🎉'].map((emoji) => (
-                                        <span key={emoji} className="emoji" onClick={() => handleChooseEmoji(m, emoji)}>
-                      {emoji}
-                    </span>
+                                        <span
+                                            key={emoji}
+                                            className="emoji"
+                                            onClick={() => handleChooseEmoji(m, emoji)}
+                                        >
+                                            {emoji}
+                                        </span>
                                     ))}
                                 </div>
                             )}
