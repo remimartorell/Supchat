@@ -1,6 +1,6 @@
-require('dotenv').config();
-
+/* supchat-backend/db.js */
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 const connectDB = async () => {
     try {

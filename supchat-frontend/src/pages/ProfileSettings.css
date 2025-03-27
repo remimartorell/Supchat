@@ -2,6 +2,7 @@
 
 /* Conteneur principal */
 .profile-settings-container {
+    /* ce que tu avais déjà */
     width: 420px;
     margin: 40px auto;
     padding: 24px;
@@ -9,6 +10,10 @@
     color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+
+    /* AJOUT : limite de hauteur + scroll */
+    max-height: 80vh;      /* ou calc(100vh - 80px) */
+    overflow-y: auto;
 }
 
 /* Titre */

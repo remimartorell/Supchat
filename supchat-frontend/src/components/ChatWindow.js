@@ -5,7 +5,6 @@ import axios from '../services/axiosConfig';
 import { IoMdCheckmarkCircle } from 'react-icons/io';
 import './ChatWindow.css';
 
-// Déjà existant : highlightMentions
 function highlightMentions(content, validMentions) {
     if (!content) return content;
     return content.split(/\s+/).map((word, i) => {
@@ -38,7 +37,6 @@ function ChatWindow({
     const [editContent, setEditContent] = useState('');
     const [showEmojiPickerFor, setShowEmojiPickerFor] = useState(null);
 
-    // --- inchangé : openEmojiPickerForMessage, handleChooseEmoji, etc. ---
     const openEmojiPickerForMessage = (m) => {
         setShowEmojiPickerFor(m._id);
     };
@@ -57,7 +55,6 @@ function ChatWindow({
         }
     };
 
-    // --- inchangé : focusMessageId, auto-scroll, formatTimestamp, etc. ---
     useEffect(() => {
         if (focusMessageId) {
             setTimeout(() => {
@@ -93,7 +90,25 @@ function ChatWindow({
         return '(Sans nom)';
     };
 
-    // --- inchangé : handleDeleteMsg, startEditingMessage, handleSaveEdit, handleCancelEdit ---
+    // **** NOUVEAU : fonction pour récupérer l'URL d'avatar ****
+    const getSenderAvatar = (m) => {
+        // si on a un objet complet (populate) => m.sender.profilePicture
+        if (m.sender && typeof m.sender === 'object') {
+            if (m.sender.profilePicture) {
+                return process.env.REACT_APP_API_URL + m.sender.profilePicture;
+            }
+        }
+        // s’il n’y a pas d’objet, on tente de trouver l’utilisateur dans "users"
+        if (typeof m.sender === 'string') {
+            const foundUser = users ? users.find((u) => u._id === m.sender) : null;
+            if (foundUser && foundUser.profilePicture) {
+                return process.env.REACT_APP_API_URL + foundUser.profilePicture;
+            }
+        }
+        // sinon on renvoie un avatar par défaut
+        return '/img/default-avatar.png';
+    };
+
     const handleDeleteMsg = async (m) => {
         if (!window.confirm('Supprimer ce message ?')) return;
         try {
@@ -145,8 +160,8 @@ function ChatWindow({
                     const timestamp = formatTimestamp(m.createdAt);
                     const validMentions = m.validMentions || [];
 
-                    // Cas 1 : Édition en cours
                     if (m._id === editingMessageId) {
+                        // Mode édition
                         return (
                             <div
                                 key={m._id}
@@ -174,22 +189,34 @@ function ChatWindow({
                         );
                     }
 
-                    // Cas 2 : Affichage normal
+                    // Affichage normal
                     return (
                         <div
                             key={m._id}
                             id={`msg-${m._id}`}
                             className={`message-container ${isMe ? 'message-bg-me' : 'message-bg-other'}`}
                         >
-                            <div className="message-header">
-                                <span className="sender">{senderLabel}</span>
-                                <span className="timestamp">{timestamp}</span>
+                            {/* AJOUT : petite zone pour afficher l'avatar */}
+                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                                <img
+                                    src={getSenderAvatar(m)}
+                                    alt="avatar"
+                                    style={{
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: '50%',
+                                        marginRight: '8px',
+                                        objectFit: 'cover'
+                                    }}
+                                />
+                                <div className="message-header">
+                                    <span className="sender">{senderLabel}</span>
+                                    <span className="timestamp">{timestamp}</span>
+                                </div>
                             </div>
 
-                            {/* Affichage du contenu = GIF si l'URL correspond */}
                             <div className="message-content">
                                 {
-                                    // Test : si c'est un lien complet .gif / .png / .jpg / .jpeg
                                     /^https?:\/\/.*\.(gif|png|jpe?g)$/i.test(m.content)
                                         ? (
                                             <img
@@ -199,14 +226,12 @@ function ChatWindow({
                                             />
                                         )
                                         : (
-                                            // Sinon on utilise la fonction highlightMentions
                                             highlightMentions(m.content || '', validMentions)
                                         )
                                 }
                                 {m.edited && <span className="message-edited">(Modifié)</span>}
                             </div>
 
-                            {/* Gestion éventuelle de fileUrl */}
                             {m.fileUrl &&
                                 (m.fileUrl.match(/\.(png|jpe?g|gif)$/i) ? (
                                     <div className="message-file">

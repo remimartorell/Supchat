@@ -1,13 +1,28 @@
-// supchat-backend/routes/auth.js
+/* supchat-backend/routes/auth.js */
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const path = require('path');
 const auth = require('../middleware/auth');
 const User = require('../models/User');
-const crypto = require('crypto');
 const transporter = require('../config/email');
 
+// GridFS
+const { GridFsStorage } = require('multer-gridfs-storage');
+const multer = require('multer');
+
+const storage = new GridFsStorage({
+    url: process.env.MONGO_URI,
+    file: (req, file) => {
+        return {
+            filename: 'avatar-' + Date.now() + path.extname(file.originalname),
+            bucketName: 'avatars',
+        };
+    },
+});
+const uploadAvatar = multer({ storage });
 // =========================
 // 1) REGISTER AVEC VERIFICATION PAR EMAIL
 // =========================
@@ -101,7 +116,7 @@ router.get('/user', auth, async (req, res) => {
         if (!user) return res.status(404).json({ msg: 'User not found' });
         res.json(user);
     } catch (err) {
-        console.error('Erreur get user :', err);
+        console.error('Erreur get user:', err);
         res.status(500).send('Server error');
     }
 });
@@ -122,36 +137,19 @@ router.get('/allUsers', auth, async (req, res) => {
 // =========================
 // 5) UPDATE PROFILE
 // =========================
-router.put('/update', auth, async (req, res) => {
+router.put('/update', auth, uploadAvatar.single('avatar'), async (req, res) => {
     try {
-        const userId = req.user.id;
-        const { name, email, oldPassword, newPassword, confirmPassword } = req.body;
-
-        const user = await User.findById(userId);
+        const user = await User.findById(req.user.id);
         if (!user) {
             return res.status(404).json({ msg: 'Utilisateur introuvable' });
         }
 
-        // Sauvegarder les anciennes valeurs pour comparaison
-        const oldName = user.name;
-        const oldEmail = user.email;
+        const { name, email, oldPassword, newPassword, confirmPassword } = req.body;
 
-        let nameChanged = false;
-        let emailChanged = false;
-        let passwordChanged = false;
+        if (name) user.name = name;
+        if (email) user.email = email;
 
-        // Mettre à jour pseudo
-        if (name && name !== user.name) {
-            user.name = name;
-            nameChanged = true;
-        }
-        // Mettre à jour email
-        if (email && email !== user.email) {
-            user.email = email;
-            emailChanged = true;
-        }
-        // Logique de changement de mot de passe
-        if (newPassword && newPassword.trim() !== '') {
+        if (newPassword) {
             if (!oldPassword) {
                 return res.status(400).json({ msg: 'Ancien mot de passe requis' });
             }
@@ -162,81 +160,21 @@ router.put('/update', auth, async (req, res) => {
             if (newPassword !== confirmPassword) {
                 return res.status(400).json({ msg: 'Le nouveau mot de passe et la confirmation ne correspondent pas' });
             }
-            user.password = newPassword; // Le hook pre('save') s'occupe du hachage
-            passwordChanged = true;
+            user.password = newPassword;
+        }
+
+        if (req.file) {
+            user.avatarFileId = req.file.id; // ObjectId de GridFS
         }
 
         await user.save();
 
-        // Envoi des emails selon les changements
-
-        // Si le pseudo a changé, envoyer un email de confirmation au même email
-        if (nameChanged) {
-            const mailOptionsName = {
-                from: 'Support SupChat <contact@supchat.info>',
-                to: user.email,
-                subject: 'Changement de pseudo',
-                html: `
-                    <p>Bonjour ${user.name},</p>
-                    <p>Votre pseudo a été modifié avec succès. Votre nouveau pseudo est : <strong>${user.name}</strong>.</p>
-                `,
-            };
-            await transporter.sendMail(mailOptionsName);
-        }
-
-        // Si l'email a changé, envoyer deux emails :
-        if (emailChanged) {
-            // Email à l'ancien email
-            const mailOptionsOldEmail = {
-                from: 'Support SupChat <contact@supchat.info>',
-                to: oldEmail,
-                subject: 'Modification de votre adresse email',
-                html: `
-                    <p>Bonjour,</p>
-                    <p>Votre adresse email a été modifiée. Votre nouvelle adresse est : <strong>${user.email}</strong>.</p>
-                `,
-            };
-            await transporter.sendMail(mailOptionsOldEmail);
-            // Email au nouveau email
-            const mailOptionsNewEmail = {
-                from: 'Support SupChat <contact@supchat.info>',
-                to: user.email,
-                subject: 'Modification de votre adresse email',
-                html: `
-                    <p>Bonjour,</p>
-                    <p>Votre adresse email a été modifiée avec succès. Elle est désormais : <strong>${user.email}</strong>.</p>
-                `,
-            };
-            await transporter.sendMail(mailOptionsNewEmail);
-        }
-
-        // Si le mot de passe a changé, envoyer un email de confirmation
-        if (passwordChanged) {
-            const mailOptionsPassword = {
-                from: 'Support SupChat <contact@supchat.info>',
-                to: user.email,
-                subject: 'Modification de votre mot de passe',
-                html: `
-                    <p>Bonjour ${user.name},</p>
-                    <p>Votre mot de passe a été modifié avec succès.</p>
-                `,
-            };
-            await transporter.sendMail(mailOptionsPassword);
-        }
-
-        // On renvoie l'utilisateur mis à jour (sans password)
-        const updatedUser = {
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-        };
-        res.json({ msg: 'Profil mis à jour', user: updatedUser });
+        res.json({ msg: 'Profil mis à jour', user });
     } catch (err) {
         console.error('Erreur update user :', err);
         res.status(500).json({ msg: 'Erreur serveur' });
     }
 });
-
 // =========================
 // 6) VERIFY EMAIL
 // =========================
