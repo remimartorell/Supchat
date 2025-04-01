@@ -8,21 +8,9 @@ const path = require('path');
 const auth = require('../middleware/auth');
 const User = require('../models/User');
 const transporter = require('../config/email');
+const upload = require('../middleware/upload');
+const { MongoClient, GridFSBucket } = require("mongodb");
 
-// GridFS
-const { GridFsStorage } = require('multer-gridfs-storage');
-const multer = require('multer');
-
-const storage = new GridFsStorage({
-    url: process.env.MONGO_URI,
-    file: (req, file) => {
-        return {
-            filename: 'avatar-' + Date.now() + path.extname(file.originalname),
-            bucketName: 'avatars',
-        };
-    },
-});
-const uploadAvatar = multer({ storage });
 // =========================
 // 1) REGISTER AVEC VERIFICATION PAR EMAIL
 // =========================
@@ -137,7 +125,8 @@ router.get('/allUsers', auth, async (req, res) => {
 // =========================
 // 5) UPDATE PROFILE
 // =========================
-router.put('/update', auth, uploadAvatar.single('avatar'), async (req, res) => {
+
+router.put('/update', auth, upload.single('avatarFile'), async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
         if (!user) {
@@ -145,36 +134,126 @@ router.put('/update', auth, uploadAvatar.single('avatar'), async (req, res) => {
         }
 
         const { name, email, oldPassword, newPassword, confirmPassword } = req.body;
+        const oldName = user.name;
+        const oldEmail = user.email;
 
-        if (name) user.name = name;
-        if (email) user.email = email;
+        let nameChanged = false;
+        let emailChanged = false;
+        let passwordChanged = false;
 
-        if (newPassword) {
-            if (!oldPassword) {
-                return res.status(400).json({ msg: 'Ancien mot de passe requis' });
-            }
+        if (name && name !== user.name) {
+            user.name = name;
+            nameChanged = true;
+        }
+
+        if (email && email !== user.email) {
+            user.email = email;
+            emailChanged = true;
+        }
+
+        if (newPassword && newPassword.trim() !== '') {
+            if (!oldPassword) return res.status(400).json({ msg: 'Ancien mot de passe requis' });
             const isMatch = await bcrypt.compare(oldPassword, user.password);
-            if (!isMatch) {
-                return res.status(400).json({ msg: 'Ancien mot de passe incorrect' });
-            }
+            if (!isMatch) return res.status(400).json({ msg: 'Ancien mot de passe incorrect' });
             if (newPassword !== confirmPassword) {
                 return res.status(400).json({ msg: 'Le nouveau mot de passe et la confirmation ne correspondent pas' });
             }
             user.password = newPassword;
+            passwordChanged = true;
         }
 
+        // --- 🖼️ Upload d’un avatar
         if (req.file) {
-            user.avatarFileId = req.file.id; // ObjectId de GridFS
+            const client = await MongoClient.connect(process.env.MONGO_URI); // ⛔️ plus de useNewUrlParser
+            const db = client.db();
+            const bucket = new GridFSBucket(db, { bucketName: 'uploads' });
+
+            const stream = bucket.openUploadStream(req.file.originalname, {
+                contentType: req.file.mimetype,
+                metadata: { originalname: req.file.originalname },
+            });
+
+            stream.on('finish', async () => {
+                user.avatarFileId = stream.id.toString(); // ✅ on convertit explicitement
+                await user.save();
+
+                // Envois de mails après avatar + infos
+                await handleEmailChanges(user, oldEmail, nameChanged, emailChanged, passwordChanged);
+                return res.json({
+                    msg: 'Profil mis à jour',
+                    user: {
+                        _id: user._id,
+                        name: user.name,
+                        email: user.email,
+                        avatarFileId: user.avatarFileId,
+                    },
+                });
+            });
+
+            stream.on('error', (err) => {
+                console.error("Erreur GridFS upload:", err);
+                return res.status(500).json({ msg: "Erreur upload fichier" });
+            });
+
+            stream.end(req.file.buffer); // ⛔️ Doit être après les events
+            return; // ❌ On sort ici pour ne pas continuer
         }
 
+        // Pas d'avatar → sauvegarde classique
         await user.save();
+        await handleEmailChanges(user, oldEmail, nameChanged, emailChanged, passwordChanged);
 
-        res.json({ msg: 'Profil mis à jour', user });
+        res.json({
+            msg: 'Profil mis à jour',
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                avatarFileId: user.avatarFileId,
+            },
+        });
     } catch (err) {
-        console.error('Erreur update user :', err);
+        console.error('❌ Erreur update user :', err);
         res.status(500).json({ msg: 'Erreur serveur' });
     }
 });
+
+// 💌 Fonction factorisée pour envoi des emails
+async function handleEmailChanges(user, oldEmail, nameChanged, emailChanged, passwordChanged) {
+    if (nameChanged) {
+        await transporter.sendMail({
+            from: 'Support SupChat <contact@supchat.info>',
+            to: user.email,
+            subject: 'Changement de pseudo',
+            html: `<p>Bonjour ${user.name},</p><p>Votre pseudo a été modifié avec succès. Nouveau pseudo : <strong>${user.name}</strong>.</p>`,
+        });
+    }
+
+    if (emailChanged) {
+        await transporter.sendMail({
+            from: 'Support SupChat <contact@supchat.info>',
+            to: oldEmail,
+            subject: 'Modification de votre adresse email',
+            html: `<p>Bonjour,</p><p>Votre adresse email a été modifiée. Nouvelle adresse : <strong>${user.email}</strong>.</p>`,
+        });
+        await transporter.sendMail({
+            from: 'Support SupChat <contact@supchat.info>',
+            to: user.email,
+            subject: 'Votre nouvelle adresse email',
+            html: `<p>Bonjour,</p><p>Votre adresse email a été modifiée avec succès : <strong>${user.email}</strong>.</p>`,
+        });
+    }
+
+    if (passwordChanged) {
+        await transporter.sendMail({
+            from: 'Support SupChat <contact@supchat.info>',
+            to: user.email,
+            subject: 'Modification de votre mot de passe',
+            html: `<p>Bonjour ${user.name},</p><p>Votre mot de passe a été modifié avec succès.</p>`,
+        });
+    }
+}
+
 // =========================
 // 6) VERIFY EMAIL
 // =========================

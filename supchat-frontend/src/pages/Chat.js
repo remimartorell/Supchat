@@ -596,6 +596,14 @@ function Chat({ onSocketReady }) {
         }
     };
 
+    useEffect(() => {
+        if (selectedUser || selectedChannel) {
+            axios.get('/api/auth/allUsers')
+                .then((res) => setUsers(res.data))
+                .catch((err) => console.error('Erreur fetch allUsers:', err));
+        }
+    }, [selectedUser, selectedChannel]);
+
     //----------------------------------------------------------------
     // Rendu final
     //----------------------------------------------------------------

@@ -37,22 +37,20 @@ function ChatWindow({
     const [editContent, setEditContent] = useState('');
     const [showEmojiPickerFor, setShowEmojiPickerFor] = useState(null);
 
+    const avatarBaseUrl = `${process.env.REACT_APP_API_URL}/api/users`;
+
     const openEmojiPickerForMessage = (m) => {
         setShowEmojiPickerFor(m._id);
     };
 
     const handleChooseEmoji = (m, chosenEmoji) => {
-        if (selectedChannel) {
-            axios
-                .post(`/api/channels/${m.channel}/messages/${m._id}/reactions`, { emoji: chosenEmoji })
-                .then(() => setShowEmojiPickerFor(null))
-                .catch((err) => console.error('Channel reaction error:', err));
-        } else if (selectedUser) {
-            axios
-                .post(`/api/direct-messages/${m._id}/reactions`, { emoji: chosenEmoji })
-                .then(() => setShowEmojiPickerFor(null))
-                .catch((err) => console.error('DM reaction error:', err));
-        }
+        const url = selectedChannel
+            ? `/api/channels/${m.channel}/messages/${m._id}/reactions`
+            : `/api/direct-messages/${m._id}/reactions`;
+
+        axios.post(url, { emoji: chosenEmoji })
+            .then(() => setShowEmojiPickerFor(null))
+            .catch((err) => console.error('Erreur réaction emoji :', err));
     };
 
     useEffect(() => {
@@ -62,9 +60,7 @@ function ChatWindow({
                 if (el) {
                     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     el.classList.add('highlight');
-                    setTimeout(() => {
-                        el.classList.remove('highlight');
-                    }, 2000);
+                    setTimeout(() => el.classList.remove('highlight'), 2000);
                 }
             }, 100);
         }
@@ -76,36 +72,33 @@ function ChatWindow({
         }
     }, [messages, focusMessageId]);
 
-    const formatTimestamp = (timestamp) => {
-        return new Date(timestamp).toLocaleString();
-    };
+    const formatTimestamp = (timestamp) => new Date(timestamp).toLocaleString();
 
     const getSenderLabel = (m) => {
         if (m.sender && typeof m.sender === 'object' && m.sender.name) {
             return m.sender.name;
         } else if (typeof m.sender === 'string') {
-            const foundUser = users ? users.find((u) => u._id === m.sender) : null;
-            return foundUser ? foundUser.name : m.sender;
+            const foundUser = users?.find((u) => u._id === m.sender);
+            return foundUser?.name || m.sender;
         }
         return '(Sans nom)';
     };
 
-    // **** NOUVEAU : fonction pour récupérer l'URL d'avatar ****
     const getSenderAvatar = (m) => {
-        // si on a un objet complet (populate) => m.sender.profilePicture
         if (m.sender && typeof m.sender === 'object') {
             if (m.sender.profilePicture) {
                 return process.env.REACT_APP_API_URL + m.sender.profilePicture;
+            } else if (m.sender.avatarFileId) {
+                return `${avatarBaseUrl}/${m.sender._id}/avatar`;
             }
-        }
-        // s’il n’y a pas d’objet, on tente de trouver l’utilisateur dans "users"
-        if (typeof m.sender === 'string') {
-            const foundUser = users ? users.find((u) => u._id === m.sender) : null;
-            if (foundUser && foundUser.profilePicture) {
+        } else if (typeof m.sender === 'string') {
+            const foundUser = users?.find((u) => u._id === m.sender);
+            if (foundUser?.profilePicture) {
                 return process.env.REACT_APP_API_URL + foundUser.profilePicture;
+            } else if (foundUser?.avatarFileId) {
+                return `${avatarBaseUrl}/${foundUser._id}/avatar`;
             }
         }
-        // sinon on renvoie un avatar par défaut
         return '/img/default-avatar.png';
     };
 
@@ -126,20 +119,16 @@ function ChatWindow({
     };
 
     const handleSaveEdit = async (m) => {
-        if (!editContent.trim()) {
-            alert("Le contenu ne peut pas être vide.");
-            return;
-        }
+        if (!editContent.trim()) return alert("Le contenu ne peut pas être vide.");
         try {
-            if (selectedChannel) {
-                await axios.put(`/api/channels/${m.channel}/messages/${m._id}`, { newContent: editContent.trim() });
-            } else if (selectedUser) {
-                await axios.put(`/api/direct-messages/${m._id}`, { newContent: editContent.trim() });
-            }
+            const endpoint = selectedChannel
+                ? `/api/channels/${m.channel}/messages/${m._id}`
+                : `/api/direct-messages/${m._id}`;
+            await axios.put(endpoint, { newContent: editContent.trim() });
             setEditingMessageId(null);
             setEditContent('');
         } catch (err) {
-            console.error('Erreur lors de l’édition du message', err);
+            console.error('Erreur édition message', err);
             alert('Impossible de modifier ce message');
         }
     };
@@ -153,61 +142,24 @@ function ChatWindow({
         <div className="chat-window-container">
             <div ref={listRef} className="chat-window-messages">
                 {messages.map((m) => {
-                    const isMe =
-                        (m.sender && typeof m.sender === 'object' && m.sender._id === userId) ||
-                        m.sender === userId;
+                    const isMe = (m.sender && typeof m.sender === 'object' && m.sender._id === userId) || m.sender === userId;
                     const senderLabel = getSenderLabel(m);
                     const timestamp = formatTimestamp(m.createdAt);
                     const validMentions = m.validMentions || [];
 
-                    if (m._id === editingMessageId) {
-                        // Mode édition
-                        return (
-                            <div
-                                key={m._id}
-                                id={`msg-${m._id}`}
-                                className={`message-container ${isMe ? 'message-bg-me' : 'message-bg-other'}`}
-                            >
-                                <div className="message-header">
-                                    <span className="sender">{senderLabel}</span>
-                                    <span className="timestamp">{timestamp}</span>
-                                </div>
-                                <textarea
-                                    className="message-edit-textarea"
-                                    value={editContent}
-                                    onChange={(e) => setEditContent(e.target.value)}
-                                />
-                                <div className="message-edit-buttons">
-                                    <button className="action-button" onClick={() => handleSaveEdit(m)}>
-                                        Enregistrer
-                                    </button>
-                                    <button className="action-button" onClick={handleCancelEdit}>
-                                        Annuler
-                                    </button>
-                                </div>
-                            </div>
-                        );
-                    }
+                    const avatarUrl = getSenderAvatar(m);
 
-                    // Affichage normal
                     return (
                         <div
                             key={m._id}
                             id={`msg-${m._id}`}
                             className={`message-container ${isMe ? 'message-bg-me' : 'message-bg-other'}`}
                         >
-                            {/* AJOUT : petite zone pour afficher l'avatar */}
                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
                                 <img
-                                    src={getSenderAvatar(m)}
+                                    src={avatarUrl}
                                     alt="avatar"
-                                    style={{
-                                        width: '32px',
-                                        height: '32px',
-                                        borderRadius: '50%',
-                                        marginRight: '8px',
-                                        objectFit: 'cover'
-                                    }}
+                                    style={{ width: '32px', height: '32px', borderRadius: '50%', marginRight: '8px', objectFit: 'cover' }}
                                 />
                                 <div className="message-header">
                                     <span className="sender">{senderLabel}</span>
@@ -215,84 +167,59 @@ function ChatWindow({
                                 </div>
                             </div>
 
-                            <div className="message-content">
-                                {
-                                    /^https?:\/\/.*\.(gif|png|jpe?g)$/i.test(m.content)
-                                        ? (
-                                            <img
-                                                src={m.content}
-                                                alt="img"
-                                                style={{ maxWidth: '200px', height: 'auto', borderRadius: '4px' }}
-                                            />
-                                        )
-                                        : (
-                                            highlightMentions(m.content || '', validMentions)
-                                        )
-                                }
-                                {m.edited && <span className="message-edited">(Modifié)</span>}
-                            </div>
-
-                            {m.fileUrl &&
-                                (m.fileUrl.match(/\.(png|jpe?g|gif)$/i) ? (
-                                    <div className="message-file">
-                                        <img
-                                            src={process.env.REACT_APP_API_URL + m.fileUrl}
-                                            alt="file"
-                                            style={{ maxWidth: '200px', height: 'auto' }}
-                                        />
+                            {editingMessageId === m._id ? (
+                                <>
+                                    <textarea
+                                        className="message-edit-textarea"
+                                        value={editContent}
+                                        onChange={(e) => setEditContent(e.target.value)}
+                                    />
+                                    <div className="message-edit-buttons">
+                                        <button className="action-button" onClick={() => handleSaveEdit(m)}>Enregistrer</button>
+                                        <button className="action-button" onClick={handleCancelEdit}>Annuler</button>
                                     </div>
-                                ) : (
-                                    <div className="message-file">
-                                        <a href={m.fileUrl} target="_blank" rel="noreferrer">
-                                            Télécharger le fichier
-                                        </a>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="message-content">
+                                        {/^https?:\/\/.*\.(gif|png|jpe?g)$/i.test(m.content)
+                                            ? <img src={m.content} alt="img" style={{ maxWidth: '200px', height: 'auto', borderRadius: '4px' }} />
+                                            : highlightMentions(m.content || '', validMentions)}
+                                        {m.edited && <span className="message-edited">(Modifié)</span>}
                                     </div>
-                                ))
-                            }
 
-                            <div className="message-actions">
-                                <button className="action-button" onClick={() => openEmojiPickerForMessage(m)}>
-                                    Réagir
-                                </button>
-                                {isMe && (
-                                    <button className="action-button" onClick={() => startEditingMessage(m)}>
-                                        Modifier
-                                    </button>
-                                )}
-                                {canDelete && (
-                                    <button
-                                        className="action-button delete-button"
-                                        onClick={() => handleDeleteMsg(m)}
-                                    >
-                                        X
-                                    </button>
-                                )}
-                            </div>
+                                    {m.fileUrl && (
+                                        <div className="message-file">
+                                            {m.fileUrl.match(/\.(png|jpe?g|gif)$/i)
+                                                ? <img src={process.env.REACT_APP_API_URL + m.fileUrl} alt="file" style={{ maxWidth: '200px', height: 'auto' }} />
+                                                : <a href={m.fileUrl} target="_blank" rel="noreferrer">Télécharger le fichier</a>}
+                                        </div>
+                                    )}
 
-                            <div className="message-reactions">
-                                {m.reactions &&
-                                    m.reactions.map((react, i) => {
-                                        const who = react.user && react.user.name ? react.user.name : '(Inconnu)';
-                                        return (
-                                            <span key={i} className="reaction" title={`Réaction de ${who}`}>
+                                    <div className="message-actions">
+                                        <button className="action-button" onClick={() => openEmojiPickerForMessage(m)}>Réagir</button>
+                                        {isMe && <button className="action-button" onClick={() => startEditingMessage(m)}>Modifier</button>}
+                                        {canDelete && <button className="action-button delete-button" onClick={() => handleDeleteMsg(m)}>X</button>}
+                                    </div>
+
+                                    <div className="message-reactions">
+                                        {m.reactions?.map((react, i) => (
+                                            <span key={i} className="reaction" title={`Réaction de ${react.user?.name || '(Inconnu)'}`}>
                                                 {react.emoji}
                                             </span>
-                                        );
-                                    })}
-                            </div>
+                                        ))}
+                                    </div>
 
-                            {showEmojiPickerFor === m._id && (
-                                <div className="emoji-picker">
-                                    {['😃', '👍', '❤️', '🔥', '🎉'].map((emoji) => (
-                                        <span
-                                            key={emoji}
-                                            className="emoji"
-                                            onClick={() => handleChooseEmoji(m, emoji)}
-                                        >
-                                            {emoji}
-                                        </span>
-                                    ))}
-                                </div>
+                                    {showEmojiPickerFor === m._id && (
+                                        <div className="emoji-picker">
+                                            {['😃', '👍', '❤️', '🔥', '🎉'].map((emoji) => (
+                                                <span key={emoji} className="emoji" onClick={() => handleChooseEmoji(m, emoji)}>
+                                                    {emoji}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </>
                             )}
                         </div>
                     );

@@ -145,9 +145,9 @@ router.get('/:channelId/messages', auth, async (req, res) => {
 
         // Récupérer tous les messages
         const messages = await Message.find({ channel: req.params.channelId })
-            .populate('sender', 'name email')
+            .populate('sender', 'name email avatarFileId')
             .populate('reactions.user', 'name')
-            .populate('readBy.user', 'name') // <--- AJOUTER ICI
+            .populate('readBy.user', 'name')
             .sort({ createdAt: 'asc' });
 
 

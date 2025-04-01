@@ -7,8 +7,8 @@ const UserSchema = new mongoose.Schema({
     email:   { type: String, required: true, unique: true },
     password:{ type: String, required: true },
 
-    // GridFS : on stocke l'ObjectId du fichier
-    avatarFileId: { type: mongoose.Schema.Types.ObjectId, default: null },
+    // ✅ Stocké désormais en String
+    avatarFileId: { type: String, default: null },
 
     isVerified: { type: Boolean, default: false },
     emailVerificationToken:   { type: String },

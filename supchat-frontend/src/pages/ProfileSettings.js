@@ -14,6 +14,7 @@ const ProfileSettings = () => {
     const [userId, setUserId] = useState(null);
     const [avatarFile, setAvatarFile] = useState(null);
     const [avatarUrl, setAvatarUrl] = useState('/img/default-avatar.png');
+    const [avatarPreview, setAvatarPreview] = useState(null);
 
     useEffect(() => {
         fetchUser();
@@ -33,8 +34,20 @@ const ProfileSettings = () => {
             } else {
                 setAvatarUrl('/img/default-avatar.png');
             }
+
+            // Reset preview quand on recharge les infos
+            setAvatarPreview(null);
+            setAvatarFile(null);
         } catch (err) {
             console.error('Erreur fetchUser:', err);
+        }
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setAvatarFile(file);
+            setAvatarPreview(URL.createObjectURL(file));
         }
     };
 
@@ -51,7 +64,7 @@ const ProfileSettings = () => {
             }
 
             if (avatarFile) {
-                formData.append('avatar', avatarFile);
+                formData.append('avatarFile', avatarFile);
             }
 
             await axios.put('/api/auth/update', formData, {
@@ -63,8 +76,7 @@ const ProfileSettings = () => {
             setNewPassword('');
             setConfirmPassword('');
             setChangePassword(false);
-
-            fetchUser();
+            fetchUser(); // recharger le profil
         } catch (err) {
             console.error('Erreur mise à jour profil:', err);
             alert('Impossible de mettre à jour');
@@ -75,21 +87,17 @@ const ProfileSettings = () => {
         <div className="profile-settings-container">
             <h2>Paramètres du profil</h2>
 
-            <div style={{ textAlign:'center', marginBottom:'20px'}}>
+            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                 <img
-                    src={avatarUrl}
+                    src={avatarPreview || avatarUrl || '/img/default-avatar.png'}
                     alt="Avatar"
-                    style={{ width:'100px', height:'100px', borderRadius:'50%', objectFit:'cover'}}
+                    style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover' }}
                 />
                 <div>
                     <input
                         type="file"
                         accept="image/*"
-                        onChange={(e)=>{
-                            if (e.target.files && e.target.files.length>0){
-                                setAvatarFile(e.target.files[0]);
-                            }
-                        }}
+                        onChange={handleFileChange}
                     />
                 </div>
             </div>
@@ -99,7 +107,7 @@ const ProfileSettings = () => {
                 <input
                     type="text"
                     value={pseudo}
-                    onChange={(e)=>setPseudo(e.target.value)}
+                    onChange={(e) => setPseudo(e.target.value)}
                 />
             </div>
 
@@ -108,33 +116,33 @@ const ProfileSettings = () => {
                 <input
                     type="email"
                     value={email}
-                    onChange={(e)=>setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
 
             {!changePassword ? (
-                <button onClick={()=>setChangePassword(true)}>Changer MDP</button>
+                <button onClick={() => setChangePassword(true)}>Changer MDP</button>
             ) : (
                 <div>
                     <label>Ancien MDP:</label>
                     <input
                         type="password"
                         value={oldPassword}
-                        onChange={(e)=>setOldPassword(e.target.value)}
+                        onChange={(e) => setOldPassword(e.target.value)}
                     />
                     <label>Nouveau MDP:</label>
                     <input
                         type="password"
                         value={newPassword}
-                        onChange={(e)=>setNewPassword(e.target.value)}
+                        onChange={(e) => setNewPassword(e.target.value)}
                     />
                     <label>Confirmer:</label>
                     <input
                         type="password"
                         value={confirmPassword}
-                        onChange={(e)=>setConfirmPassword(e.target.value)}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                     />
-                    <button onClick={()=>setChangePassword(false)}>Annuler</button>
+                    <button onClick={() => setChangePassword(false)}>Annuler</button>
                 </div>
             )}
 

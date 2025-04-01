@@ -13,7 +13,7 @@ services:
       - mongodb
     volumes:
       - "./supchat-backend/uploads:/app/uploads"
-
+    restart: always
 
   frontend:
     build:

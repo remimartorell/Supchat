@@ -5,16 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Photo de profile ATTENTION ERREUR">
-      <change afterPath="$PROJECT_DIR$/supchat-backend/routes/users.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/public/img/avatars/Capture d'écran 2023-10-24 221114.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/public/img/default-avatar.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/middleware/upload.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-backend/db.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/db.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-backend/models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/models/User.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/directMessages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/directMessages.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/messages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/messages.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/users.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/users.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -82,7 +87,7 @@
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "vcs.Git",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.3.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -357,16 +362,5 @@
     <MESSAGE value="Problèmes réglés du premier commit d'Hugo qui étaient : &#10;- Pages login et register sans css&#10;- Barre du haut affichée sur / , /login et /register &#10;- Absence de la barre du haut lors de la connexion et une fois dans le chat&#10;- Impossibilité de se connecter via la page localhost (on était obligé d'aller sur la page de notre IP)" />
     <MESSAGE value="Photo de profile ATTENTION ERREUR" />
     <option name="LAST_COMMIT_MESSAGE" value="Photo de profile ATTENTION ERREUR" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js</url>
-          <line>1</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

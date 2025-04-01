@@ -88,6 +88,16 @@ function Sidebar({
         }
     };
 
+    const getUserAvatar = (user) => {
+        if (user.profilePicture) {
+            return process.env.REACT_APP_API_URL + user.profilePicture;
+        } else if (user.avatarFileId) {
+            return `${process.env.REACT_APP_API_URL}/api/users/${user._id}/avatar`;
+        }
+        return '/img/default-avatar.png';
+    };
+
+
     return (
         <div className="sidebar">
             <h3>Sidebar</h3>
@@ -103,9 +113,13 @@ function Sidebar({
                                 key={u._id}
                                 className={`sidebar-item ${isSelected ? 'sidebar-item-selected' : ''}`}
                                 onClick={() => onSelectUser(u._id)}
-                                style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+                                style={{display: 'flex', alignItems: 'center', gap: '8px', padding: '4px 0'}}
                             >
-                                {/* Pastille de statut en ligne/offline */}
+                                <img
+                                    src={getUserAvatar(u)}
+                                    alt="avatar"
+                                    style={{width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover'}}
+                                />
                                 <span
                                     style={{
                                         display: 'inline-block',

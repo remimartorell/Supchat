@@ -1,19 +1,23 @@
-/* supchat-backend/index.js */
-require('dotenv').config();
+/*..\supchat-backend\index.js*/
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const connectDB = require('./db');
+require('dotenv').config();
 
 const app = express();
 connectDB();
 
-app.use(cors());
-app.use(express.json());
+// -- 1) Déclarer CORS avant tout :
+app.use(cors({
+  origin: process.env.CLIENT_URL, // ✅ défini dans ton .env → http://localhost:3001
+  credentials: true,
+}));
 
-// On ne sert plus "uploads" en statique, car on utilise GridFS
-// app.use('/uploads', express.static('uploads'));
+// Middleware
+app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -23,21 +27,25 @@ app.use('/api/channels', require('./routes/messages'));
 app.use('/api/direct-messages', require('./routes/directMessages'));
 app.use('/api/search', require('./routes/search'));
 app.use('/api/notifications', require('./routes/notifications'));
-
 // Nouvelle route pour servir l’avatar depuis GridFS
 app.use('/api/users', require('./routes/users'));
 
 const server = http.createServer(app);
 
-// Socket.IO
+// -- 3) Configurer Socket.IO avec CORS :
 const io = socketIo(server, {
   cors: {
-    origin: '*',
+    origin: process.env.CLIENT_URL,
     methods: ['GET', 'POST'],
+    credentials: true,
   },
 });
 
+// On stocke ici le mapping userId -> socketId
 const userSocketMap = {};
+
+// --- Ajout de la gestion des statuts en ligne ---
+// Objet qui contiendra pour chaque userId son socketId (pour le statut "online")
 const onlineUsers = {};
 
 app.set('socketio', io);
@@ -54,9 +62,12 @@ io.on('connection', (socket) => {
     userSocketMap[userId] = socket.id;
     onlineUsers[userId] = socket.id;
     console.log(`L'utilisateur ${userId} est maintenant associé au socket ${socket.id}`);
+
+    // IMPORTANT : on émet "user-status-changed"
     io.emit('user-status-changed', { userId, status: 'online' });
+
     socket.emit('joined', {
-      message: `Ok, userId ${userId} associé à socket ${socket.id}`,
+      message: `Ok, userId ${userId} associé à socketId ${socket.id}`,
     });
   });
 

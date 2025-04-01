@@ -28,8 +28,8 @@ router.get('/:userId', auth, async (req, res) => {
                 { sender: req.params.userId, receiver: req.user.id },
             ],
         })
-            .populate('sender', 'name email')
-            .populate('receiver', 'name email')
+            .populate('sender', 'name email avatarFileId')
+            .populate('receiver', 'name email avatarFileId')
             .populate('readBy.user', 'name')
             .sort({ createdAt: 'asc' });
 
