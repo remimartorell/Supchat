@@ -5,22 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Photo de profile ATTENTION ERREUR">
-      <change afterPath="$PROJECT_DIR$/supchat-backend/middleware/upload.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/services/axiosGiphy.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/db.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/db.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/models/User.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/directMessages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/directMessages.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/messages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/messages.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/users.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/users.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,12 +35,12 @@
     &quot;assignee&quot;: &quot;remimartorell&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/remimartorell/Supchat.git&quot;,
-    &quot;accountId&quot;: &quot;39a550c0-b14e-4748-9a4e-1ebd85ade2a8&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/remimartorell/Supchat.git",
+    "accountId": "41714712-62ae-4952-accd-af807ed350c6"
   }
-}</component>
+}]]></component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -87,7 +76,7 @@
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "vcs.Git",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.3.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -103,8 +92,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.24807.4" />
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.24807.4" />
+        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.24978.46" />
+        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-IU-243.24978.46" />
       </set>
     </attachedChunks>
   </component>
@@ -135,6 +124,7 @@
       <workItem from="1740559005319" duration="2617000" />
       <workItem from="1740748630067" duration="185000" />
       <workItem from="1740748851115" duration="6985000" />
+      <workItem from="1744623681708" duration="9057000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -362,5 +352,17 @@
     <MESSAGE value="Problèmes réglés du premier commit d'Hugo qui étaient : &#10;- Pages login et register sans css&#10;- Barre du haut affichée sur / , /login et /register &#10;- Absence de la barre du haut lors de la connexion et une fois dans le chat&#10;- Impossibilité de se connecter via la page localhost (on était obligé d'aller sur la page de notre IP)" />
     <MESSAGE value="Photo de profile ATTENTION ERREUR" />
     <option name="LAST_COMMIT_MESSAGE" value="Photo de profile ATTENTION ERREUR" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js</url>
+          <line>18</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
