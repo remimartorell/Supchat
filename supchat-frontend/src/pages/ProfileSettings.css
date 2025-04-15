@@ -2,7 +2,6 @@
 
 /* Conteneur principal */
 .profile-settings-container {
-    /* ce que tu avais déjà */
     width: 420px;
     margin: 40px auto;
     padding: 24px;
@@ -10,9 +9,7 @@
     color: #fff;
     border-radius: 8px;
     box-shadow: 0 4px 14px rgba(0,0,0,0.4);
-
-    /* AJOUT : limite de hauteur + scroll */
-    max-height: 80vh;      /* ou calc(100vh - 80px) */
+    max-height: 80vh;
     overflow-y: auto;
 }
 
@@ -48,8 +45,9 @@ hr {
     margin: 20px 0;
 }
 
-/* Bouton Enregistrer */
-.save-button {
+/* Boutons */
+.save-button,
+.toggle-password-btn {
     display: inline-block;
     background: linear-gradient(135deg, #6e8efb, #a777e3);
     border: none;
@@ -59,28 +57,12 @@ hr {
     font-size: 0.95rem;
     color: #fff;
     transition: background 0.3s, transform 0.3s;
+    margin-right: 10px;
 }
-.save-button:hover {
+.save-button:hover,
+.toggle-password-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-}
-
-/* Bouton "Changer le mot de passe" */
-.toggle-password-btn {
-    display: inline-block;
-    background: #5865F2;
-    border: none;
-    border-radius: 20px;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: #fff;
-    transition: background 0.3s;
-    margin-right: 10px;
-    margin-bottom: 10px;
-}
-.toggle-password-btn:hover {
-    background: #4752c4;
 }
 
 /* Le conteneur du bloc mot de passe */
@@ -90,7 +72,7 @@ hr {
 
 /* GESTION DES RADIOS THEME */
 .theme-radio-group {
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .theme-radio-group p {
@@ -98,7 +80,6 @@ hr {
     font-weight: 600;
 }
 
-/* On affiche chaque radio option en ligne ou en colonne ? */
 .theme-radio-option {
     display: flex;
     align-items: center;
@@ -107,7 +88,7 @@ hr {
 }
 
 .theme-radio-option input[type="radio"] {
-    appearance: none; /* On masque l'UI par défaut */
+    appearance: none;
     width: 18px;
     height: 18px;
     border: 2px solid #888;
@@ -119,7 +100,6 @@ hr {
     background-color: #1f1f2f;
 }
 
-/* Quand c'est coché, on affiche un rond intérieur */
 .theme-radio-option input[type="radio"]:checked::before {
     content: '';
     display: block;
@@ -129,10 +109,9 @@ hr {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background-color: #6e8efb; /* Couleur du point */
+    background-color: #6e8efb;
 }
 
-/* Ajustez si vous voulez un style plus flashy */
 .theme-radio-option span {
     font-size: 0.95rem;
 }

@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout d'une API pour avoir de nombreux GIFS">
-      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/services/axiosEmoji.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -361,16 +358,5 @@
     <MESSAGE value="Photo de profile ATTENTION ERREUR" />
     <MESSAGE value="Ajout d'une API pour avoir de nombreux GIFS" />
     <option name="LAST_COMMIT_MESSAGE" value="Ajout d'une API pour avoir de nombreux GIFS" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js</url>
-          <line>18</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

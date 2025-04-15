@@ -1,4 +1,4 @@
-/* src/pages/ProfileSettings.js */
+// src/pages/ProfileSettings.js
 import React, { useState, useEffect } from 'react';
 import axios from '../services/axiosConfig';
 import './ProfileSettings.css';
@@ -35,7 +35,6 @@ const ProfileSettings = () => {
                 setAvatarUrl('/img/default-avatar.png');
             }
 
-            // Reset preview quand on recharge les infos
             setAvatarPreview(null);
             setAvatarFile(null);
         } catch (err) {
@@ -76,7 +75,7 @@ const ProfileSettings = () => {
             setNewPassword('');
             setConfirmPassword('');
             setChangePassword(false);
-            fetchUser(); // recharger le profil
+            fetchUser();
         } catch (err) {
             console.error('Erreur mise à jour profil:', err);
             alert('Impossible de mettre à jour');
@@ -89,65 +88,59 @@ const ProfileSettings = () => {
 
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                 <img
-                    src={avatarPreview || avatarUrl || '/img/default-avatar.png'}
+                    src={avatarPreview || avatarUrl}
                     alt="Avatar"
                     style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover' }}
                 />
                 <div>
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                    />
+                    <input type="file" accept="image/*" onChange={handleFileChange} />
                 </div>
             </div>
 
             <div className="profile-form-group">
                 <label>Pseudo:</label>
-                <input
-                    type="text"
-                    value={pseudo}
-                    onChange={(e) => setPseudo(e.target.value)}
-                />
+                <input type="text" value={pseudo} onChange={(e) => setPseudo(e.target.value)} />
             </div>
 
             <div className="profile-form-group">
                 <label>Email:</label>
-                <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
 
             {!changePassword ? (
-                <button onClick={() => setChangePassword(true)}>Changer MDP</button>
+                <button className="toggle-password-btn" onClick={() => setChangePassword(true)}>Changer MDP</button>
             ) : (
-                <div>
-                    <label>Ancien MDP:</label>
-                    <input
-                        type="password"
-                        value={oldPassword}
-                        onChange={(e) => setOldPassword(e.target.value)}
-                    />
-                    <label>Nouveau MDP:</label>
-                    <input
-                        type="password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                    />
-                    <label>Confirmer:</label>
-                    <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                    <button onClick={() => setChangePassword(false)}>Annuler</button>
+                <div className="password-form">
+                    <div className="profile-form-group">
+                        <label>Ancien MDP:</label>
+                        <input
+                            type="password"
+                            value={oldPassword}
+                            onChange={(e) => setOldPassword(e.target.value)}
+                        />
+                    </div>
+                    <div className="profile-form-group">
+                        <label>Nouveau MDP:</label>
+                        <input
+                            type="password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                    </div>
+                    <div className="profile-form-group">
+                        <label>Confirmer:</label>
+                        <input
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                    </div>
+                    <button className="toggle-password-btn" onClick={() => setChangePassword(false)}>Annuler</button>
                 </div>
             )}
 
             <hr />
-            <button onClick={handleSave}>Enregistrer</button>
+            <button className="save-button" onClick={handleSave}>Enregistrer</button>
         </div>
     );
 };
