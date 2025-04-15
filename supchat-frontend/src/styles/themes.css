@@ -1,164 +1,328 @@
-/* src/styles/themes.css */
+/* ===========================
+   THÈMES DYNAMIQUES : LIGHT, DARK, MIDNIGHT, SOLARIZED
+   (À placer dans : src/styles/themes.css)
+=========================== */
 
-/* ======================
-   THEME DEFAULT (Sombre actuel)
-   ====================== */
-/* Si votre design par défaut est déjà défini ailleurs,
-   vous pouvez laisser .theme-default vide.
-   Ou alors rapatrier ici les couleurs actuelles. */
-body.theme-default {
-    /* exemple de fond global */
-    background-color: #0f1522;
-    color: #fff;
+/* Thème Dark (défaut) */
+:root[data-theme="dark"] {
+    --bg-color: #1e1e2f;
+    --text-color: #ffffff;
+    --input-bg: #2c2f33;
+    --accent-color: #6e8efb;
+    --border-color: #444;
+    --card-bg: #2c2c3c;
+    --shadow: rgba(0, 0, 0, 0.4);
+}
+
+/* Thème Light */
+:root[data-theme="light"] {
+    --bg-color: #f9f9f9;
+    --text-color: #111111;
+    --input-bg: #ffffff;
+    --accent-color: #4a67ff;
+    --border-color: #ccc;
+    --card-bg: #ffffff;
+    --shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Thème Midnight */
+:root[data-theme="midnight"] {
+    --bg-color: #0f0f1f;
+    --text-color: #c0c0ff;
+    --input-bg: #1f1f3f;
+    --accent-color: #a777e3;
+    --border-color: #333366;
+    --card-bg: #1a1a2f;
+    --shadow: rgba(120, 100, 220, 0.3);
+}
+
+/* Thème Solarized */
+:root[data-theme="solarized"] {
+    --bg-color: #fdf6e3;
+    --text-color: #586e75;
+    --input-bg: #eee8d5;
+    --accent-color: #b58900;
+    --border-color: #ddd6c0;
+    --card-bg: #f5f2d8;
+    --shadow: rgba(181, 137, 0, 0.2);
+}
+
+/* ===========================
+   APPLICATION GLOBALE DES THÈMES
+=========================== */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Segoe UI', sans-serif;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* override sidebar, navbar, etc. si besoin */
-body.theme-default .sidebar {
-    background-color: #1e1e30;
+/* Tous les formulaires et champs */
+input, textarea, select {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.3s, color 0.3s, border 0.3s;
+}
+
+/* Boutons généraux */
+button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* ===========================
+   NAVBAR, SIDEBAR, ET AUTRES CONTAINERS
+=========================== */
+.navbar {
+    background-color: var(--bg-color) !important; /* Utilise la couleur de fond du thème pour éviter le violet par défaut */
+    color: var(--text-color);
+    box-shadow: 0 2px 4px var(--shadow);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.sidebar,
+.nav-search,
+.user-menu,
+.workspace-list {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    box-shadow: 0 2px 4px var(--shadow);
+}
+
+.card, .modal, .popup, .form-container {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+/* Liens */
+a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+a:hover {
+    opacity: 0.8;
+}
+
+/* ===========================
+   TYPOGRAPHIE
+=========================== */
+h1, h2, h3, h4, h5 {
+    color: var(--text-color);
+}
+
+p, label, span, li, ul {
+    color: var(--text-color);
+}
+
+/* ===========================
+   CHAT ET MESSAGES
+=========================== */
+.chat-container,
+.chat-window-container,
+.chat-layout-main {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.message-container {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+/* ===========================
+   USER MENU & NOTIFICATION HUB
+=========================== */
+/* Ajustement du menu utilisateur pour que la cloche et les icônes s’alignent en ligne */
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Notification hub : assure une bonne visibilité */
+.notification-hub-container {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.notification-bell-icon {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.notification-bell-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Badge de notification */
+.notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -2px;
+    background: red;
+    color: #fff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Menu déroulant du User Menu */
+.user-menu-dropdown {
+    position: absolute;
+    right: 0;
+    margin-top: 8px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: 0 2px 6px var(--shadow);
+    z-index: 1000;
+    width: 200px;
+}
+
+.user-menu-item {
+    padding: 10px;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.user-menu-item:hover {
+    background-color: var(--accent-color);
+}
+
+/* ===========================
+   HAMBURGER MENU (USER MENU TRIGGER)
+=========================== */
+/* Nouveau style CSS pour le menu burger (recrée trois traits horizontaux) */
+.burger-icon {
+    display: inline-block;
+    width: 24px;       /* largeur du burger */
+    height: 18px;      /* hauteur totale du burger */
+    position: relative;
+    cursor: pointer;
+}
+
+.burger-icon span {
+    display: block;
+    position: absolute;
+    height: 3px;       /* épaisseur de chaque barre */
+    width: 100%;
+    background-color: var(--text-color);  /* ou une couleur fixe, ex: #fff */
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* Positionnement des trois barres */
+.burger-icon span:nth-child(1) {
+    top: 0;
+}
+.burger-icon span:nth-child(2) {
+    top: 7.5px;    /* ajustez l'espacement en fonction de la hauteur totale */
+}
+.burger-icon span:nth-child(3) {
+    top: 15px;
+}
+
+/* ===========================
+   MODALS & OVERLAYS
+=========================== */
+.modal-backdrop {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.popup {
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+/* ===========================
+   FOCUS DES INPUTS
+=========================== */
+input:focus, textarea:focus, select:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* ===========================
+   FOOTER
+=========================== */
+.footer {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    padding: 10px;
+    text-align: center;
+}
+
+/* ===========================
+   RÉGLES SPÉCIFIQUES POUR DIVERS COMPOSANTS
+=========================== */
+
+/* Pour une sidebar cohérente */
+.sidebar {
+    background-color: var(--card-bg);
+    border-right: 1px solid var(--border-color);
+}
+
+/* Pour le conteneur principal des chats */
+.chat-window-container {
+    background-color: var(--bg-color);
+}
+
+/* Pour les boutons spéciaux (ex. danger) */
+.btn-danger {
+    background-color: #e53935;
     color: #fff;
 }
 
-body.theme-default .navbar {
-    background-color: #111b26;
-    color: #fff;
+.btn-danger:hover {
+    background-color: #c62828;
 }
 
-body.theme-default .chat-layout-main {
-    background-color: #0f1522;
-    color: #fff;
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
 }
 
-/* Les boutons */
-body.theme-default button {
-    background: linear-gradient(135deg, #6e8efb, #a777e3);
-    color: #fff;
-}
-
-/* Les formulaires */
-body.theme-default input,
-body.theme-default textarea,
-body.theme-default select {
-    background-color: #2c2c44;
-    color: #fff;
-    border: 1px solid #444;
-}
-
-/* ProfileSettings container */
-body.theme-default .profile-settings-container {
-    background-color: #2c2f33;
-    color: #fff;
-}
-
-/* ======================
-   THEME BLANC
-   ====================== */
-body.theme-white {
-    background-color: #ffffff;
-    color: #000000;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Sidebar */
-body.theme-white .sidebar {
-    background-color: #f0f0f0;
-    color: #000;
-}
-
-/* Navbar */
-body.theme-white .navbar {
-    background-color: #f8f8f8;
-    color: #000;
-}
-
-/* Zone chat */
-body.theme-white .chat-layout-main {
-    background-color: #ffffff;
-    color: #000000;
-}
-
-/* Boutons */
-body.theme-white button {
-    background-color: #e0e0e0;
-    color: #000;
-    border: 1px solid #ccc;
-    /* ou gardez un style gradient plus clair si vous le souhaitez */
-}
-
-/* Inputs, textarea, select */
-body.theme-white input,
-body.theme-white textarea,
-body.theme-white select {
-    background-color: #ffffff;
-    color: #000;
-    border: 1px solid #ccc;
-}
-
-/* ProfileSettings container */
-body.theme-white .profile-settings-container {
-    background-color: #ffffff;
-    color: #000;
-}
-
-/* Message containers */
-body.theme-white .message-container {
-    background-color: #f9f9f9;
-    color: #000;
-    border: 1px solid #ddd;
-}
-
-/* ======================
-   THEME CONTRAST (Ex: Violet sombre)
-   ====================== */
-body.theme-contrast {
-    background-color: #2e003e;
-    color: #fff;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Sidebar */
-body.theme-contrast .sidebar {
-    background-color: #3b054f; /* un violet plus clair */
-    color: #fff;
-}
-
-/* Navbar */
-body.theme-contrast .navbar {
-    background-color: #4b065e;
-    color: #fff;
-}
-
-/* Zone de chat */
-body.theme-contrast .chat-layout-main {
-    background-color: #2e003e;
-    color: #fff;
-}
-
-/* Boutons */
-body.theme-contrast button {
-    background-color: #6d0b8c;
-    color: #fff;
-    border: 1px solid #a020f0;
-}
-
-/* Inputs, textarea, select */
-body.theme-contrast input,
-body.theme-contrast textarea,
-body.theme-contrast select {
-    background-color: #4a1068;
-    color: #fff;
-    border: 1px solid #6e2d92;
-}
-
-/* ProfileSettings container */
-body.theme-contrast .profile-settings-container {
-    background-color: #3b054f;
-    color: #fff;
-}
-
-/* Par exemple pour un message container */
-body.theme-contrast .message-container {
-    background-color: #4a1068;
-    color: #fff;
-    border: 1px solid #6e2d92;
+.btn-outline:hover {
+    background-color: var(--accent-color);
+    color: white;
 }

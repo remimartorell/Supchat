@@ -1,0 +1,62 @@
+/* src/pages/Register.css */
+
+.register-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+}
+
+.register-box {
+    width: 350px;
+    padding: 2rem;
+    border-radius: 8px;
+    background-color: var(--card-bg);
+    box-shadow: 0 4px 20px var(--shadow);
+    text-align: center;
+    color: var(--text-color);
+}
+
+.register-title {
+    margin-bottom: 1rem;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.register-input {
+    margin-bottom: 1rem;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+.register-submit-btn {
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: var(--accent-color);
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: filter 0.3s;
+}
+
+.register-submit-btn:hover {
+    filter: brightness(1.1);
+}
+
+.register-footer-link {
+    margin-top: 1rem;
+    color: var(--text-color);
+}
+
+.register-footer-link a {
+    color: var(--accent-color);
+    text-decoration: underline;
+}

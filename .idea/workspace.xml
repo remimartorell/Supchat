@@ -4,8 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout d'une API pour avoir de nombreux GIFS">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Amélioration du css pour les paramètre">
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Register.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/styles/navbar.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/global.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/global.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Register.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Register.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/styles/themes.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/styles/themes.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,8 +28,9 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Dockerfile" />
-        <option value="CSS File" />
         <option value="JavaScript File" />
+        <option value="TypeScript File" />
+        <option value="CSS File" />
       </list>
     </option>
   </component>
@@ -315,7 +328,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744634825125</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Amélioration du css pour les paramètre">
+      <option name="closed" value="true" />
+      <created>1744705044978</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1744705044978</updated>
+    </task>
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -357,6 +378,7 @@
     <MESSAGE value="Problèmes réglés du premier commit d'Hugo qui étaient : &#10;- Pages login et register sans css&#10;- Barre du haut affichée sur / , /login et /register &#10;- Absence de la barre du haut lors de la connexion et une fois dans le chat&#10;- Impossibilité de se connecter via la page localhost (on était obligé d'aller sur la page de notre IP)" />
     <MESSAGE value="Photo de profile ATTENTION ERREUR" />
     <MESSAGE value="Ajout d'une API pour avoir de nombreux GIFS" />
-    <option name="LAST_COMMIT_MESSAGE" value="Ajout d'une API pour avoir de nombreux GIFS" />
+    <MESSAGE value="Amélioration du css pour les paramètre" />
+    <option name="LAST_COMMIT_MESSAGE" value="Amélioration du css pour les paramètre" />
   </component>
 </project>

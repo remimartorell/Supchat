@@ -1,0 +1,87 @@
+/* src/styles/navbar.css */
+
+/* Conteneur de la navbar */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 4px var(--shadow);
+}
+
+/* Zone gauche : liens / logo */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Zone droite : icônes (notification et menu utilisateur) */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Pour le UserMenu, nous allons positionner la cloche à gauche du bouton hamburger */
+/* Par exemple, si votre composant UserMenu contient un conteneur commun */
+.user-menu-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Pour la cloche (icône notification) */
+.notification-bell-icon {
+    /* Ajuster la taille et la couleur si besoin */
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.notification-bell-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Pour le bouton hamburger ou le logo qui représente le menu utilisateur */
+.user-menu-trigger {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+/* On suppose que l'ancienne icône était une image. Si vous l'aviez en SVG ou PNG, placez-la ici.
+   Par exemple, remplacez le contenu par l'image d'origine (logo_hamburger.png) via background-image : */
+.user-menu-trigger .burger-icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background: url('/img/logo_hamburger.png') no-repeat center center;
+    background-size: contain;
+}
+
+/* Si vous aviez auparavant trois traits (span) et que vous souhaitez les réutiliser, vous pouvez aussi faire : */
+.user-menu-trigger .burger-icon span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: var(--text-color);
+    margin: 3px 0;
+}
+
+/* Exemple pour disposer la cloche à gauche et les traits à droite */
+.user-menu-container {
+    display: flex;
+    align-items: center;
+}
+
+.user-menu-container .notification-bell-icon {
+    order: 1;
+}
+
+.user-menu-container .user-menu-trigger {
+    order: 2;
+}

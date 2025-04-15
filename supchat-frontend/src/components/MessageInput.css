@@ -7,8 +7,9 @@
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
-    background-color: #1f1f2f;
-    border-top: 1px solid #444;
+    /* Utiliser la couleur de fond d’une "carte" pour s’harmoniser */
+    background-color: var(--card-bg);
+    border-top: 1px solid var(--border-color);
 }
 
 /* Champ texte */
@@ -16,10 +17,10 @@
     flex: 1;
     padding: 6px 8px;
     font-size: 0.95rem;
-    background-color: #2c2c44;
-    border: 1px solid #555;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    color: #fff;
+    color: var(--text-color);
 }
 
 /* Label trombone */
@@ -30,45 +31,50 @@
     width: 40px;
     height: 40px;
     cursor: pointer;
-    background-color: #2c2c44;
-    border: 1px solid #555;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, filter 0.2s;
+    color: var(--text-color);
 }
 .message-clip-label:hover {
-    background-color: #3c3c5c;
+    /* Passe sur une teinte légèrement différente, ici on utilise une variation de var(--card-bg) */
+    background-color: var(--card-bg);
+    filter: brightness(1.05);
 }
 
 /* Bouton GIF/Emoji */
 .gif-emoji-toggle-btn {
     width: 40px;
     height: 40px;
-    background-color: #2c2c44;
-    border: 1px solid #555;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
     border-radius: 4px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, filter 0.2s;
+    color: var(--text-color);
 }
 .gif-emoji-toggle-btn:hover {
-    background-color: #3c3c5c;
+    background-color: var(--card-bg);
+    filter: brightness(1.05);
 }
 
 /* Bouton envoyer */
 .message-input-button {
     padding: 6px 12px;
-    background-color: #5865f2;
+    background-color: var(--accent-color);
     border: none;
     border-radius: 4px;
     font-size: 0.9rem;
     color: #fff;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, filter 0.2s;
 }
 .message-input-button:hover {
-    background-color: #4752c4;
+    filter: brightness(1.1);
 }
 
 /* Preview d'image (fichier sélectionné) */
@@ -76,37 +82,33 @@
     position: absolute;
     bottom: 55px;
     right: 10px;
-    background-color: #333;
+    background-color: var(--card-bg);
     padding: 5px;
     border-radius: 4px;
+    border: 1px solid var(--border-color);
 }
 .message-input-preview img {
     max-width: 200px;
     border-radius: 4px;
-    border: 1px solid #666;
+    border: 1px solid var(--border-color);
 }
 
 /* Menu déroulant GIF/Emoji */
 .gif-emoji-menu {
     position: absolute;
-    bottom: 60px; /* Ajustez selon la barre d'envoi */
+    bottom: 60px; /* Ajustez selon la hauteur de la barre d'envoi */
     left: 50%;
     transform: translateX(-50%);
-    /* Augmentez ici la largeur (ex: 320px) */
-    width: 320px;
-
-    background-color: #2c2c44;
-    border: 1px solid #555;
+    width: 320px;  /* Largeur désirée */
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 10px;
     z-index: 9999;
-    color: #fff;
-
-    /* Limite la hauteur + scroll vertical */
+    color: var(--text-color);
     max-height: 340px;
     overflow-y: auto;
 }
-
 
 /* Tabs du menu (GIF / Emoji) */
 .gif-emoji-tabs {
@@ -114,33 +116,38 @@
     gap: 8px;
     margin-bottom: 10px;
 }
+
 .gif-emoji-tab {
     flex: 1;
     padding: 6px 0;
-    border: 1px solid #555;
-    background-color: #3c3c5c;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bg);
     border-radius: 4px;
     cursor: pointer;
     text-align: center;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, filter 0.2s;
+    color: var(--text-color);
 }
 .gif-emoji-tab.active {
-    background-color: #5865f2;
-    border-color: #4752c4;
+    background-color: var(--accent-color);
+    border-color: var(--border-color);
+    color: #fff;
 }
 
 /* Panel GIF */
 .gif-panel {
     width: 100%;
 }
+
+/* Champ de recherche pour GIF */
 .gif-search-input {
     width: 100%;
     padding: 4px 8px;
     margin-bottom: 10px;
-    border: 1px solid #555;
+    border: 1px solid var(--border-color);
     border-radius: 4px;
-    background-color: #1f1f2f;
-    color: #fff;
+    background-color: var(--input-bg);
+    color: var(--text-color);
 }
 
 /* Galerie GIF scrollable */
@@ -148,8 +155,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
-    /* On peut limiter ici aussi si on veut un sous-scroll
-       .gif-gallery { max-height: 200px; overflow-y: auto; } */
 }
 .gif-gallery img {
     width: 80px;
@@ -161,7 +166,7 @@
 }
 .gif-gallery img:hover {
     transform: scale(1.05);
-    border-color: #aaa;
+    border-color: var(--accent-color);
 }
 
 /* Panel Emoji */

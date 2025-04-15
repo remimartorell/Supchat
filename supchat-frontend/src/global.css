@@ -1,47 +1,43 @@
 /* src/global.css */
 
-/* 1) RESET & VARIABLES */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
 :root {
-    --color-bg-dark: #0f1522;
-    --color-bg-lighter: #111b26;
-    --color-primary: #286ef1;
-    --color-accent: #ff5555;
     --font-family-main: 'Roboto', sans-serif;
 }
 
-/* 2) HTML / BODY => plus de scrollbar globale */
+/* HTML & BODY */
 html, body {
     width: 100%;
     height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden; /* IMPORTANT: supprime la scrollbar générale */
+    overflow: hidden;
     font-family: var(--font-family-main);
-    background-color: var(--color-bg-dark);
-    color: #fff;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* #root : container principal React */
+/* React root */
 #root {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
-/* ==============================
-   NAVBAR FIXE (SI BESOIN)
-============================== */
+/* NAVBAR */
 .navbar {
-    background: #0f1522;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    box-shadow: 0 2px 4px var(--shadow);
     position: fixed;
-    top: 0; left: 0;
+    top: 0;
+    left: 0;
     width: 100%;
     z-index: 1000;
     padding: 12px 20px;
@@ -49,311 +45,204 @@ html, body {
     align-items: center;
     justify-content: space-between;
 }
-.nav-right {
-    display: flex;
-    align-items: center;
-}
+
 .nav-search {
     display: flex;
     align-items: center;
-    background: rgba(255,255,255,0.2);
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
     padding: 5px 12px;
     border-radius: 30px;
     transition: all 0.3s;
 }
+
 .nav-search input {
+    background: transparent;
+    color: var(--text-color);
     border: none;
     outline: none;
-    background: transparent;
-    color: #fff;
     padding: 5px 10px;
     width: 220px;
     font-size: 14px;
 }
-.nav-search input::placeholder {
-    color: rgba(255,255,255,0.7);
-}
+
 .nav-search button {
-    background: rgba(255,255,255,0.3);
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
     padding: 8px 14px;
     border-radius: 20px;
     font-size: 14px;
     font-weight: bold;
-    color: #fff;
+    cursor: pointer;
     transition: background 0.3s, transform 0.3s;
 }
+
 .nav-search button:hover {
-    background: #fff;
-    color: #6e8efb;
+    opacity: 0.8;
     transform: scale(1.05);
 }
 
-/* ==============================
-   SCROLLBAR CUSTOM (POUR LES DIVS)
-============================== */
+/* SCROLLBAR */
 ::-webkit-scrollbar {
     width: 8px;
 }
+
 ::-webkit-scrollbar-track {
-    background: transparent;
-}
-::-webkit-scrollbar-thumb {
-    background: #1c1f2b;
-    border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-    background: #3a3e4b;
+    background: var(--card-bg);
 }
 
-/* ==============================
-   BOUTONS GLOBAUX
-============================== */
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+}
+
+/* BUTTONS */
 button {
-    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    background-color: var(--accent-color);
+    color: white;
     border: none;
     padding: 6px 14px;
     border-radius: 20px;
     cursor: pointer;
     font-size: 14px;
     font-weight: bold;
-    color: #fff;
     transition: all 0.3s ease-in-out;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    min-width: 80px;
+    box-shadow: 0 2px 6px var(--shadow);
 }
-button + button {
-    margin-left: 12px;
-}
+
 button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    opacity: 0.9;
 }
+
 button:active {
     transform: scale(0.95);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* Bouton Logout */
 .logout-btn {
-    background: #ff4d4d;
-    border-radius: 20px;
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: bold;
-    color: #fff;
-    transition: all 0.3s ease-in-out;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-.logout-btn:hover {
-    transform: translateY(-2px);
-    background: #ff1f1f;
-    box-shadow: 0 4px 10px rgba(255, 77, 77, 0.3);
-}
-.logout-btn:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 6px rgba(255, 77, 77, 0.2);
+    background-color: #ff4d4d;
 }
 
-/* Bouton Chat (lien) */
+.logout-btn:hover {
+    background-color: #ff1f1f;
+}
+
+/* CHAT LINK BUTTON */
 .chat-link {
     padding: 10px 18px;
-    background: linear-gradient(135deg, #007bff, #0056b3);
+    background-color: var(--accent-color);
     border-radius: 20px;
     text-decoration: none;
     color: white;
     font-weight: bold;
     transition: all 0.3s;
-    box-shadow: 0px 3px 6px rgba(0, 123, 255, 0.5);
-    display: inline-block;
-}
-.chat-link:hover {
-    background: linear-gradient(135deg, #0056b3, #003f80);
-    transform: scale(1.05);
-}
-.chat-link:active {
-    transform: scale(0.95);
+    box-shadow: 0px 3px 6px var(--shadow);
 }
 
-/* ==============================
-   LAYOUT (CHAT)
-============================== */
+.chat-link:hover {
+    transform: scale(1.05);
+}
+
+/* LAYOUT */
 .chat-layout {
     flex: 1;
     display: flex;
-    overflow: hidden; /* Pas de scroll global */
+    overflow: hidden;
 }
+
 .sidebar-layout {
     width: 250px;
-    /* Le scroll est géré dans .sidebar elle-même */
 }
+
 .chat-layout-main {
     flex: 1;
     display: flex;
     flex-direction: column;
-    /* Pas de overflow global */
 }
 
-/* ==============================
-   FORMATS LOGIN/REGISTER
-============================== */
-/* Login container */
-.login-container {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.login-box {
-    width: 350px;
-    padding: 2rem;
-    border-radius: 8px;
-    background-color: var(--color-bg-lighter);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-}
-.login-title {
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
-}
-.login-avatar-circle {
-    width: 80px;
-    height: 80px;
-    background-color: #ccc;
-    border-radius: 50%;
-    margin-bottom: 1rem;
-}
-.login-form {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-.login-input {
-    margin-bottom: 1rem;
-    padding: 0.8rem;
-    border: none;
-    border-radius: 4px;
-    background-color: #1c1c1c;
-    color: #fff;
-    font-size: 0.9rem;
-}
-.login-options {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1rem;
-}
-.forgot-link {
-    color: var(--color-primary);
-    font-size: 0.8rem;
-    text-decoration: none;
-}
-.login-submit-btn {
-    background-color: var(--color-primary);
-    color: #fff;
-    padding: 0.8rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-}
-.login-submit-btn:hover {
-    background-color: #1a4fbf;
-}
-.login-separator {
-    margin: 1.2rem 0;
-    color: #aaa;
-    font-size: 0.9rem;
-    text-align: center;
-}
-.login-socials {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-}
-.social-btn {
-    flex: 1;
-    padding: 0.7rem;
-    border: 1px solid #888;
-    border-radius: 4px;
-    color: #fff;
-    cursor: pointer;
-    font-size: 0.9rem;
-    background-color: #222;
-}
-.google-btn {
-    background-color: #4285F4;
-    border: none;
-}
-.facebook-btn {
-    background-color: #3b5998;
-    border: none;
-}
-.login-footer-link {
-    margin-top: 0.8rem;
-    font-size: 0.8rem;
-    color: #ddd;
-    text-align: center;
+/* LOGIN & REGISTER */
+.login-container, .register-container {
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
-/* Register page */
-.register-container {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--color-bg-dark);
+.login-box, .register-box {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    box-shadow: 0 4px 20px var(--shadow);
 }
-.register-box {
-    width: 350px;
-    padding: 2rem;
-    border-radius: 8px;
-    background-color: var(--color-bg-lighter);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+
+.login-input, .register-input {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
 }
-.register-title {
-    font-size: 1.3rem;
-    margin-bottom: 1rem;
+
+.login-submit-btn, .register-submit-btn {
+    background-color: var(--accent-color);
+    color: white;
 }
-.register-form {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
+
+.login-submit-btn:hover, .register-submit-btn:hover {
+    opacity: 0.9;
 }
-.register-input {
-    margin-bottom: 1rem;
-    padding: 0.8rem;
-    border: none;
+
+.login-footer-link, .register-footer-link {
+    color: var(--text-color);
+}
+
+/* FORMS & INPUTS GLOBAL */
+input, textarea, select {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 8px;
     border-radius: 4px;
-    background-color: #1c1c1c;
-    color: #fff;
-    font-size: 0.9rem;
 }
-.register-submit-btn {
-    background-color: var(--color-primary);
-    color: #fff;
-    padding: 0.8rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
+
+input::placeholder, textarea::placeholder {
+    color: var(--text-color);
+    opacity: 0.7;
 }
-.register-submit-btn:hover {
-    background-color: #1a4fbf;
+
+input:focus, textarea:focus, select:focus {
+    outline: 2px solid var(--accent-color);
 }
-.register-footer-link {
-    margin-top: 1.2rem;
-    font-size: 0.8rem;
-    color: #ddd;
-    text-align: center;
+
+/* SIDEBAR */
+.sidebar {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-right: 1px solid var(--border-color);
+}
+
+.sidebar-item {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+.sidebar-item:hover, .sidebar-item-selected {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* NOTIFICATIONS */
+.notification-dropdown, .user-menu-dropdown {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+/* PROFILE SETTINGS PAGE */
+.profile-settings-container {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px var(--shadow);
 }

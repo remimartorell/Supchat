@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import axios from '../services/axiosConfig';
 import { useNavigate, Link } from 'react-router-dom';
+import './Register.css'; // Assurez-vous de créer ce fichier
 
 function Register() {
     const [name, setName] = useState('');
@@ -12,15 +13,11 @@ function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // POST /api/auth/register
             const response = await axios.post('/api/auth/register', { name, email, password });
-            // On vérifie si un token est retourné
             if (!response.data.token) {
-                // Aucun token n'est retourné : c'est normal, on affiche le message de confirmation
-                alert(response.data.msg || 'Inscription réussie ! Veuillez vérifier votre email pour activer votre compte.');
-                navigate('/login'); // Rediriger vers la page de connexion
+                alert(response.data.msg || 'Inscription réussie ! Vérifiez votre email pour activer votre compte.');
+                navigate('/login');
             } else {
-                // Cas rare si le serveur renvoie un token (optionnel)
                 localStorage.setItem('token', response.data.token);
                 axios.defaults.headers.common['x-auth-token'] = response.data.token;
                 if (response.data.user && response.data.user._id) {
@@ -30,7 +27,7 @@ function Register() {
             }
         } catch (err) {
             console.error('Erreur register :', err);
-            alert('Register failed');
+            alert('Inscription échouée');
         }
     };
 
@@ -38,7 +35,6 @@ function Register() {
         <div className="register-container">
             <div className="register-box">
                 <h2 className="register-title">Créer un compte</h2>
-
                 <form onSubmit={handleSubmit} className="register-form">
                     <input
                         type="text"
@@ -64,17 +60,13 @@ function Register() {
                         required
                         className="register-input"
                     />
-
                     <button type="submit" className="register-submit-btn">
                         Inscription
                     </button>
                 </form>
-
                 <div className="register-footer-link">
                     <span>Déjà un compte ? </span>
-                    <Link to="/login" style={{ color: '#fff', textDecoration: 'underline' }}>
-                        Se connecter
-                    </Link>
+                    <Link to="/login">Se connecter</Link>
                 </div>
             </div>
         </div>

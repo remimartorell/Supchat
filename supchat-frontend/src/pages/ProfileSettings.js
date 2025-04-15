@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import axios from '../services/axiosConfig';
 import './ProfileSettings.css';
 
+const themes = ['light', 'dark', 'midnight', 'solarized'];
+
 const ProfileSettings = () => {
     const [pseudo, setPseudo] = useState('');
     const [email, setEmail] = useState('');
@@ -16,9 +18,16 @@ const ProfileSettings = () => {
     const [avatarUrl, setAvatarUrl] = useState('/img/default-avatar.png');
     const [avatarPreview, setAvatarPreview] = useState(null);
 
+    const [selectedTheme, setSelectedTheme] = useState(localStorage.getItem('appTheme') || 'dark');
+
     useEffect(() => {
         fetchUser();
     }, []);
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', selectedTheme);
+        localStorage.setItem('appTheme', selectedTheme);
+    }, [selectedTheme]);
 
     const fetchUser = async () => {
         try {
@@ -55,6 +64,7 @@ const ProfileSettings = () => {
             const formData = new FormData();
             formData.append('name', pseudo);
             formData.append('email', email);
+            formData.append('theme', selectedTheme);
 
             if (changePassword) {
                 formData.append('oldPassword', oldPassword);
@@ -88,56 +98,80 @@ const ProfileSettings = () => {
 
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                 <img
-                    src={avatarPreview || avatarUrl}
+                    src={avatarPreview || avatarUrl || '/img/default-avatar.png'}
                     alt="Avatar"
                     style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover' }}
                 />
                 <div>
-                    <input type="file" accept="image/*" onChange={handleFileChange} />
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                    />
                 </div>
             </div>
 
             <div className="profile-form-group">
                 <label>Pseudo:</label>
-                <input type="text" value={pseudo} onChange={(e) => setPseudo(e.target.value)} />
+                <input
+                    type="text"
+                    value={pseudo}
+                    onChange={(e) => setPseudo(e.target.value)}
+                />
             </div>
 
             <div className="profile-form-group">
                 <label>Email:</label>
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
             </div>
 
             {!changePassword ? (
                 <button className="toggle-password-btn" onClick={() => setChangePassword(true)}>Changer MDP</button>
             ) : (
                 <div className="password-form">
-                    <div className="profile-form-group">
-                        <label>Ancien MDP:</label>
-                        <input
-                            type="password"
-                            value={oldPassword}
-                            onChange={(e) => setOldPassword(e.target.value)}
-                        />
-                    </div>
-                    <div className="profile-form-group">
-                        <label>Nouveau MDP:</label>
-                        <input
-                            type="password"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                        />
-                    </div>
-                    <div className="profile-form-group">
-                        <label>Confirmer:</label>
-                        <input
-                            type="password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                        />
-                    </div>
+                    <label>Ancien MDP:</label>
+                    <input
+                        type="password"
+                        value={oldPassword}
+                        onChange={(e) => setOldPassword(e.target.value)}
+                    />
+                    <label>Nouveau MDP:</label>
+                    <input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                    />
+                    <label>Confirmer:</label>
+                    <input
+                        type="password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
                     <button className="toggle-password-btn" onClick={() => setChangePassword(false)}>Annuler</button>
                 </div>
             )}
+
+            <div className="theme-selection">
+                <div className="theme-radio-group">
+                    <p>Choisir un thème :</p>
+                    {themes.map((theme) => (
+                        <label key={theme} className="theme-radio-option">
+                            <input
+                                type="radio"
+                                name="theme"
+                                value={theme}
+                                checked={selectedTheme === theme}
+                                onChange={(e) => setSelectedTheme(e.target.value)}
+                            />
+                            <span>{theme.charAt(0).toUpperCase() + theme.slice(1)}</span>
+                        </label>
+                    ))}
+                </div>
+            </div>
 
             <hr />
             <button className="save-button" onClick={handleSave}>Enregistrer</button>
