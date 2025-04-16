@@ -1,4 +1,3 @@
-/* supchat-backend/routes/auth.js */
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -22,11 +21,11 @@ router.post('/register', async (req, res) => {
         if (user) {
             return res.status(400).json({ msg: 'User already exists' });
         }
-        // Créer un nouvel utilisateur avec isVerified = false
+        // Créer un nouvel utilisateur avec isVerified = false (le thème sera par défaut "dark")
         user = new User({
             name,
             email,
-            password, // passez le mot de passe en clair, le hook va le hacher
+            password, // Le hook 'pre' se chargera de hacher le mot de passe
             isVerified: false,
         });
         // Générer un token de vérification
@@ -87,6 +86,7 @@ router.post('/login', async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                theme: user.theme  // On renvoie également le thème sauvegardé pour que le front l'applique
             },
         });
     } catch (err) {
@@ -123,9 +123,8 @@ router.get('/allUsers', auth, async (req, res) => {
 });
 
 // =========================
-// 5) UPDATE PROFILE
+// 5) UPDATE PROFILE (incluant la mise à jour du thème)
 // =========================
-
 router.put('/update', auth, upload.single('avatarFile'), async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
@@ -133,24 +132,35 @@ router.put('/update', auth, upload.single('avatarFile'), async (req, res) => {
             return res.status(404).json({ msg: 'Utilisateur introuvable' });
         }
 
-        const { name, email, oldPassword, newPassword, confirmPassword } = req.body;
+        // On récupère le thème en plus des autres champs
+        const { name, email, theme, oldPassword, newPassword, confirmPassword } = req.body;
         const oldName = user.name;
         const oldEmail = user.email;
 
         let nameChanged = false;
         let emailChanged = false;
         let passwordChanged = false;
+        let themeChanged = false;
 
+        // Mise à jour du nom
         if (name && name !== user.name) {
             user.name = name;
             nameChanged = true;
         }
 
+        // Mise à jour de l'email
         if (email && email !== user.email) {
             user.email = email;
             emailChanged = true;
         }
 
+        // Mise à jour du thème si fourni et différent de l'actuel
+        if (theme && theme !== user.theme) {
+            user.theme = theme;
+            themeChanged = true;
+        }
+
+        // Gestion de la modification du mot de passe
         if (newPassword && newPassword.trim() !== '') {
             if (!oldPassword) return res.status(400).json({ msg: 'Ancien mot de passe requis' });
             const isMatch = await bcrypt.compare(oldPassword, user.password);
@@ -162,9 +172,9 @@ router.put('/update', auth, upload.single('avatarFile'), async (req, res) => {
             passwordChanged = true;
         }
 
-        // --- 🖼️ Upload d’un avatar
+        // --- Upload d’un avatar s'il y en a un
         if (req.file) {
-            const client = await MongoClient.connect(process.env.MONGO_URI); // ⛔️ plus de useNewUrlParser
+            const client = await MongoClient.connect(process.env.MONGO_URI);
             const db = client.db();
             const bucket = new GridFSBucket(db, { bucketName: 'uploads' });
 
@@ -174,10 +184,10 @@ router.put('/update', auth, upload.single('avatarFile'), async (req, res) => {
             });
 
             stream.on('finish', async () => {
-                user.avatarFileId = stream.id.toString(); // ✅ on convertit explicitement
+                user.avatarFileId = stream.id.toString(); // Conversion en string
                 await user.save();
 
-                // Envois de mails après avatar + infos
+                // Envoi de mails pour notifier les changements (nom, email, mot de passe)
                 await handleEmailChanges(user, oldEmail, nameChanged, emailChanged, passwordChanged);
                 return res.json({
                     msg: 'Profil mis à jour',
@@ -185,6 +195,7 @@ router.put('/update', auth, upload.single('avatarFile'), async (req, res) => {
                         _id: user._id,
                         name: user.name,
                         email: user.email,
+                        theme: user.theme,
                         avatarFileId: user.avatarFileId,
                     },
                 });
@@ -195,11 +206,11 @@ router.put('/update', auth, upload.single('avatarFile'), async (req, res) => {
                 return res.status(500).json({ msg: "Erreur upload fichier" });
             });
 
-            stream.end(req.file.buffer); // ⛔️ Doit être après les events
-            return; // ❌ On sort ici pour ne pas continuer
+            stream.end(req.file.buffer);
+            return; // Sortie anticipée pour ne pas continuer
         }
 
-        // Pas d'avatar → sauvegarde classique
+        // Sauvegarde classique si pas d'avatar
         await user.save();
         await handleEmailChanges(user, oldEmail, nameChanged, emailChanged, passwordChanged);
 
@@ -209,6 +220,7 @@ router.put('/update', auth, upload.single('avatarFile'), async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
+                theme: user.theme,
                 avatarFileId: user.avatarFileId,
             },
         });
@@ -218,7 +230,8 @@ router.put('/update', auth, upload.single('avatarFile'), async (req, res) => {
     }
 });
 
-// 💌 Fonction factorisée pour envoi des emails
+// Fonction factorisée pour envoyer des emails sur certains changements (nom, email, mot de passe)
+// Vous pouvez ajouter ici une notification par email pour un changement de thème si besoin
 async function handleEmailChanges(user, oldEmail, nameChanged, emailChanged, passwordChanged) {
     if (nameChanged) {
         await transporter.sendMail({
@@ -332,7 +345,7 @@ router.post('/reset-password', async (req, res) => {
         if (!user) {
             return res.status(400).json({ msg: 'Token invalid or expired' });
         }
-        user.password = newPassword; // sera hashé par le hook pre('save')
+        user.password = newPassword; // Le hook pre('save') gère le hachage
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
         await user.save();

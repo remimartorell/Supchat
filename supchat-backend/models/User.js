@@ -1,4 +1,3 @@
-/* supchat-backend/models/User.js */
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -7,8 +6,11 @@ const UserSchema = new mongoose.Schema({
     email:   { type: String, required: true, unique: true },
     password:{ type: String, required: true },
 
-    // ✅ Stocké désormais en String
+    // L'avatar stocké en String (ID de GridFS par exemple)
     avatarFileId: { type: String, default: null },
+
+    // Nouveau champ pour enregistrer le thème choisi par l'utilisateur
+    theme: { type: String, default: "dark" },
 
     isVerified: { type: Boolean, default: false },
     emailVerificationToken:   { type: String },

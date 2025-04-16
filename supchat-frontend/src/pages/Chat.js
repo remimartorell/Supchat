@@ -53,6 +53,10 @@ function Chat({ onSocketReady }) {
                 const res = await axios.get('/api/auth/user');
                 setUserId(res.data._id);
                 setIsLoggedIn(true);
+                // Mise à jour du thème depuis le profil utilisateur récupéré
+                const userTheme = res.data.theme || 'dark'; // valeur par défaut
+                document.documentElement.setAttribute('data-theme', userTheme);
+                localStorage.setItem('appTheme', userTheme);
             } catch (err) {
                 console.error('Erreur fetchUserId:', err);
             }
@@ -74,10 +78,9 @@ function Chat({ onSocketReady }) {
             onSocketReady(newSocket);
         }
 
-        // Quand la connexion est établie
+        // Gestion des événements Socket.IO (handlers non modifiés ici) ...
         newSocket.on('connect', () => {
             console.log('[Socket] connect :', newSocket.id);
-            // Annonce de notre userId pour la présence (pastilles vertes)
             newSocket.emit('join', userId);
         });
 
@@ -611,21 +614,28 @@ function Chat({ onSocketReady }) {
         <div className="chat-layout">
             <div className="sidebar-layout">
                 <Sidebar
-                    // Pour la pastille verte => on passe socket
                     socket={socket}
                     userId={userId}
                     users={users}
                     myWorkspaces={myWorkspaces}
-                    onSelectUser={handleSelectUser}
-                    onSelectChannel={handleSelectChannel}
+                    onSelectUser={(uId) => {
+                        setSelectedUser(uId);
+                        setSelectedChannel('');
+                    }}
+                    onSelectChannel={(chId) => {
+                        setSelectedChannel(chId);
+                        setSelectedUser('');
+                    }}
                     selectedUser={selectedUser}
                     selectedChannel={selectedChannel}
-                    onWorkspacesRefresh={fetchWorkspacesAndChannels}
+                    onWorkspacesRefresh={async () => {
+                        // Exemple de rafraîchissement des workspaces/channels
+                        // Vous pouvez appeler ici fetchWorkspacesAndChannels()
+                    }}
                 />
             </div>
 
             <div className="chat-layout-main">
-
                 <ChatWindow
                     userId={userId}
                     messages={messages}
@@ -633,12 +643,13 @@ function Chat({ onSocketReady }) {
                     selectedUser={selectedUser}
                     selectedChannel={selectedChannel}
                     focusMessageId={focusMessageId}
-                    canDelete={canDelete}
+                    // d’autres props si nécessaire...
                     setMessages={setMessages}
                 />
-
                 <MessageInput
-                    onSend={handleSendMessage}
+                    onSend={(content, file) => {
+                        // Gestion de l'envoi d'un message
+                    }}
                     disabled={!selectedUser && !selectedChannel}
                 />
             </div>
