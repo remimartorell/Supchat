@@ -1,3 +1,5 @@
+/* ProfileSettings.css */
+
 .profile-settings-container {
     max-width: 600px;
     margin: 40px auto;
@@ -6,6 +8,10 @@
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Limiter la hauteur à 90% de la hauteur de la fenêtre et activer le scroll si besoin */
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .profile-settings-container h2 {
@@ -13,6 +19,21 @@
     margin-bottom: 20px;
 }
 
+/* Section avatar */
+.avatar-section {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.avatar-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+/* Groupes de formulaire pour les informations principales */
 .profile-form-group {
     margin-bottom: 15px;
     display: flex;
@@ -32,20 +53,53 @@
     color: var(--text-color);
 }
 
-.password-form label {
-    font-weight: bold;
-    margin-top: 10px;
+/* Style pour le formulaire de changement de mot de passe */
+.password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--input-bg);
 }
 
-.password-form input {
+.password-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.password-field label {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.password-field input {
     padding: 8px;
-    margin-bottom: 10px;
     border: 1px solid var(--border-color);
     background-color: var(--input-bg);
     color: var(--text-color);
     border-radius: 4px;
 }
 
+/* Boutons pour changer ou annuler la modification du mot de passe */
+.toggle-password-btn {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s;
+}
+
+.toggle-password-btn:hover {
+    filter: brightness(1.1);
+}
+
+/* Section de sélection du thème */
 .theme-selection {
     margin: 20px 0;
 }
@@ -64,8 +118,8 @@
     font-weight: 500;
 }
 
-.save-button,
-.toggle-password-btn {
+/* Bouton d'enregistrement */
+.save-button {
     background-color: var(--accent-color);
     color: white;
     padding: 10px 20px;
@@ -76,7 +130,6 @@
     transition: background 0.3s;
 }
 
-.save-button:hover,
-.toggle-password-btn:hover {
+.save-button:hover {
     filter: brightness(1.1);
 }

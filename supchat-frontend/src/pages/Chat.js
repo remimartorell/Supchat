@@ -1,5 +1,6 @@
 // src/pages/Chat.js
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import axios from '../services/axiosConfig';
 
@@ -7,15 +8,16 @@ import Sidebar from '../components/Sidebar';
 import ChatWindow from '../components/ChatWindow';
 import MessageInput from '../components/MessageInput';
 
-import { useLocation, useNavigate } from 'react-router-dom';
-
-// Détecter les @mentions dans un message
+/**
+ * Détecte les @mentions dans un message (ex: @JohnDoe).
+ * Renvoie un tableau des pseudos mentionnés.
+ */
 function parseMentions(content) {
     const regex = /@(\S+)/g;
     const matches = content.matchAll(regex);
     const mentionNames = [];
     for (const match of matches) {
-        mentionNames.push(match[1]); // ex: "JohnDoe"
+        mentionNames.push(match[1]);
     }
     return mentionNames;
 }
@@ -24,53 +26,63 @@ function Chat({ onSocketReady }) {
     const navigate = useNavigate();
     const location = useLocation();
 
+    // ------------------
+    // ÉTATS PRINCIPAUX
+    // ------------------
     const [socket, setSocket] = useState(null);
-
-    // ID de l'utilisateur connecté
     const [userId, setUserId] = useState('');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    // Sélection courante : un user pour DM ou un channel
     const [selectedUser, setSelectedUser] = useState('');
     const [selectedChannel, setSelectedChannel] = useState('');
-
-    // Liste des messages (DM ou channel)
     const [messages, setMessages] = useState([]);
-
-    // Pour la Sidebar
-    const [users, setUsers] = useState([]);          // liste d'utilisateurs
-    const [myWorkspaces, setMyWorkspaces] = useState([]); // liste de workspaces
-
-    // focus sur un message précis (via ?focusMsg=xxx)
+    const [users, setUsers] = useState([]);
+    const [myWorkspaces, setMyWorkspaces] = useState([]);
     const [focusMessageId, setFocusMessageId] = useState('');
 
-    //----------------------------------------------------------------
-    // 1) Récupérer l'utilisateur connecté (userId)
-    //----------------------------------------------------------------
+    /**
+     * On conserve les refs pour `selectedUser` et `selectedChannel`
+     * afin d'y accéder dans les callbacks socket,
+     * sans avoir un state obsolète.
+     */
+    const selectedUserRef = useRef(selectedUser);
+    const selectedChannelRef = useRef(selectedChannel);
+
     useEffect(() => {
-        const fetchUserId = async () => {
+        selectedUserRef.current = selectedUser;
+    }, [selectedUser]);
+
+    useEffect(() => {
+        selectedChannelRef.current = selectedChannel;
+    }, [selectedChannel]);
+
+    // ----------------------------------------------------------------
+    // 1) Récupère le profil de l'utilisateur connecté et applique le thème
+    // ----------------------------------------------------------------
+    useEffect(() => {
+        const fetchUserProfile = async () => {
             try {
                 const res = await axios.get('/api/auth/user');
                 setUserId(res.data._id);
                 setIsLoggedIn(true);
-                // Mise à jour du thème depuis le profil utilisateur récupéré
-                const userTheme = res.data.theme || 'dark'; // valeur par défaut
+
+                // Application du thème défini par l'utilisateur ou "dark" par défaut
+                const userTheme = res.data.theme || 'dark';
                 document.documentElement.setAttribute('data-theme', userTheme);
                 localStorage.setItem('appTheme', userTheme);
             } catch (err) {
-                console.error('Erreur fetchUserId:', err);
+                console.error('Erreur lors de la récupération du profil utilisateur :', err);
             }
         };
-        fetchUserId();
+        fetchUserProfile();
     }, []);
 
-    //----------------------------------------------------------------
-    // 2) Créer / Recréer le socket & brancher tous les handlers
-    //    => dépend de [isLoggedIn, userId, selectedUser, selectedChannel]
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // 2) Création du socket (unique) et écoute des événements "globaux"
+    // ----------------------------------------------------------------
     useEffect(() => {
         if (!isLoggedIn || !userId) return;
 
+        // On se connecte via Socket.IO
         const newSocket = io(process.env.REACT_APP_API_URL);
         setSocket(newSocket);
 
@@ -78,17 +90,17 @@ function Chat({ onSocketReady }) {
             onSocketReady(newSocket);
         }
 
-        // Gestion des événements Socket.IO (handlers non modifiés ici) ...
+        // Quand on est réellement connectés côté socket :
         newSocket.on('connect', () => {
             console.log('[Socket] connect :', newSocket.id);
-            newSocket.emit('join', userId);
+            newSocket.emit('join', userId); // Annonce de notre userId
         });
 
         newSocket.on('joined', (msg) => {
             console.log('[Socket] joined:', msg);
         });
 
-        //--- 2-A) WORKSPACES / rafraîchir la liste
+        // Rafraîchir la liste Workspaces/Channels quand un workspace est modifié ou supprimé
         const handleWorkspaceUpdated = () => {
             console.log('[Socket] workspace-updated => refresh');
             fetchWorkspacesAndChannels();
@@ -100,28 +112,43 @@ function Chat({ onSocketReady }) {
         newSocket.on('workspace-updated', handleWorkspaceUpdated);
         newSocket.on('workspace-removed', handleWorkspaceRemoved);
 
-        //--- 2-B) MESSAGES PRIVÉS (DM)
+        // Nettoyage
+        return () => {
+            newSocket.off('workspace-updated', handleWorkspaceUpdated);
+            newSocket.off('workspace-removed', handleWorkspaceRemoved);
+            newSocket.close();
+            newSocket.disconnect();
+        };
+    }, [isLoggedIn, userId, onSocketReady]);
+
+    // ----------------------------------------------------------------
+    // 3) Événements liés aux DM (messages privés)
+    // ----------------------------------------------------------------
+    useEffect(() => {
+        if (!socket) return;
+
         const handleNewPrivateMessage = (dm) => {
             console.log('[Socket] new-private-message:', dm);
+            const amISender = String(dm.sender) === userId;
+            const amIReceiver = String(dm.receiver) === userId;
 
-            // 1) Vérifier si ça me concerne
-            const amISender = (String(dm.sender) === userId);
-            const amIReceiver = (String(dm.receiver) === userId);
+            // Si ça ne me concerne pas => on ignore
             if (!amISender && !amIReceiver) return;
 
-            // 2) Est-ce le DM qu'on affiche ?
-            const isCurrentDM =
-                (String(dm.sender) === userId && String(dm.receiver) === selectedUser)
-                || (String(dm.sender) === selectedUser && String(dm.receiver) === userId);
-
-            // 3) Si c'est le DM courant => on l’ajoute
-            if (isCurrentDM) {
+            // Vérifier si ce message privé correspond à la conversation DM en cours
+            if (
+                selectedUserRef.current &&
+                (
+                    (String(dm.sender) === userId && String(dm.receiver) === selectedUserRef.current) ||
+                    (String(dm.sender) === selectedUserRef.current && String(dm.receiver) === userId)
+                )
+            ) {
+                // On l'ajoute aux messages
                 setMessages((prev) => [...prev, dm]);
 
-                // 4) Si je suis le récepteur => je marque "lu"
+                // Si je suis le récepteur => je marque comme lu
                 if (!amISender) {
-                    axios
-                        .put(`/api/direct-messages/${dm._id}/markAsRead`)
+                    axios.put(`/api/direct-messages/${dm._id}/markAsRead`)
                         .catch(err => console.error('Erreur markAsRead DM:', err));
                 }
             }
@@ -131,53 +158,58 @@ function Chat({ onSocketReady }) {
             // payload = { dmId, userId }
             console.log('[Socket] dm-message-read:', payload);
 
-            setMessages(prev => {
-                // 1) Trouver le message
-                const foundMsg = prev.find(m => m._id === payload.dmId);
-                if (!foundMsg) return prev;
+            setMessages(prev =>
+                prev.map(m => {
+                    if (m._id === payload.dmId && selectedUserRef.current) {
+                        const senderId = String(m.sender._id || m.sender);
+                        const receiverId = String(m.receiver._id || m.receiver);
 
-                // 2) Vérifier qu’il appartient au DM courant
-                const senderId   = String(foundMsg.sender._id || foundMsg.sender);
-                const receiverId = String(foundMsg.receiver._id || foundMsg.receiver);
-                const isCurrentDM =
-                    (senderId === userId && receiverId === selectedUser) ||
-                    (senderId === selectedUser && receiverId === userId);
+                        const isCurrentDM =
+                            (senderId === userId && receiverId === selectedUserRef.current) ||
+                            (senderId === selectedUserRef.current && receiverId === userId);
 
-                if (!isCurrentDM) {
-                    // => on ignore, ça ne concerne pas le DM affiché
-                    return prev;
-                }
-
-                // 3) Mettre à jour readBy
-                return prev.map(m => {
-                    if (m._id === payload.dmId) {
-                        if (!m.readBy) m.readBy = [];
-                        const already = m.readBy.some(rb => rb.user === payload.userId);
-                        if (!already) {
-                            m.readBy.push({ user: payload.userId, readAt: new Date() });
+                        if (isCurrentDM) {
+                            if (!m.readBy) m.readBy = [];
+                            const already = m.readBy.some(rb => rb.user === payload.userId);
+                            if (!already) {
+                                return {
+                                    ...m,
+                                    readBy: [...m.readBy, { user: payload.userId, readAt: new Date() }],
+                                };
+                            }
                         }
                     }
                     return m;
-                });
-            });
+                })
+            );
         };
 
-        newSocket.on('new-private-message', handleNewPrivateMessage);
-        newSocket.on('dm-message-read', handleDmMessageRead);
+        socket.on('new-private-message', handleNewPrivateMessage);
+        socket.on('dm-message-read', handleDmMessageRead);
 
-        //--- 2-C) CHANNELS
+        return () => {
+            socket.off('new-private-message', handleNewPrivateMessage);
+            socket.off('dm-message-read', handleDmMessageRead);
+        };
+    }, [socket, userId]);
+
+    // ----------------------------------------------------------------
+    // 4) Événements liés aux Channels
+    // ----------------------------------------------------------------
+    useEffect(() => {
+        if (!socket) return;
+
         const handleNewChannelMessage = (channelMsg) => {
             console.log('[Socket] new-channel-message:', channelMsg);
-
-            // si on est sur le channel correspondant => on l'ajoute
-            if (selectedChannel && channelMsg.channelId === selectedChannel) {
-                channelMsg.channel = channelMsg.channelId; // on force
+            if (selectedChannelRef.current && channelMsg.channelId === selectedChannelRef.current) {
+                // On force channelMsg.channel = channelId
+                channelMsg.channel = channelMsg.channelId;
                 setMessages((prev) => [...prev, channelMsg]);
 
-                // si je ne suis pas l'émetteur => markAsRead
+                // Si je ne suis pas l'émetteur => markAsRead
                 if (String(channelMsg.sender) !== userId) {
                     axios
-                        .put(`/api/channels/${selectedChannel}/messages/${channelMsg._id}/markAsRead`)
+                        .put(`/api/channels/${selectedChannelRef.current}/messages/${channelMsg._id}/markAsRead`)
                         .catch(err => console.error('Erreur markAsRead new message:', err));
                 }
             }
@@ -185,16 +217,16 @@ function Chat({ onSocketReady }) {
 
         const handleChannelMessageDeleted = (payload) => {
             console.log('[Socket] channel-message-deleted:', payload);
-            if (selectedChannel === payload.channelId) {
-                setMessages((prev) => prev.filter(m => m._id !== payload.messageId));
+            if (selectedChannelRef.current && payload.channelId === selectedChannelRef.current) {
+                setMessages(prev => prev.filter(m => m._id !== payload.messageId));
             }
         };
 
         const handleChannelMessageUpdated = (payload) => {
             console.log('[Socket] channel-message-updated:', payload);
-            if (selectedChannel === payload.channelId) {
-                setMessages((prev) =>
-                    prev.map((m) =>
+            if (selectedChannelRef.current && payload.channelId === selectedChannelRef.current) {
+                setMessages(prev =>
+                    prev.map(m =>
                         m._id === payload.messageId
                             ? { ...m, content: payload.newContent, edited: payload.edited }
                             : m
@@ -205,24 +237,23 @@ function Chat({ onSocketReady }) {
 
         const handleMessageReacted = (payload) => {
             console.log('[Socket] message-reacted:', payload);
-            if (selectedChannel && payload.channelId === selectedChannel) {
+            if (selectedChannelRef.current && payload.channelId === selectedChannelRef.current) {
                 setMessages(prev =>
                     prev.map(msg => {
                         if (msg._id === payload.messageId) {
-                            const existingIndex = msg.reactions
-                                ? msg.reactions.findIndex(r =>
-                                    (r.user._id && r.user._id === payload.reaction.user._id)
-                                    || (typeof r.user === 'string' && r.user === payload.reaction.user)
-                                )
-                                : -1;
-                            let newReactions;
+                            if (!msg.reactions) msg.reactions = [];
+                            // Trouver la réaction existante pour le même user
+                            const existingIndex = msg.reactions.findIndex(r =>
+                                (r.user._id && r.user._id === payload.reaction.user._id) ||
+                                (typeof r.user === 'string' && r.user === payload.reaction.user)
+                            );
                             if (existingIndex !== -1) {
-                                newReactions = [...msg.reactions];
+                                const newReactions = [...msg.reactions];
                                 newReactions[existingIndex] = payload.reaction;
+                                msg.reactions = newReactions;
                             } else {
-                                newReactions = [...(msg.reactions || []), payload.reaction];
+                                msg.reactions = [...msg.reactions, payload.reaction];
                             }
-                            return { ...msg, reactions: newReactions };
                         }
                         return msg;
                     })
@@ -231,20 +262,20 @@ function Chat({ onSocketReady }) {
         };
 
         const handleMentionNotification = (notif) => {
-            alert(`
-        Tu as été mentionné par ${notif.from}
-        Dans le channel ${notif.channelName}
-        Du workspace ${notif.workspaceName}
-      `);
+            alert(
+                `Tu as été mentionné par ${notif.from}\n` +
+                `Dans le channel ${notif.channelName}\n` +
+                `Du workspace ${notif.workspaceName}`
+            );
         };
 
         const handleChannelAdded = (channel) => {
             console.log('[Socket] channel-added:', channel);
-            setMyWorkspaces((prev) =>
-                prev.map((ws) => {
-                    if (ws._id === channel.workspace.toString()) {
-                        const exists = ws.channels && ws.channels.some((ch) => ch._id === channel._id);
-                        if (!exists) {
+            setMyWorkspaces(prev =>
+                prev.map(ws => {
+                    if (String(ws._id) === String(channel.workspace)) {
+                        const alreadyExists = ws.channels?.some(ch => ch._id === channel._id);
+                        if (!alreadyExists) {
                             return { ...ws, channels: [...(ws.channels || []), channel] };
                         }
                     }
@@ -255,26 +286,24 @@ function Chat({ onSocketReady }) {
 
         const handleChannelDeleted = (payload) => {
             console.log('[Socket] channel-deleted:', payload);
-            setMyWorkspaces((prev) =>
-                prev.map((ws) => {
+            setMyWorkspaces(prev =>
+                prev.map(ws => {
                     if (ws.channels) {
-                        return { ...ws, channels: ws.channels.filter((ch) => ch._id !== payload.channelId) };
+                        return { ...ws, channels: ws.channels.filter(ch => ch._id !== payload.channelId) };
                     }
                     return ws;
                 })
             );
         };
 
-        // => pour “Lu par X” (en channel)
         const handleMessageRead = (payload) => {
-            // payload = { channelId, messageId, userId }
             console.log('[Socket] message-read:', payload);
-            if (selectedChannel && payload.channelId === selectedChannel) {
-                setMessages((prev) =>
-                    prev.map((msg) => {
+            if (selectedChannelRef.current && payload.channelId === selectedChannelRef.current) {
+                setMessages(prev =>
+                    prev.map(msg => {
                         if (msg._id === payload.messageId) {
                             if (!msg.readBy) msg.readBy = [];
-                            const already = msg.readBy.some((rb) => rb.user === payload.userId);
+                            const already = msg.readBy.some(rb => rb.user === payload.userId);
                             if (!already) {
                                 msg.readBy.push({ user: payload.userId, readAt: new Date() });
                             }
@@ -285,86 +314,70 @@ function Chat({ onSocketReady }) {
             }
         };
 
-        // => DM: réactions
+        // Pour DM : réactions et modifications
         const handleDmMessageReacted = (payload) => {
-            // payload = { dmId, reaction: { emoji, user: { _id, name }, ... } }
+            // payload = { dmId, reaction }
             setMessages(prev =>
                 prev.map(dm => {
                     if (dm._id === payload.dmId) {
-                        // trouver la reaction existante pour user ?
-                        const existingIdx = dm.reactions
-                            ? dm.reactions.findIndex(r => r.user && r.user._id === payload.reaction.user._id)
-                            : -1;
-                        let newReactions;
-                        if (existingIdx !== -1) {
-                            newReactions = [...dm.reactions];
-                            newReactions[existingIdx] = payload.reaction;
+                        if (!dm.reactions) dm.reactions = [];
+                        const existingIndex = dm.reactions.findIndex(
+                            r => r.user && r.user._id === payload.reaction.user._id
+                        );
+                        if (existingIndex !== -1) {
+                            const newReactions = [...dm.reactions];
+                            newReactions[existingIndex] = payload.reaction;
+                            dm.reactions = newReactions;
                         } else {
-                            newReactions = [...(dm.reactions || []), payload.reaction];
+                            dm.reactions = [...dm.reactions, payload.reaction];
                         }
-                        return { ...dm, reactions: newReactions };
                     }
                     return dm;
                 })
             );
         };
 
-        // => DM: message édité
         const handleDmMessageUpdated = (payload) => {
             // payload = { dmId, newContent, edited }
             setMessages(prev =>
                 prev.map(dm => {
                     if (dm._id === payload.dmId) {
-                        return {
-                            ...dm,
-                            content: payload.newContent,
-                            edited: payload.edited,
-                        };
+                        return { ...dm, content: payload.newContent, edited: payload.edited };
                     }
                     return dm;
                 })
             );
         };
 
-        // Écoute
-        newSocket.on('new-channel-message', handleNewChannelMessage);
-        newSocket.on('channel-message-deleted', handleChannelMessageDeleted);
-        newSocket.on('channel-message-updated', handleChannelMessageUpdated);
-        newSocket.on('message-reacted', handleMessageReacted);
-        newSocket.on('mention-notification', handleMentionNotification);
-        newSocket.on('channel-added', handleChannelAdded);
-        newSocket.on('channel-deleted', handleChannelDeleted);
-        newSocket.on('message-read', handleMessageRead);
-        newSocket.on('dm-message-reacted', handleDmMessageReacted);
-        newSocket.on('dm-message-updated', handleDmMessageUpdated);
+        // On se branche sur tous les événements
+        socket.on('new-channel-message', handleNewChannelMessage);
+        socket.on('channel-message-deleted', handleChannelMessageDeleted);
+        socket.on('channel-message-updated', handleChannelMessageUpdated);
+        socket.on('message-reacted', handleMessageReacted);
+        socket.on('mention-notification', handleMentionNotification);
+        socket.on('channel-added', handleChannelAdded);
+        socket.on('channel-deleted', handleChannelDeleted);
+        socket.on('message-read', handleMessageRead);
+        socket.on('dm-message-reacted', handleDmMessageReacted);
+        socket.on('dm-message-updated', handleDmMessageUpdated);
 
-        // Nettoyage
         return () => {
-            newSocket.off('workspace-updated', handleWorkspaceUpdated);
-            newSocket.off('workspace-removed', handleWorkspaceRemoved);
-
-            newSocket.off('new-private-message', handleNewPrivateMessage);
-            newSocket.off('dm-message-read', handleDmMessageRead);
-            newSocket.off('dm-message-reacted', handleDmMessageReacted);
-            newSocket.off('dm-message-updated', handleDmMessageUpdated);
-
-            newSocket.off('new-channel-message', handleNewChannelMessage);
-            newSocket.off('channel-message-deleted', handleChannelMessageDeleted);
-            newSocket.off('channel-message-updated', handleChannelMessageUpdated);
-            newSocket.off('message-reacted', handleMessageReacted);
-            newSocket.off('mention-notification', handleMentionNotification);
-            newSocket.off('channel-added', handleChannelAdded);
-            newSocket.off('channel-deleted', handleChannelDeleted);
-            newSocket.off('message-read', handleMessageRead);
-            newSocket.close();
-
-            newSocket.disconnect();
+            socket.off('new-channel-message', handleNewChannelMessage);
+            socket.off('channel-message-deleted', handleChannelMessageDeleted);
+            socket.off('channel-message-updated', handleChannelMessageUpdated);
+            socket.off('message-reacted', handleMessageReacted);
+            socket.off('mention-notification', handleMentionNotification);
+            socket.off('channel-added', handleChannelAdded);
+            socket.off('channel-deleted', handleChannelDeleted);
+            socket.off('message-read', handleMessageRead);
+            socket.off('dm-message-reacted', handleDmMessageReacted);
+            socket.off('dm-message-updated', handleDmMessageUpdated);
         };
-    }, [isLoggedIn, userId, selectedUser, selectedChannel, onSocketReady]);
+    }, [socket, userId]);
 
-    //----------------------------------------------------------------
-    // 3) Rejoindre la room socket si selectedChannel
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // 5) Rejoindre la room du channel sélectionné
+    // ----------------------------------------------------------------
     useEffect(() => {
         if (socket && selectedChannel) {
             socket.emit('joinChannel', selectedChannel);
@@ -372,9 +385,9 @@ function Chat({ onSocketReady }) {
         }
     }, [socket, selectedChannel]);
 
-    //----------------------------------------------------------------
-    // 4) Charger la liste des utilisateurs, workspaces
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // 6) Charger la liste des utilisateurs, workspaces
+    // ----------------------------------------------------------------
     useEffect(() => {
         if (isLoggedIn && userId) {
             fetchUsers();
@@ -400,9 +413,9 @@ function Chat({ onSocketReady }) {
         }
     };
 
-    //----------------------------------------------------------------
-    // Charger workspaces + channels
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // 7) Charger workspaces + channels
+    // ----------------------------------------------------------------
     useEffect(() => {
         if (isLoggedIn && userId) {
             fetchWorkspacesAndChannels();
@@ -425,9 +438,9 @@ function Chat({ onSocketReady }) {
         }
     };
 
-    //----------------------------------------------------------------
-    // 5) Surveiller query params ?channelId=? / ?userId=? / ?focusMsg=?
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // 8) Surveiller query params ?channelId=? / ?userId=? / ?focusMsg=?
+    // ----------------------------------------------------------------
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         const channelId = queryParams.get('channelId');
@@ -439,23 +452,23 @@ function Chat({ onSocketReady }) {
         } else if (userParam) {
             handleSelectUser(userParam);
         }
+        // eslint-disable-next-line
     }, [location.search]);
 
-    //----------------------------------------------------------------
-    // 6) Sélection d’un channel
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // 9) Sélection d’un channel
+    // ----------------------------------------------------------------
     const handleSelectChannel = async (chId, focusMsgParam) => {
+        // On réinitialise la conversation pour éviter de voir
+        // d'anciens messages d'une autre conversation
         setSelectedUser('');
         setSelectedChannel(chId);
+        setMessages([]);
 
-        // 1) On récupère le tableau
         const fetched = await fetchChannelHistory(chId);
-        // 2) On marque tous ces messages comme lus
         await markChannelMessagesAsRead(chId, fetched);
-        // 3) Maintenant on peut mettre à jour le state
         setMessages(fetched);
 
-        // Gérer le focus
         if (focusMsgParam) {
             setFocusMessageId(focusMsgParam);
             const newParams = new URLSearchParams(location.search);
@@ -464,24 +477,18 @@ function Chat({ onSocketReady }) {
         }
     };
 
-    //----------------------------------------------------------------
-    // 7) Sélection d’un user (DM)
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // 10) Sélection d’un user (DM)
+    // ----------------------------------------------------------------
     const handleSelectUser = async (uId) => {
         setSelectedChannel('');
         setSelectedUser(uId);
+        setMessages([]);
 
-        // On fetch l’historique
         const fetchedDMs = await fetchDMHistory(uId);
-        // fetchedDMs = tableau de messages
-
-        // On met dans le state
         setMessages(fetchedDMs);
-
-        // On marque tous ces DMs comme lus
         await markDMsAsRead(fetchedDMs);
 
-        // 5) Focus message éventuel + cleanup
         const queryParams = new URLSearchParams(location.search);
         if (queryParams.has('focusMsg')) {
             queryParams.delete('focusMsg');
@@ -489,25 +496,24 @@ function Chat({ onSocketReady }) {
         }
     };
 
-
-    //----------------------------------------------------------------
-    // 8) Historique DM
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // 11) Historique DM
+    // ----------------------------------------------------------------
     const fetchDMHistory = async (otherUserId) => {
         try {
             const res = await axios.get(`/api/direct-messages/${otherUserId}`);
-            return res.data; // Au lieu de setMessages(res.data) direct
+            return res.data;
         } catch (err) {
             console.error('Erreur fetchDMHistory:', err);
             return [];
         }
     };
 
-    //----------------------------------------------------------------
-    // 9) Historique channel
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // 12) Historique channel
+    // ----------------------------------------------------------------
     const fetchChannelHistory = async (channelId) => {
-        if (!channelId) return;
+        if (!channelId) return [];
         try {
             const res = await axios.get(`/api/channels/${channelId}/messages`);
             return res.data;
@@ -517,25 +523,27 @@ function Chat({ onSocketReady }) {
         }
     };
 
-    //----------------------------------------------------------------
-    // 10) Envoyer un message (DM ou channel)
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // 13) Envoyer un message (DM ou channel)
+    // ----------------------------------------------------------------
     const handleSendMessage = async (content, file) => {
         try {
             const mentions = parseMentions(content);
             const formData = new FormData();
             formData.append('content', content);
             formData.append('mentions', JSON.stringify(mentions));
-            if (file) formData.append('file', file);
+            if (file) {
+                formData.append('file', file);
+            }
 
             if (selectedUser) {
-                // On envoie un DM
+                // DM
                 formData.append('receiverId', selectedUser);
                 await axios.post('/api/direct-messages', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             } else if (selectedChannel) {
-                // On envoie un message dans le channel
+                // Channel
                 await axios.post(`/api/channels/${selectedChannel}/messages`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
@@ -545,9 +553,9 @@ function Chat({ onSocketReady }) {
         }
     };
 
-    //----------------------------------------------------------------
-    // 11) Peut-on supprimer un message ?
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // 14) Peut-on supprimer un message ?
+    // ----------------------------------------------------------------
     let canDelete = false;
     if (selectedChannel) {
         const wsWithChannel = myWorkspaces.find(ws =>
@@ -563,13 +571,12 @@ function Chat({ onSocketReady }) {
         }
     }
 
+    // ----------------------------------------------------------------
+    // 15) Marquer les messages (channel) comme lus
+    // ----------------------------------------------------------------
     const markChannelMessagesAsRead = async (channelId, channelMessages) => {
         for (const msg of channelMessages) {
-            // si je suis l'expéditeur, pas besoin de le “lire”
-            if (String(msg.sender?._id || msg.sender) === userId) {
-                continue;
-            }
-            // si déjà lu, on skip
+            if (String(msg.sender?._id || msg.sender) === userId) continue;
             const alreadyRead = msg.readBy?.some(rb => String(rb.user) === userId);
             if (!alreadyRead) {
                 try {
@@ -581,13 +588,12 @@ function Chat({ onSocketReady }) {
         }
     };
 
+    // ----------------------------------------------------------------
+    // 16) Marquer les DM comme lus
+    // ----------------------------------------------------------------
     const markDMsAsRead = async (directMessages) => {
         for (const msg of directMessages) {
-            // si je suis l'expéditeur => skip
-            if (String(msg.sender?._id || msg.sender) === userId) {
-                continue;
-            }
-            // si déjà lu => skip
+            if (String(msg.sender?._id || msg.sender) === userId) continue;
             const already = msg.readBy?.some(rb => String(rb.user) === userId);
             if (!already) {
                 try {
@@ -599,17 +605,20 @@ function Chat({ onSocketReady }) {
         }
     };
 
+    // ----------------------------------------------------------------
+    // 17) Recharger la liste des users si la conv change
+    // ----------------------------------------------------------------
     useEffect(() => {
         if (selectedUser || selectedChannel) {
             axios.get('/api/auth/allUsers')
-                .then((res) => setUsers(res.data))
-                .catch((err) => console.error('Erreur fetch allUsers:', err));
+                .then(res => setUsers(res.data))
+                .catch(err => console.error('Erreur fetch allUsers:', err));
         }
     }, [selectedUser, selectedChannel]);
 
-    //----------------------------------------------------------------
-    // Rendu final
-    //----------------------------------------------------------------
+    // -------------------
+    // RENDU FINAL
+    // -------------------
     return (
         <div className="chat-layout">
             <div className="sidebar-layout">
@@ -618,19 +627,12 @@ function Chat({ onSocketReady }) {
                     userId={userId}
                     users={users}
                     myWorkspaces={myWorkspaces}
-                    onSelectUser={(uId) => {
-                        setSelectedUser(uId);
-                        setSelectedChannel('');
-                    }}
-                    onSelectChannel={(chId) => {
-                        setSelectedChannel(chId);
-                        setSelectedUser('');
-                    }}
+                    onSelectUser={handleSelectUser}
+                    onSelectChannel={handleSelectChannel}
                     selectedUser={selectedUser}
                     selectedChannel={selectedChannel}
                     onWorkspacesRefresh={async () => {
-                        // Exemple de rafraîchissement des workspaces/channels
-                        // Vous pouvez appeler ici fetchWorkspacesAndChannels()
+                        await fetchWorkspacesAndChannels();
                     }}
                 />
             </div>
@@ -643,13 +645,11 @@ function Chat({ onSocketReady }) {
                     selectedUser={selectedUser}
                     selectedChannel={selectedChannel}
                     focusMessageId={focusMessageId}
-                    // d’autres props si nécessaire...
+                    // canDelete={canDelete} // si vous voulez gérer la suppression selon le rôle
                     setMessages={setMessages}
                 />
                 <MessageInput
-                    onSend={(content, file) => {
-                        // Gestion de l'envoi d'un message
-                    }}
+                    onSend={handleSendMessage}
                     disabled={!selectedUser && !selectedChannel}
                 />
             </div>

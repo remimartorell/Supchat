@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Réimplentation des thèmes amélioré reste a modifire le css du changement de mdp est a renregistré dans la bdd pour chaque user.">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Amélioration du css pour les paramètre">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/models/User.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/auth.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,7 +27,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="RESET_MODE" value="MIXED" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -126,8 +126,6 @@
       <workItem from="1740748851115" duration="6985000" />
       <workItem from="1744623681708" duration="9595000" />
       <workItem from="1744635549758" duration="2182000" />
-      <workItem from="1744718473935" duration="897000" />
-      <workItem from="1744787613843" duration="1596000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -329,15 +327,7 @@
       <option name="project" value="LOCAL" />
       <updated>1744705044978</updated>
     </task>
-    <task id="LOCAL-00026" summary="Réimplentation des thèmes amélioré reste a modifire le css du changement de mdp est a renregistré dans la bdd pour chaque user.">
-      <option name="closed" value="true" />
-      <created>1744718537335</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1744718537335</updated>
-    </task>
-    <option name="localTasksCounter" value="27" />
+    <option name="localTasksCounter" value="26" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -355,6 +345,7 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <MESSAGE value="Début du projet (node.js, express, mongoose, .env)" />
     <MESSAGE value="Ajout docker-compose.yml" />
     <MESSAGE value="- Ajout middleware/auth, models/ User &amp; Workspace, routes/ auth &amp; workspace&#10;- Installation de bcryptjs &amp; jsonwebtoken &amp; express-validator&#10;- Modification du index.js" />
     <MESSAGE value="- Utilisateurs : Inscription &amp; connexion&#10;- Workspace : Créer un workspace, voir les workspaces de l'utilisateur, ajout un membre à un workspace, modifier un workspace, supprimer un workspace&#10;- Modification du index.js" />
@@ -379,7 +370,6 @@
     <MESSAGE value="Photo de profile ATTENTION ERREUR" />
     <MESSAGE value="Ajout d'une API pour avoir de nombreux GIFS" />
     <MESSAGE value="Amélioration du css pour les paramètre" />
-    <MESSAGE value="Réimplentation des thèmes amélioré reste a modifire le css du changement de mdp est a renregistré dans la bdd pour chaque user." />
-    <option name="LAST_COMMIT_MESSAGE" value="Réimplentation des thèmes amélioré reste a modifire le css du changement de mdp est a renregistré dans la bdd pour chaque user." />
+    <option name="LAST_COMMIT_MESSAGE" value="Amélioration du css pour les paramètre" />
   </component>
 </project>

@@ -96,11 +96,11 @@ const ProfileSettings = () => {
         <div className="profile-settings-container">
             <h2>Paramètres du profil</h2>
 
-            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+            <div className="avatar-section">
                 <img
                     src={avatarPreview || avatarUrl || '/img/default-avatar.png'}
                     alt="Avatar"
-                    style={{ width: 100, height: 100, borderRadius: '50%', objectFit: 'cover' }}
+                    className="avatar-image"
                 />
                 <div>
                     <input
@@ -130,28 +130,38 @@ const ProfileSettings = () => {
             </div>
 
             {!changePassword ? (
-                <button className="toggle-password-btn" onClick={() => setChangePassword(true)}>Changer MDP</button>
+                <button className="toggle-password-btn" onClick={() => setChangePassword(true)}>
+                    Changer MDP
+                </button>
             ) : (
                 <div className="password-form">
-                    <label>Ancien MDP:</label>
-                    <input
-                        type="password"
-                        value={oldPassword}
-                        onChange={(e) => setOldPassword(e.target.value)}
-                    />
-                    <label>Nouveau MDP:</label>
-                    <input
-                        type="password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                    />
-                    <label>Confirmer:</label>
-                    <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
-                    <button className="toggle-password-btn" onClick={() => setChangePassword(false)}>Annuler</button>
+                    <div className="password-field">
+                        <label>Ancien MDP:</label>
+                        <input
+                            type="password"
+                            value={oldPassword}
+                            onChange={(e) => setOldPassword(e.target.value)}
+                        />
+                    </div>
+                    <div className="password-field">
+                        <label>Nouveau MDP:</label>
+                        <input
+                            type="password"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                        />
+                    </div>
+                    <div className="password-field">
+                        <label>Confirmer:</label>
+                        <input
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                        />
+                    </div>
+                    <button className="toggle-password-btn" onClick={() => setChangePassword(false)}>
+                        Annuler
+                    </button>
                 </div>
             )}
 
@@ -174,7 +184,9 @@ const ProfileSettings = () => {
             </div>
 
             <hr />
-            <button className="save-button" onClick={handleSave}>Enregistrer</button>
+            <button className="save-button" onClick={handleSave}>
+                Enregistrer
+            </button>
         </div>
     );
 };
