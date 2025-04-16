@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Réimplentation des thèmes amélioré reste a modifire le css du changement de mdp est a renregistré dans la bdd pour chaque user.">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Sauvegarde du thème pour chaque user dans le bdd">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/models/User.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,7 +126,7 @@
       <workItem from="1744623681708" duration="9595000" />
       <workItem from="1744635549758" duration="2182000" />
       <workItem from="1744718473935" duration="897000" />
-      <workItem from="1744787613843" duration="1596000" />
+      <workItem from="1744787613843" duration="2609000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -337,7 +336,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744718537335</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Sauvegarde du thème pour chaque user dans le bdd">
+      <option name="closed" value="true" />
+      <created>1744789494368</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1744789494368</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -355,7 +362,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Ajout docker-compose.yml" />
     <MESSAGE value="- Ajout middleware/auth, models/ User &amp; Workspace, routes/ auth &amp; workspace&#10;- Installation de bcryptjs &amp; jsonwebtoken &amp; express-validator&#10;- Modification du index.js" />
     <MESSAGE value="- Utilisateurs : Inscription &amp; connexion&#10;- Workspace : Créer un workspace, voir les workspaces de l'utilisateur, ajout un membre à un workspace, modifier un workspace, supprimer un workspace&#10;- Modification du index.js" />
     <MESSAGE value="- Channels : Création de canal, lister les canaux d'un workspace, supprimer un canal&#10;- Modification du index.js" />
@@ -380,6 +386,7 @@
     <MESSAGE value="Ajout d'une API pour avoir de nombreux GIFS" />
     <MESSAGE value="Amélioration du css pour les paramètre" />
     <MESSAGE value="Réimplentation des thèmes amélioré reste a modifire le css du changement de mdp est a renregistré dans la bdd pour chaque user." />
-    <option name="LAST_COMMIT_MESSAGE" value="Réimplentation des thèmes amélioré reste a modifire le css du changement de mdp est a renregistré dans la bdd pour chaque user." />
+    <MESSAGE value="Sauvegarde du thème pour chaque user dans le bdd" />
+    <option name="LAST_COMMIT_MESSAGE" value="Sauvegarde du thème pour chaque user dans le bdd" />
   </component>
 </project>
