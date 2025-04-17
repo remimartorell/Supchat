@@ -82,7 +82,6 @@ function Chat({ onSocketReady }) {
     useEffect(() => {
         if (!isLoggedIn || !userId) return;
 
-        // On se connecte via Socket.IO
         const newSocket = io(process.env.REACT_APP_API_URL);
         setSocket(newSocket);
 
@@ -90,17 +89,35 @@ function Chat({ onSocketReady }) {
             onSocketReady(newSocket);
         }
 
-        // Quand on est réellement connectés côté socket :
         newSocket.on('connect', () => {
             console.log('[Socket] connect :', newSocket.id);
-            newSocket.emit('join', userId); // Annonce de notre userId
+            newSocket.emit('join', userId);
         });
 
         newSocket.on('joined', (msg) => {
             console.log('[Socket] joined:', msg);
         });
 
-        // Rafraîchir la liste Workspaces/Channels quand un workspace est modifié ou supprimé
+        newSocket.on('bot-message', (botMsg) => {
+            console.log('[Socket] bot-message:', botMsg);
+            setMessages(prev => [...prev, { ...botMsg, type: 'bot' }]);
+        });
+
+
+        newSocket.on('poll-result', (data) => {
+            console.log('[Socket] poll-result:', data);
+            // On met à jour le sondage existant, pas besoin d'ajouter un message.
+            setMessages(prev =>
+                prev.map(m =>
+                    m._id === data._id
+                        ? { ...m, votes: data.votes }
+                        : m
+                )
+            );
+        });
+
+
+
         const handleWorkspaceUpdated = () => {
             console.log('[Socket] workspace-updated => refresh');
             fetchWorkspacesAndChannels();
@@ -112,7 +129,6 @@ function Chat({ onSocketReady }) {
         newSocket.on('workspace-updated', handleWorkspaceUpdated);
         newSocket.on('workspace-removed', handleWorkspaceRemoved);
 
-        // Nettoyage
         return () => {
             newSocket.off('workspace-updated', handleWorkspaceUpdated);
             newSocket.off('workspace-removed', handleWorkspaceRemoved);
@@ -131,11 +147,8 @@ function Chat({ onSocketReady }) {
             console.log('[Socket] new-private-message:', dm);
             const amISender = String(dm.sender) === userId;
             const amIReceiver = String(dm.receiver) === userId;
-
-            // Si ça ne me concerne pas => on ignore
             if (!amISender && !amIReceiver) return;
 
-            // Vérifier si ce message privé correspond à la conversation DM en cours
             if (
                 selectedUserRef.current &&
                 (
@@ -143,10 +156,7 @@ function Chat({ onSocketReady }) {
                     (String(dm.sender) === selectedUserRef.current && String(dm.receiver) === userId)
                 )
             ) {
-                // On l'ajoute aux messages
                 setMessages((prev) => [...prev, dm]);
-
-                // Si je suis le récepteur => je marque comme lu
                 if (!amISender) {
                     axios.put(`/api/direct-messages/${dm._id}/markAsRead`)
                         .catch(err => console.error('Erreur markAsRead DM:', err));
@@ -155,27 +165,20 @@ function Chat({ onSocketReady }) {
         };
 
         const handleDmMessageRead = (payload) => {
-            // payload = { dmId, userId }
             console.log('[Socket] dm-message-read:', payload);
-
             setMessages(prev =>
                 prev.map(m => {
                     if (m._id === payload.dmId && selectedUserRef.current) {
                         const senderId = String(m.sender._id || m.sender);
                         const receiverId = String(m.receiver._id || m.receiver);
-
                         const isCurrentDM =
                             (senderId === userId && receiverId === selectedUserRef.current) ||
                             (senderId === selectedUserRef.current && receiverId === userId);
-
                         if (isCurrentDM) {
                             if (!m.readBy) m.readBy = [];
                             const already = m.readBy.some(rb => rb.user === payload.userId);
                             if (!already) {
-                                return {
-                                    ...m,
-                                    readBy: [...m.readBy, { user: payload.userId, readAt: new Date() }],
-                                };
+                                return { ...m, readBy: [...m.readBy, { user: payload.userId, readAt: new Date() }] };
                             }
                         }
                     }
@@ -202,14 +205,10 @@ function Chat({ onSocketReady }) {
         const handleNewChannelMessage = (channelMsg) => {
             console.log('[Socket] new-channel-message:', channelMsg);
             if (selectedChannelRef.current && channelMsg.channelId === selectedChannelRef.current) {
-                // On force channelMsg.channel = channelId
                 channelMsg.channel = channelMsg.channelId;
                 setMessages((prev) => [...prev, channelMsg]);
-
-                // Si je ne suis pas l'émetteur => markAsRead
                 if (String(channelMsg.sender) !== userId) {
-                    axios
-                        .put(`/api/channels/${selectedChannelRef.current}/messages/${channelMsg._id}/markAsRead`)
+                    axios.put(`/api/channels/${selectedChannelRef.current}/messages/${channelMsg._id}/markAsRead`)
                         .catch(err => console.error('Erreur markAsRead new message:', err));
                 }
             }
@@ -242,7 +241,6 @@ function Chat({ onSocketReady }) {
                     prev.map(msg => {
                         if (msg._id === payload.messageId) {
                             if (!msg.reactions) msg.reactions = [];
-                            // Trouver la réaction existante pour le même user
                             const existingIndex = msg.reactions.findIndex(r =>
                                 (r.user._id && r.user._id === payload.reaction.user._id) ||
                                 (typeof r.user === 'string' && r.user === payload.reaction.user)
@@ -263,9 +261,7 @@ function Chat({ onSocketReady }) {
 
         const handleMentionNotification = (notif) => {
             alert(
-                `Tu as été mentionné par ${notif.from}\n` +
-                `Dans le channel ${notif.channelName}\n` +
-                `Du workspace ${notif.workspaceName}`
+                `Tu as été mentionné par ${notif.from}\nDans le channel ${notif.channelName}\nDu workspace ${notif.workspaceName}`
             );
         };
 
@@ -314,9 +310,8 @@ function Chat({ onSocketReady }) {
             }
         };
 
-        // Pour DM : réactions et modifications
         const handleDmMessageReacted = (payload) => {
-            // payload = { dmId, reaction }
+            console.log('[Socket] dm-message-reacted:', payload);
             setMessages(prev =>
                 prev.map(dm => {
                     if (dm._id === payload.dmId) {
@@ -337,6 +332,8 @@ function Chat({ onSocketReady }) {
             );
         };
 
+        socket.on('dm-message-reacted', handleDmMessageReacted);
+
         const handleDmMessageUpdated = (payload) => {
             // payload = { dmId, newContent, edited }
             setMessages(prev =>
@@ -349,7 +346,6 @@ function Chat({ onSocketReady }) {
             );
         };
 
-        // On se branche sur tous les événements
         socket.on('new-channel-message', handleNewChannelMessage);
         socket.on('channel-message-deleted', handleChannelMessageDeleted);
         socket.on('channel-message-updated', handleChannelMessageUpdated);
@@ -386,7 +382,7 @@ function Chat({ onSocketReady }) {
     }, [socket, selectedChannel]);
 
     // ----------------------------------------------------------------
-    // 6) Charger la liste des utilisateurs, workspaces
+    // 6) Charger la liste des utilisateurs et workspaces
     // ----------------------------------------------------------------
     useEffect(() => {
         if (isLoggedIn && userId) {
@@ -439,7 +435,7 @@ function Chat({ onSocketReady }) {
     };
 
     // ----------------------------------------------------------------
-    // 8) Surveiller query params ?channelId=? / ?userId=? / ?focusMsg=?
+    // 8) Surveiller les paramètres d'URL (channelId, userId, focusMsg)
     // ----------------------------------------------------------------
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
@@ -459,8 +455,7 @@ function Chat({ onSocketReady }) {
     // 9) Sélection d’un channel
     // ----------------------------------------------------------------
     const handleSelectChannel = async (chId, focusMsgParam) => {
-        // On réinitialise la conversation pour éviter de voir
-        // d'anciens messages d'une autre conversation
+        // Réinitialiser la conversation pour ne pas conserver d'anciens messages
         setSelectedUser('');
         setSelectedChannel(chId);
         setMessages([]);
@@ -478,7 +473,7 @@ function Chat({ onSocketReady }) {
     };
 
     // ----------------------------------------------------------------
-    // 10) Sélection d’un user (DM)
+    // 10) Sélection d’un utilisateur (DM)
     // ----------------------------------------------------------------
     const handleSelectUser = async (uId) => {
         setSelectedChannel('');
@@ -510,7 +505,7 @@ function Chat({ onSocketReady }) {
     };
 
     // ----------------------------------------------------------------
-    // 12) Historique channel
+    // 12) Historique d’un channel
     // ----------------------------------------------------------------
     const fetchChannelHistory = async (channelId) => {
         if (!channelId) return [];
@@ -524,9 +519,14 @@ function Chat({ onSocketReady }) {
     };
 
     // ----------------------------------------------------------------
-    // 13) Envoyer un message (DM ou channel)
-    // ----------------------------------------------------------------
+// 13) Envoyer un message (DM ou channel)
+// ----------------------------------------------------------------
     const handleSendMessage = async (content, file) => {
+        if (content.startsWith('/')) {
+            handleCommand(content);
+            return;
+        }
+
         try {
             const mentions = parseMentions(content);
             const formData = new FormData();
@@ -537,24 +537,110 @@ function Chat({ onSocketReady }) {
             }
 
             if (selectedUser) {
-                // DM
-                formData.append('receiverId', selectedUser);
+                const receiverId =
+                    typeof selectedUser === 'object' ? selectedUser._id : selectedUser;
+                formData.append('receiverId', receiverId);
+
+                // ❌ Ne fais pas de setMessages ici : ça crée un doublon !
                 await axios.post('/api/direct-messages', formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
+
             } else if (selectedChannel) {
-                // Channel
                 await axios.post(`/api/channels/${selectedChannel}/messages`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 });
             }
+
         } catch (err) {
             console.error('Erreur handleSendMessage:', err);
         }
     };
 
+// ----------------------------------------------------------------
+// 14) Traitement des commandes (ex: /meeting, /poll, /remindme)
+// ----------------------------------------------------------------
+    const handleCommand = (content) => {
+        const fullCommand = content.trim();
+        const spaceIndex = fullCommand.indexOf(' ');
+        const command = spaceIndex !== -1 ? fullCommand.substring(0, spaceIndex) : fullCommand;
+        const argsString = spaceIndex !== -1 ? fullCommand.substring(spaceIndex + 1).trim() : '';
+        const lowerCommand = command.toLowerCase();
+
+        console.log(`🛠️ Commande détectée :`, lowerCommand);
+
+        // -----------------------
+        // 📅 Commande /meeting
+        // -----------------------
+        if (lowerCommand === '/meeting') {
+            const [meetingDate, meetingTime, ...titleParts] = argsString.split(' ');
+            const meetingTitle = titleParts.join(' ') || 'Réunion';
+            if (!meetingDate || !meetingTime) {
+                alert("❌ Format : /meeting 2025-04-20 15:30 Réunion hebdo");
+                return;
+            }
+
+            console.log(`🧩 Commande /meeting : ${meetingTitle} à ${meetingDate} ${meetingTime}`);
+            socket.emit('meeting-reminder', { meetingDate, meetingTime, meetingTitle });
+            return;
+        }
+
+        // -----------------------
+        // 📊 Commande /poll
+        // -----------------------
+        if (lowerCommand === '/poll') {
+            const [questionPart, ...optionParts] = argsString.split('|');
+            const pollQuestion = questionPart.trim();
+            const options = optionParts.map(opt => opt.trim()).filter(Boolean);
+
+            if (!pollQuestion || options.length < 2 || options.length > 4) {
+                alert("❌ Format invalide. Utilise : /poll Question ? | Option1 | Option2 ... (2 à 4 options max)");
+                return;
+            }
+
+
+            console.log(`📊 Émission socket /poll`, { question: pollQuestion, options });
+            socket.emit('poll', { question: pollQuestion, options });
+
+
+            return;
+        }
+// -----------------------
+// ⏰ Commande /remindme
+// -----------------------
+        if (lowerCommand === '/remindme') {
+            const [time, ...reminderParts] = argsString.split(' ');
+            const message = reminderParts.join(' ').trim();
+
+            if (!time || !message) {
+                alert("❌ Format : /remindme 10min Va boire de l'eau !");
+                return;
+            }
+
+            console.log(`⏰ Émission socket /remindme`, { time, message });
+            socket.emit('remindme', { time, message }); // ← 🔥 ICI
+
+            setMessages(prev => [
+                ...prev,
+                {
+                    _id: Date.now(),
+                    content: `⏰ Rappel dans ${time} programmé`,
+                    type: 'system'
+                }
+            ]);
+            return;
+        }
+
+
+        // -----------------------
+        // ❓ Commande inconnue
+        // -----------------------
+        console.warn(`❓ Commande inconnue : ${lowerCommand}`);
+    };
+
+
     // ----------------------------------------------------------------
-    // 14) Peut-on supprimer un message ?
+    // 15) Autorisation de suppression d'un message
     // ----------------------------------------------------------------
     let canDelete = false;
     if (selectedChannel) {
@@ -572,7 +658,7 @@ function Chat({ onSocketReady }) {
     }
 
     // ----------------------------------------------------------------
-    // 15) Marquer les messages (channel) comme lus
+    // 16) Marquer les messages (channel) comme lus
     // ----------------------------------------------------------------
     const markChannelMessagesAsRead = async (channelId, channelMessages) => {
         for (const msg of channelMessages) {
@@ -589,7 +675,7 @@ function Chat({ onSocketReady }) {
     };
 
     // ----------------------------------------------------------------
-    // 16) Marquer les DM comme lus
+    // 17) Marquer les DM comme lus
     // ----------------------------------------------------------------
     const markDMsAsRead = async (directMessages) => {
         for (const msg of directMessages) {
@@ -606,7 +692,7 @@ function Chat({ onSocketReady }) {
     };
 
     // ----------------------------------------------------------------
-    // 17) Recharger la liste des users si la conv change
+    // 18) Recharger la liste des utilisateurs lors du changement de conversation
     // ----------------------------------------------------------------
     useEffect(() => {
         if (selectedUser || selectedChannel) {
@@ -645,7 +731,7 @@ function Chat({ onSocketReady }) {
                     selectedUser={selectedUser}
                     selectedChannel={selectedChannel}
                     focusMessageId={focusMessageId}
-                    // canDelete={canDelete} // si vous voulez gérer la suppression selon le rôle
+                    // canDelete={canDelete} // Optionnel : pour contrôler la suppression selon le rôle
                     setMessages={setMessages}
                 />
                 <MessageInput
@@ -658,3 +744,12 @@ function Chat({ onSocketReady }) {
 }
 
 export default Chat;
+
+
+/*
+/poll Quelle est votre couleur préférée ? | Rouge | Bleu | Vert
+/remindme 10min meeting !
+
+
+*
+* */

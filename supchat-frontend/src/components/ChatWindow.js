@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import axios from '../services/axiosConfig';
-import { IoMdCheckmarkCircle } from 'react-icons/io';
 import './ChatWindow.css';
 
 function highlightMentions(content, validMentions) {
@@ -36,6 +35,7 @@ function ChatWindow({
     const [editingMessageId, setEditingMessageId] = useState(null);
     const [editContent, setEditContent] = useState('');
     const [showEmojiPickerFor, setShowEmojiPickerFor] = useState(null);
+    const [votedPolls, setVotedPolls] = useState(new Set());
 
     const avatarBaseUrl = `${process.env.REACT_APP_API_URL}/api/users`;
 
@@ -75,9 +75,8 @@ function ChatWindow({
     const formatTimestamp = (timestamp) => new Date(timestamp).toLocaleString();
 
     const getSenderLabel = (m) => {
-        if (m.sender && typeof m.sender === 'object' && m.sender.name) {
-            return m.sender.name;
-        } else if (typeof m.sender === 'string') {
+        if (m.sender?.name) return m.sender.name;
+        if (typeof m.sender === 'string') {
             const foundUser = users?.find((u) => u._id === m.sender);
             return foundUser?.name || m.sender;
         }
@@ -85,6 +84,8 @@ function ChatWindow({
     };
 
     const getSenderAvatar = (m) => {
+        if (m.sender?.avatar) return m.sender.avatar;
+
         if (m.sender && typeof m.sender === 'object') {
             if (m.sender.profilePicture) {
                 return process.env.REACT_APP_API_URL + m.sender.profilePicture;
@@ -138,6 +139,25 @@ function ChatWindow({
         setEditContent('');
     };
 
+    const handleVote = (pollId, optionIndex) => {
+        if (votedPolls.has(pollId)) {
+            alert("Tu as déjà voté.");
+            return;
+        }
+
+        setVotedPolls(prev => new Set(prev).add(pollId));
+        setMessages(prev =>
+            prev.map(m => {
+                if (m._id === pollId) {
+                    const updatedVotes = [...(m.votes || Array(m.options.length).fill(0))];
+                    updatedVotes[optionIndex]++;
+                    return { ...m, votes: updatedVotes };
+                }
+                return m;
+            })
+        );
+    };
+
     return (
         <div className="chat-window-container">
             <div ref={listRef} className="chat-window-messages">
@@ -146,8 +166,8 @@ function ChatWindow({
                     const senderLabel = getSenderLabel(m);
                     const timestamp = formatTimestamp(m.createdAt);
                     const validMentions = m.validMentions || [];
-
                     const avatarUrl = getSenderAvatar(m);
+                    const isPoll = m.question && m.options && Array.isArray(m.options);
 
                     return (
                         <div
@@ -159,7 +179,13 @@ function ChatWindow({
                                 <img
                                     src={avatarUrl}
                                     alt="avatar"
-                                    style={{ width: '32px', height: '32px', borderRadius: '50%', marginRight: '8px', objectFit: 'cover' }}
+                                    style={{
+                                        width: '32px',
+                                        height: '32px',
+                                        borderRadius: '50%',
+                                        marginRight: '8px',
+                                        objectFit: 'cover'
+                                    }}
                                 />
                                 <div className="message-header">
                                     <span className="sender">{senderLabel}</span>
@@ -181,12 +207,31 @@ function ChatWindow({
                                 </>
                             ) : (
                                 <>
-                                    <div className="message-content">
-                                        {/^https?:\/\/.*\.(gif|png|jpe?g)$/i.test(m.content)
-                                            ? <img src={m.content} alt="img" style={{ maxWidth: '200px', height: 'auto', borderRadius: '4px' }} />
-                                            : highlightMentions(m.content || '', validMentions)}
-                                        {m.edited && <span className="message-edited">(Modifié)</span>}
-                                    </div>
+                                    {isPoll ? (
+                                        <div className="poll-container">
+                                            <div className="poll-question">📊 {m.question}</div>
+                                            {m.options.slice(0, 4).map((opt, index) => (
+                                                <button
+                                                    key={index}
+                                                    className="poll-option-button"
+                                                    onClick={() => handleVote(m._id, index)}
+                                                    disabled={votedPolls.has(m._id)}
+                                                >
+                                                    {opt}
+                                                    {m.votes?.[index] >= 0 && (
+                                                        <span className="poll-vote-count"> ({m.votes[index]})</span>
+                                                    )}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="message-content">
+                                            {/^https?:\/\/.*\.(gif|png|jpe?g)$/i.test(m.content)
+                                                ? <img src={m.content} alt="img" style={{ maxWidth: '200px', height: 'auto', borderRadius: '4px' }} />
+                                                : highlightMentions(m.content || '', validMentions)}
+                                            {m.edited && <span className="message-edited">(Modifié)</span>}
+                                        </div>
+                                    )}
 
                                     {m.fileUrl && (
                                         <div className="message-file">
@@ -196,11 +241,13 @@ function ChatWindow({
                                         </div>
                                     )}
 
-                                    <div className="message-actions">
-                                        <button className="action-button" onClick={() => openEmojiPickerForMessage(m)}>Réagir</button>
-                                        {isMe && <button className="action-button" onClick={() => startEditingMessage(m)}>Modifier</button>}
-                                        {canDelete && <button className="action-button delete-button" onClick={() => handleDeleteMsg(m)}>X</button>}
-                                    </div>
+                                    {!isPoll && (
+                                        <div className="message-actions">
+                                            <button className="action-button" onClick={() => openEmojiPickerForMessage(m)}>Réagir</button>
+                                            {isMe && <button className="action-button" onClick={() => startEditingMessage(m)}>Modifier</button>}
+                                            {canDelete && <button className="action-button delete-button" onClick={() => handleDeleteMsg(m)}>X</button>}
+                                        </div>
+                                    )}
 
                                     <div className="message-reactions">
                                         {m.reactions?.map((react, i) => (

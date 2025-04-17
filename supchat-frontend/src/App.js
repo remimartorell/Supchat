@@ -30,6 +30,7 @@ function App() {
         document.documentElement.setAttribute('data-theme', savedTheme);
     }, []);
 
+    // Utilisé pour masquer la navbar sur certaines pages
     const hideNavbarPaths = ['/', '/login', '/register', '/forgot-password', '/reset-password'];
     const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
 
@@ -38,6 +39,23 @@ function App() {
         if (!searchInput.trim()) return;
         navigate(`/search?query=${encodeURIComponent(searchInput.trim())}`);
     };
+
+    // --------------------------
+    // Intégration du bot de rappel de réunion
+    // --------------------------
+    useEffect(() => {
+        if (theSocket) {
+            theSocket.on('meeting-reminder', (data) => {
+                // data doit contenir meetingTitle et meetingTime
+                alert(`Rappel Réunion : ${data.meetingTitle} à ${data.meetingTime}`);
+                // Vous pouvez remplacer alert par une notification personnalisée
+            });
+            return () => {
+                theSocket.off('meeting-reminder');
+            };
+        }
+    }, [theSocket]);
+    // --------------------------
 
     return (
         <div id="root-app">

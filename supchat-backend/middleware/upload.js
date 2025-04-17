@@ -1,3 +1,4 @@
+//middleware/uploads.js
 const multer = require("multer");
 
 const storage = multer.memoryStorage(); // stocke le fichier en RAM, on le transfère manuellement après
