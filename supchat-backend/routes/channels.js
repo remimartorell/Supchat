@@ -190,4 +190,38 @@ router.delete('/:workspaceId/channels/:channelId/members/:userId', auth, async (
     }
 });
 
+// @route PUT /api/workspaces/:workspaceId/channels/:channelId
+router.put('/:workspaceId/channels/:channelId', auth, async (req, res) => {
+    try {
+        const { name, type } = req.body;
+        const workspace = await Workspace.findById(req.params.workspaceId);
+        if (!workspace) return res.status(404).json({ msg: 'Workspace not found' });
+
+        const currentMember = workspace.members.find(m => m.user.toString() === req.user.id);
+        if (!currentMember || !['admin', 'owner'].includes(currentMember.role)) {
+            return res.status(403).json({ msg: 'Not authorized' });
+        }
+
+        const channel = await Channel.findById(req.params.channelId);
+        if (!channel) return res.status(404).json({ msg: 'Channel not found' });
+
+        channel.name = name || channel.name;
+        channel.type = type || channel.type;
+        await channel.save();
+
+        // 🔁 Emit socket event
+        const io = req.app.get('socketio');
+        const userSocketMap = req.app.get('userSocketMap');
+        workspace.members.forEach(member => {
+            const sid = userSocketMap[member.user.toString()];
+            if (sid) io.to(sid).emit('channel-updated', channel);
+        });
+
+        res.json({ msg: 'Channel updated', channel });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
 module.exports = router;

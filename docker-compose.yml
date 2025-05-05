@@ -37,5 +37,11 @@ services:
 volumes:
   mongodb_data:
 
+  # Commandes Docker sur le VPS "docker compose [...]" avec espace au lieu de "docker-compose [...]" avec tiret
+
   # Commande Docker pour lancer le server "docker-compose up --build"
-  # Commande Docker pour stopper le server, dans un autre CMD "docker-compose down"
+
+  # Commande Docker pour lancer le server en arrière plan "docker-compose up -d --build"
+  # Commande Docker pour voir les logs à tout moment "docker-compose logs -f"
+
+  # Commande Docker pour stopper le server "docker-compose down"
