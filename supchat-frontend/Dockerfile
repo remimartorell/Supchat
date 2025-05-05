@@ -6,6 +6,7 @@ RUN npm install
 COPY . .
 RUN npm run build
 
+
 # Étape 2 : servir via NGINX avec configuration personnalisée
 FROM nginx:alpine
 # Copier le build de React

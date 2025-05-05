@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout du dossier supchat-mobile&#10;Remis les IP dans le .env car sinon le mobile ne marchait pas.&#10;Modif des fichiers backend/middleware/auth.js et ajout d'une route dans backend/routes/channel.js puis enfin ajout de commentaires dans le docker-compose.yml" />
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout du dossier supchat-mobile&#10;Remis les IP dans le .env car sinon le mobile ne marchait pas.&#10;Modif des fichiers backend/middleware/auth.js et ajout d'une route dans backend/routes/channel.js puis enfin ajout de commentaires dans le docker-compose.yml">
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-mobile" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-mobile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-mobile/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-mobile/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-mobile/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-mobile/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-mobile/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-mobile/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-mobile/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-mobile/tsconfig.json" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -30,12 +39,12 @@
     &quot;assignee&quot;: &quot;remimartorell&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/remimartorell/Supchat.git",
-    "accountId": "39a550c0-b14e-4748-9a4e-1ebd85ade2a8"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/remimartorell/Supchat.git&quot;,
+    &quot;accountId&quot;: &quot;39a550c0-b14e-4748-9a4e-1ebd85ade2a8&quot;
   }
-}]]></component>
+}</component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -73,7 +82,7 @@
     "project.structure.last.edited": "Problems",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "vcs.Git",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
     "ts.external.directory.path": "C:\\Users\\marto\\Desktop\\Cours\\3eAnnee\\3PROJ\\Projet Final\\Supchat\\supchat-mobile\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
@@ -129,7 +138,8 @@
       <workItem from="1744873661538" duration="20883000" />
       <workItem from="1744961451786" duration="12957000" />
       <workItem from="1745916636311" duration="15586000" />
-      <workItem from="1746443505552" duration="2009000" />
+      <workItem from="1746443505552" duration="2572000" />
+      <workItem from="1746446166208" duration="81000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -363,7 +373,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746445423626</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Ajout du dossier supchat-mobile&#10;Remis les IP dans le .env car sinon le mobile ne marchait pas.&#10;Modif des fichiers backend/middleware/auth.js et ajout d'une route dans backend/routes/channel.js puis enfin ajout de commentaires dans le docker-compose.yml">
+      <option name="closed" value="true" />
+      <created>1746445892983</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1746445892983</updated>
+    </task>
+    <option name="localTasksCounter" value="31" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
