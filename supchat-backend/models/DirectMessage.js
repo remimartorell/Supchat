@@ -2,29 +2,42 @@
 const mongoose = require('mongoose');
 
 const DirectMessageSchema = new mongoose.Schema({
+    content: {
+        type: String,
+    },
+    fileUrl: {
+        type: String,
+    },
     sender: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
     },
     receiver: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
     },
-    content: { type: String },
-    fileUrl: { type: String },
-    reactions: [
-        {
-            emoji: { type: String },
-            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        },
-    ],
+
+    // ← AJOUT type de message
+    type: {
+        type: String,
+        enum: ['normal', 'bot'],
+        default: 'normal'
+    },
+
+    deliveredAt: {
+        type: Date,
+    },
     readBy: [
         {
             user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
             readAt: { type: Date },
-        },
+        }
+    ],
+    reactions: [
+        {
+            emoji: { type: String },
+            user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        }
     ],
     createdAt: {
         type: Date,
@@ -32,8 +45,11 @@ const DirectMessageSchema = new mongoose.Schema({
     },
     edited: {
         type: Boolean,
-        default: false
+        default: false,
     },
 });
 
-module.exports = mongoose.model('DirectMessage', DirectMessageSchema);
+// On évite OverwriteModelError
+module.exports = mongoose.models.DirectMessage
+    ? mongoose.model('DirectMessage')
+    : mongoose.model('DirectMessage', DirectMessageSchema);

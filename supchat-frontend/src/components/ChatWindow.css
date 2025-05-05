@@ -178,3 +178,33 @@ src/components/ChatWindows.css
     border-radius: 4px;
     cursor: pointer;
 }
+.poll-option-bar {
+    display: flex;
+    align-items: center;
+    margin: 6px 0;
+}
+
+.poll-option-label {
+    flex: 0 0 100px;
+    font-weight: 500;
+}
+
+.poll-bar-outer {
+    flex: 1;
+    height: 10px;
+    background: #e0e0e0;
+    border-radius: 5px;
+    margin: 0 8px;
+    overflow: hidden;
+}
+
+.poll-bar-inner {
+    height: 100%;
+    background: #4a90e2; /* peut être ajusté ou laissé par défaut */
+}
+
+.poll-bar-count {
+    flex: 0 0 50px;
+    text-align: right;
+    font-size: 0.85em;
+}

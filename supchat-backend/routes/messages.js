@@ -1,3 +1,4 @@
+// routes/messages.js
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
@@ -11,101 +12,80 @@ const Workspace = require('../models/Workspace');
 
 // Configuration de Multer pour stocker les fichiers localement
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Dossier où les fichiers seront stockés
-    },
-    filename: (req, file, cb) => {
-        const ext = path.extname(file.originalname);
-        cb(null, Date.now() + '-' + file.originalname); // Nom unique pour chaque fichier
-    },
+    destination: (req, file, cb) => cb(null, 'uploads/'),
+    filename: (req, file, cb) =>
+        cb(null, `${Date.now()}-${file.originalname}`)
 });
-
 const upload = multer({ storage });
 
-// @route   POST /api/channels/:channelId/messages
-// @desc    Envoyer un message avec texte ou fichier
-// @access  Privé (membre du canal uniquement)
+// ----------------------
+// POST /api/channels/:channelId/messages
+// Envoi d’un message (texte, fichier, mentions)
+// ----------------------
 router.post('/:channelId/messages', auth, upload.single('file'), async (req, res) => {
     const { content } = req.body;
     try {
         const channel = await Channel.findById(req.params.channelId);
-        if (!channel) {
-            return res.status(404).json({ msg: 'Channel not found' });
-        }
+        if (!channel) return res.status(404).json({ msg: 'Channel not found' });
 
-        // Vérifier que l'utilisateur est membre du workspace associé
         const workspace = await Workspace.findById(channel.workspace);
-        if (!workspace) {
-            return res.status(404).json({ msg: 'Workspace not found' });
-        }
-        const isWorkspaceMember = workspace.members.some(m => m.user.toString() === req.user.id);
-        if (!isWorkspaceMember) {
+        if (!workspace) return res.status(404).json({ msg: 'Workspace not found' });
+        if (!workspace.members.some(m => m.user.toString() === req.user.id))
             return res.status(403).json({ msg: 'Access denied (not in workspace)' });
+
+        if (channel.type === 'private' &&
+            !channel.members.some(u => u.toString() === req.user.id)) {
+            return res.status(403).json({ msg: 'Access denied to private channel' });
         }
 
-        // Si le canal est privé, vérifier que l'utilisateur fait partie du canal
-        if (channel.type === 'private') {
-            const isInChannel = channel.members.some(u => u.toString() === req.user.id);
-            if (!isInChannel) {
-                return res.status(403).json({ msg: 'Access denied to private channel' });
-            }
-        }
-
-        // Création du message
         const newMessage = new Message({
             content,
             fileUrl: req.file ? `/uploads/${req.file.filename}` : null,
             channel: req.params.channelId,
-            sender: req.user.id,
+            sender:  req.user.id
         });
         const message = await newMessage.save();
 
-        // Récupérer Socket.IO et le mapping userSocketMap
         const io = req.app.get('socketio');
         const userSocketMap = req.app.get('userSocketMap');
-
-        // Gestion des mentions
         const mentions = JSON.parse(req.body.mentions || '[]');
         const validMentions = [];
         const fromUser = await User.findById(req.user.id).select('name');
 
         for (const mentionName of mentions) {
-            // Chercher un utilisateur par son nom
             const userMentioned = await User.findOne({ name: mentionName });
-            if (userMentioned) {
-                validMentions.push(mentionName);
-                // Créer la notification en incluant messageId
-                const newNotif = await Notification.create({
-                    user: userMentioned._id,
-                    type: 'mention',
-                    channel: req.params.channelId,
-                    message: `${fromUser.name} t'a mentionné dans le channel ${channel.name}`,
-                    messageId: message._id  // pour permettre la navigation vers le message
+            if (!userMentioned) continue;
+            validMentions.push(mentionName);
+
+            const newNotif = await Notification.create({
+                user:      userMentioned._id,
+                type:      'mention',
+                channel:   channel._id,
+                message:   `${fromUser.name} t'a mentionné dans le channel ${channel.name}`,
+                messageId: message._id
+            });
+
+            const socketId = userSocketMap[userMentioned._id];
+            if (socketId) {
+                io.to(socketId).emit('new-notification', newNotif);
+                io.to(socketId).emit('mention-notification', {
+                    from:          fromUser.name,
+                    channelName:   channel.name,
+                    workspaceName: workspace.name,
+                    message:       `@${mentionName} a été mentionné.`
                 });
-                const socketId = userSocketMap[userMentioned._id];
-                if (socketId) {
-                    io.to(socketId).emit('new-notification', newNotif);
-                    io.to(socketId).emit('mention-notification', {
-                        from: fromUser.name || 'Unknown',
-                        channelName: channel.name,
-                        workspaceName: workspace.name || '',
-                        message: `@${mentionName} a été mentionné.`
-                    });
-                }
             }
         }
 
-        // Émettre un événement à tous les membres du canal pour le nouveau message
-        io.to(req.params.channelId).emit('new-channel-message', {
-            _id: message._id,
-            content: message.content,
-            channelId: req.params.channelId,
-            channel: req.params.channelId,
+        io.to(channel._id.toString()).emit('new-channel-message', {
+            _id:         message._id,
+            content:     message.content,
+            channelId:   channel._id,
             channelName: channel.name,
-            sender: req.user.id,
-            createdAt: message.createdAt,
+            sender:      req.user.id,
+            createdAt:   message.createdAt,
             validMentions,
-            fileUrl: message.fileUrl,
+            fileUrl:     message.fileUrl
         });
 
         return res.json(message);
@@ -115,214 +95,182 @@ router.post('/:channelId/messages', auth, upload.single('file'), async (req, res
     }
 });
 
-// @route   GET /api/channels/:channelId/messages
-// @desc    Voir les messages d'un canal
-// @access  Privé (membre du canal uniquement)
+// ----------------------
+// GET /api/channels/:channelId/messages
+// Lecture des messages d’un canal
+// ----------------------
 router.get('/:channelId/messages', auth, async (req, res) => {
     try {
         const channel = await Channel.findById(req.params.channelId);
-        if (!channel) {
-            return res.status(404).json({ msg: 'Channel not found' });
-        }
+        if (!channel) return res.status(404).json({ msg: 'Channel not found' });
 
-        // Vérifier qu'on est membre du workspace
         const workspace = await Workspace.findById(channel.workspace);
-        if (!workspace) {
-            return res.status(404).json({ msg: 'Workspace not found' });
-        }
-        const isWorkspaceMember = workspace.members.some(m => m.user.toString() === req.user.id);
-        if (!isWorkspaceMember) {
+        if (!workspace) return res.status(404).json({ msg: 'Workspace not found' });
+        if (!workspace.members.some(m => m.user.toString() === req.user.id))
             return res.status(403).json({ msg: 'Access denied (not in workspace)' });
+
+        if (channel.type === 'private' &&
+            !channel.members.some(u => u.toString() === req.user.id)) {
+            return res.status(403).json({ msg: 'Access denied to private channel' });
         }
 
-        // Si le channel est private => vérifier qu'on fait partie de channel.members
-        if (channel.type === 'private') {
-            const isInChannel = channel.members.some(u => u.toString() === req.user.id);
-            if (!isInChannel) {
-                return res.status(403).json({ msg: 'Access denied to private channel' });
-            }
-        }
-
-        // Récupérer tous les messages
         const messages = await Message.find({ channel: req.params.channelId })
             .populate('sender', 'name email avatarFileId')
             .populate('reactions.user', 'name')
             .populate('readBy.user', 'name')
-            .sort({ createdAt: 'asc' });
+            .sort({ createdAt: 1 });
 
-
-        res.json(messages);
+        return res.json(messages);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        return res.status(500).send('Server Error');
     }
 });
 
-// @route   POST /api/channels/:channelId/messages/:messageId/reactions
-// @desc    Ajouter une réaction (emoji) à un message
-// @access  Privé (membre uniquement)
+// ----------------------
+// POST /api/channels/:channelId/messages/:messageId/reactions
+// Ajouter/modifier une réaction
+// ----------------------
 router.post('/:channelId/messages/:messageId/reactions', auth, async (req, res) => {
     const { emoji } = req.body;
     try {
-        let message = await Message.findById(req.params.messageId);
-        if (!message) {
-            return res.status(404).json({ msg: 'Message not found' });
-        }
-        // Vérifier s’il existe déjà une réaction de cet utilisateur
-        const existingIdx = message.reactions.findIndex(r => String(r.user) === req.user.id);
-        if (existingIdx !== -1) {
-            message.reactions[existingIdx].emoji = emoji;
+        const message = await Message.findById(req.params.messageId);
+        if (!message) return res.status(404).json({ msg: 'Message not found' });
+
+        const idx = message.reactions.findIndex(r => String(r.user) === req.user.id);
+        if (idx !== -1) {
+            message.reactions[idx].emoji = emoji;
         } else {
             message.reactions.push({ emoji, user: req.user.id });
         }
         await message.save();
-        // Peupler les données utilisateur dans la réaction de l'utilisateur courant
         await message.populate('reactions.user', 'name');
-        const updatedReaction = message.reactions.find(r => String(r.user._id || r.user) === req.user.id);
+
+        const updatedReaction = message.reactions.find(r =>
+            String(r.user._id || r.user) === req.user.id
+        );
         const io = req.app.get('socketio');
         io.to(req.params.channelId).emit('message-reacted', {
             channelId: req.params.channelId,
             messageId: message._id.toString(),
-            reaction: updatedReaction
+            reaction:  updatedReaction
         });
-        res.json(message);
+
+        return res.json(message);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        return res.status(500).send('Server Error');
     }
 });
 
-
-// @route   DELETE /api/channels/:channelId/messages/:messageId
-// @desc    Supprimer un message
-// @access  Privé (owner/admin/moderator)
+// ----------------------
+// DELETE /api/channels/:channelId/messages/:messageId
+// Supprimer un message (owner/admin/moderator)
+// ----------------------
 router.delete('/:channelId/messages/:messageId', auth, async (req, res) => {
     try {
-        // 1) Retrouver le channel
         const channel = await Channel.findById(req.params.channelId).populate('workspace');
-        if (!channel) {
-            return res.status(404).json({ msg: 'Channel not found' });
-        }
+        if (!channel) return res.status(404).json({ msg: 'Channel not found' });
 
-        // 2) Retrouver le workspace
-        let workspaceId = channel.workspace;
-        // si .populate('workspace') => channel.workspace est un obj
-        if (channel.workspace._id) {
-            workspaceId = channel.workspace._id;
-        }
+        let workspaceId = channel.workspace._id || channel.workspace;
         const workspace = await Workspace.findById(workspaceId);
-        if (!workspace) {
-            return res.status(404).json({ msg: 'Workspace not found' });
-        }
+        if (!workspace) return res.status(404).json({ msg: 'Workspace not found' });
 
-        // 3) Vérifier qu'on est membre
-        const currentMember = workspace.members.find(m => m.user.toString() === req.user.id);
-        if (!currentMember) {
-            return res.status(403).json({ msg: 'You are not in this workspace' });
-        }
+        const member = workspace.members.find(m => m.user.toString() === req.user.id);
+        if (!member) return res.status(403).json({ msg: 'You are not in this workspace' });
 
-        // 4) Rôles autorisés: owner, admin, moderator
-        if (!['owner','admin','moderator'].includes(currentMember.role)) {
-            return res.status(403).json({ msg: 'Only moderators/admin/owner can delete messages' });
-        }
+        if (!['owner','admin','moderator'].includes(member.role))
+            return res.status(403).json({ msg: 'Only owner/admin/moderator can delete messages' });
 
-        // 5) On supprime le message
         const message = await Message.findByIdAndDelete(req.params.messageId);
-        if (!message) {
-            return res.status(404).json({ msg: 'Message not found' });
-        }
+        if (!message) return res.status(404).json({ msg: 'Message not found' });
 
-        // Émettre l'événement via Socket.IO
         const io = req.app.get('socketio');
-        // Envoyer à la “room” = channelId
-        io.to(req.params.channelId).emit('channel-message-deleted', {
+        io.to(channel._id.toString()).emit('channel-message-deleted', {
             channelId: req.params.channelId,
-            messageId: req.params.messageId,
+            messageId: req.params.messageId
         });
 
-        res.json({ msg: 'Message deleted successfully' });
+        return res.json({ msg: 'Message deleted successfully' });
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        return res.status(500).send('Server Error');
     }
 });
 
+// ----------------------
+// PUT /api/channels/:channelId/messages/:messageId
+// Editer un message (uniquement auteur)
+// ----------------------
 router.put('/:channelId/messages/:messageId', auth, async (req, res) => {
     try {
         const { newContent } = req.body;
+        const message = await Message.findById(req.params.messageId);
+        if (!message) return res.status(404).json({ msg: 'Message not found' });
 
-        // 1) Retrouver le message
-        let message = await Message.findById(req.params.messageId);
-        if (!message) {
-            return res.status(404).json({ msg: 'Message not found' });
-        }
-
-        // 2) Vérifier que c’est bien l’auteur qui édite
-        if (message.sender.toString() !== req.user.id) {
+        if (message.sender.toString() !== req.user.id)
             return res.status(403).json({ msg: 'Only the author can edit this message' });
-        }
 
-        // 3) Mettre à jour
         message.content = newContent;
-        message.edited = true;  // => Pour afficher (Modifié)
-
+        message.edited  = true;
         await message.save();
 
-        // 4) Émettre un event "channel-message-updated"
         const io = req.app.get('socketio');
         io.to(req.params.channelId).emit('channel-message-updated', {
-            channelId: req.params.channelId,
-            messageId: message._id.toString(),
+            channelId:  req.params.channelId,
+            messageId:  message._id.toString(),
             newContent,
-            edited: true,
+            edited:     true
         });
 
-        res.json({ msg: 'Message updated', message });
+        return res.json({ msg: 'Message updated', message });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Server Error');
+        return res.status(500).send('Server Error');
     }
 });
 
-// @route   PUT /api/channels/:channelId/messages/:messageId/markAsRead
+// ----------------------
+// PUT /api/channels/:channelId/messages/:messageId/markAsRead
+// Marquer un message comme lu
+// ----------------------
 router.put('/:channelId/messages/:messageId/markAsRead', auth, async (req, res) => {
     try {
         const { channelId, messageId } = req.params;
 
-        // Vérifier l'existence du channel + droits
-        const channel = await Channel.findById(channelId);
-        if (!channel) return res.status(404).json({ msg: 'Channel not found' });
+        // 1) Vérifier le channel et workspace
+        const channel   = await Channel.findById(channelId);
+        if (!channel)   return res.status(404).json({ msg: 'Channel not found' });
+        const workspace = await Workspace.findById(channel.workspace);
+        if (!workspace) return res.status(404).json({ msg: 'Workspace not found' });
 
-        // Vérifier qu'on fait partie du workspace etc.
-        // (Copier-coller la même logique que vous avez dans POST /:channelId/messages)
-
-        // Récupérer le message
-        let message = await Message.findById(messageId);
-        if (!message) {
-            return res.status(404).json({ msg: 'Message not found' });
+        // 2) Contrôle d’accès
+        if (!workspace.members.some(m => m.user.toString() === req.user.id))
+            return res.status(403).json({ msg: 'Access denied (not in workspace)' });
+        if (channel.type === 'private' &&
+            !channel.members.some(u => u.toString() === req.user.id)) {
+            return res.status(403).json({ msg: 'Access denied to private channel' });
         }
 
-        // Ajouter l'utilisateur dans readBy s'il n'y est pas déjà
-        const already = message.readBy.some((rb) => String(rb.user) === req.user.id);
-        if (!already) {
+        // 3) Marquer comme lu
+        const message = await Message.findById(messageId);
+        if (!message) return res.status(404).json({ msg: 'Message not found' });
+
+        if (!message.readBy.some(rb => String(rb.user) === req.user.id)) {
             message.readBy.push({ user: req.user.id, readAt: new Date() });
             await message.save();
         }
 
-        // Émettre un event Socket.IO "message-read" pour mettre à jour en direct
+        // 4) Émettre l’event
         const io = req.app.get('socketio');
-        io.to(channelId).emit('message-read', {
-            channelId,
-            messageId,
-            userId: req.user.id
-        });
+        io.to(channelId).emit('message-read', { channelId, messageId, userId: req.user.id });
 
-        return res.json({ msg: 'ok', message });
+        // 5) **RENVOI CORRECT** du message mis à jour
+        return res.json(message);
     } catch (err) {
         console.error(err);
-        res.status(500).send('Server Error');
+        return res.status(500).send('Server Error');
     }
 });
-
 
 module.exports = router;

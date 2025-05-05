@@ -26,6 +26,8 @@ router.get('/:userId', auth, async (req, res) => {
             $or: [
                 { sender: req.user.id, receiver: req.params.userId },
                 { sender: req.params.userId, receiver: req.user.id },
+                { sender: '000000000000000000000000', receiver: req.user.id }
+
             ],
         })
             .populate('sender', 'name email avatarFileId')

@@ -4,21 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Bug réglé part rapport a la récupréation des messages">
-      <change afterPath="$PROJECT_DIR$/supchat-backend/bots/meetingBot.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-backend/bots/pollBot.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-backend/bots/reminderBot.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-backend/models/Meeting.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/supchat-backend/routes/meetings.js" afterDir="false" />
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage&#10;Attention a améliorer le visuel">
+      <change afterPath="$PROJECT_DIR$/supchat-backend/controllers/messageBotController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/bots/meetingBot.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/bots/meetingBot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/bots/pollBot.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/bots/pollBot.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/bots/reminderBot.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/bots/reminderBot.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/middleware/upload.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/middleware/upload.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/models/DirectMessage.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/models/DirectMessage.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/models/Message.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/models/Message.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/models/Notification.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/models/Notification.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/channels.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/channels.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/directMessages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/directMessages.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/meetings.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/meetings.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/messages.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/messages.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/services/axiosConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/services/axiosConfig.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,6 +57,9 @@
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
+  <component name="PackageJsonUpdateNotifier">
+    <dismissed value="$PROJECT_DIR$/supchat-backend/package.json" />
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -138,7 +143,9 @@
       <workItem from="1744635549758" duration="2182000" />
       <workItem from="1744718473935" duration="897000" />
       <workItem from="1744787613843" duration="1596000" />
-      <workItem from="1744873661538" duration="13945000" />
+      <workItem from="1744873661538" duration="20883000" />
+      <workItem from="1744961451786" duration="12957000" />
+      <workItem from="1745916636311" duration="11509000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -348,7 +355,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744718537335</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage&#10;Attention a améliorer le visuel">
+      <option name="closed" value="true" />
+      <created>1744889984178</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1744889984179</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -366,8 +381,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Ajout docker-compose.yml" />
-    <MESSAGE value="- Ajout middleware/auth, models/ User &amp; Workspace, routes/ auth &amp; workspace&#10;- Installation de bcryptjs &amp; jsonwebtoken &amp; express-validator&#10;- Modification du index.js" />
     <MESSAGE value="- Utilisateurs : Inscription &amp; connexion&#10;- Workspace : Créer un workspace, voir les workspaces de l'utilisateur, ajout un membre à un workspace, modifier un workspace, supprimer un workspace&#10;- Modification du index.js" />
     <MESSAGE value="- Channels : Création de canal, lister les canaux d'un workspace, supprimer un canal&#10;- Modification du index.js" />
     <MESSAGE value="- Messages : Envoyer un message dans un canal, récupérer les messages d'un canal&#10;- Modification du index.js" />
@@ -391,7 +404,9 @@
     <MESSAGE value="Ajout d'une API pour avoir de nombreux GIFS" />
     <MESSAGE value="Amélioration du css pour les paramètre" />
     <MESSAGE value="Réimplentation des thèmes amélioré reste a modifire le css du changement de mdp est a renregistré dans la bdd pour chaque user." />
-    <option name="LAST_COMMIT_MESSAGE" value="Réimplentation des thèmes amélioré reste a modifire le css du changement de mdp est a renregistré dans la bdd pour chaque user." />
+    <MESSAGE value="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage" />
+    <MESSAGE value="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage&#10;Attention a améliorer le visuel" />
+    <option name="LAST_COMMIT_MESSAGE" value="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage&#10;Attention a améliorer le visuel" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -1,5 +1,4 @@
 // supchat-backend/models/Message.js
-
 const mongoose = require('mongoose');
 
 const MessageSchema = new mongoose.Schema({
@@ -12,25 +11,49 @@ const MessageSchema = new mongoose.Schema({
     channel: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Channel',
-        required: true,
+        default: null
     },
     sender: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        default: null
     },
-    deliveredAt: { type: Date }, // Date de délivrance
+    // ← CHAMPS POUR SONDAGES
+    question: {
+        type: String,
+        default: null
+    },
+    options: {
+        type: [String],
+        default: undefined
+    },
+    votes: {
+        type: [Number],
+        default: undefined
+    },
+    // ← FIN champs sondages
+
+    // ← AJOUT type de message
+    type: {
+        type: String,
+        enum: ['normal', 'bot', 'poll'],
+        default: 'normal'
+    },
+
+    deliveredAt: {
+        type: Date,
+    },
     readBy: [
         {
             user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-            readAt: { type: Date }
+            readAt: { type: Date },
         }
     ],
     reactions: [
         {
             emoji: { type: String },
             user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-        },
+        }
     ],
     createdAt: {
         type: Date,
@@ -42,4 +65,7 @@ const MessageSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('Message', MessageSchema);
+// On évite OverwriteModelError
+module.exports = mongoose.models.Message
+    ? mongoose.model('Message')
+    : mongoose.model('Message', MessageSchema);

@@ -1,5 +1,4 @@
 // src/components/ChatWindow.js
-
 import React, { useEffect, useRef, useState } from 'react';
 import axios from '../services/axiosConfig';
 import './ChatWindow.css';
@@ -22,6 +21,7 @@ function highlightMentions(content, validMentions) {
 }
 
 function ChatWindow({
+                        socket,
                         userId,
                         messages,
                         users,
@@ -38,6 +38,15 @@ function ChatWindow({
     const [votedPolls, setVotedPolls] = useState(new Set());
 
     const avatarBaseUrl = `${process.env.REACT_APP_API_URL}/api/users`;
+
+    useEffect(() => {
+        const stored = localStorage.getItem('votedPolls');
+        if (stored) setVotedPolls(new Set(JSON.parse(stored)));
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('votedPolls', JSON.stringify([...votedPolls]));
+    }, [votedPolls]);
 
     const openEmojiPickerForMessage = (m) => {
         setShowEmojiPickerFor(m._id);
@@ -145,6 +154,8 @@ function ChatWindow({
             return;
         }
 
+        socket.emit('vote-poll', { pollId, optionIndex });
+
         setVotedPolls(prev => new Set(prev).add(pollId));
         setMessages(prev =>
             prev.map(m => {
@@ -167,7 +178,7 @@ function ChatWindow({
                     const timestamp = formatTimestamp(m.createdAt);
                     const validMentions = m.validMentions || [];
                     const avatarUrl = getSenderAvatar(m);
-                    const isPoll = m.question && m.options && Array.isArray(m.options);
+                    const isPoll = m.type === 'poll' || (m.question && Array.isArray(m.options));
 
                     return (
                         <div
@@ -210,19 +221,32 @@ function ChatWindow({
                                     {isPoll ? (
                                         <div className="poll-container">
                                             <div className="poll-question">📊 {m.question}</div>
-                                            {m.options.slice(0, 4).map((opt, index) => (
-                                                <button
-                                                    key={index}
-                                                    className="poll-option-button"
-                                                    onClick={() => handleVote(m._id, index)}
-                                                    disabled={votedPolls.has(m._id)}
-                                                >
-                                                    {opt}
-                                                    {m.votes?.[index] >= 0 && (
-                                                        <span className="poll-vote-count"> ({m.votes[index]})</span>
-                                                    )}
-                                                </button>
-                                            ))}
+                                            {(() => {
+                                                const total = m.votes.reduce((sum, v) => sum + v, 0);
+                                                return m.options.map((opt, idx) => {
+                                                    const count = m.votes[idx] || 0;
+                                                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                                                    return (
+                                                        <div
+                                                            key={idx}
+                                                            className="poll-option-bar"
+                                                            onClick={() => !votedPolls.has(m._id) && handleVote(m._id, idx)}
+                                                            style={{ cursor: votedPolls.has(m._id) ? 'default' : 'pointer' }}
+                                                        >
+                                                            <span className="poll-option-label">{opt}</span>
+                                                            <div className="poll-bar-outer">
+                                                                <div
+                                                                    className="poll-bar-inner"
+                                                                    style={{ width: `${pct}%` }}
+                                                                />
+                                                            </div>
+                                                            <span className="poll-bar-count">
+                                                                {count} ({pct}%)
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                });
+                                            })()}
                                         </div>
                                     ) : (
                                         <div className="message-content">

@@ -1,7 +1,7 @@
 // src/pages/Chat.js
-import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { io } from 'socket.io-client';
+import React, {useEffect, useState, useRef} from 'react';
+import {useNavigate, useLocation} from 'react-router-dom';
+import {io} from 'socket.io-client';
 import axios from '../services/axiosConfig';
 
 import Sidebar from '../components/Sidebar';
@@ -22,7 +22,7 @@ function parseMentions(content) {
     return mentionNames;
 }
 
-function Chat({ onSocketReady }) {
+function Chat({onSocketReady}) {
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -100,7 +100,7 @@ function Chat({ onSocketReady }) {
 
         newSocket.on('bot-message', (botMsg) => {
             console.log('[Socket] bot-message:', botMsg);
-            setMessages(prev => [...prev, { ...botMsg, type: 'bot' }]);
+            setMessages(prev => [...prev, {...botMsg, type: 'bot'}]);
         });
 
 
@@ -110,12 +110,11 @@ function Chat({ onSocketReady }) {
             setMessages(prev =>
                 prev.map(m =>
                     m._id === data._id
-                        ? { ...m, votes: data.votes }
+                        ? {...m, votes: data.votes}
                         : m
                 )
             );
         });
-
 
 
         const handleWorkspaceUpdated = () => {
@@ -178,7 +177,7 @@ function Chat({ onSocketReady }) {
                             if (!m.readBy) m.readBy = [];
                             const already = m.readBy.some(rb => rb.user === payload.userId);
                             if (!already) {
-                                return { ...m, readBy: [...m.readBy, { user: payload.userId, readAt: new Date() }] };
+                                return {...m, readBy: [...m.readBy, {user: payload.userId, readAt: new Date()}]};
                             }
                         }
                     }
@@ -227,7 +226,7 @@ function Chat({ onSocketReady }) {
                 setMessages(prev =>
                     prev.map(m =>
                         m._id === payload.messageId
-                            ? { ...m, content: payload.newContent, edited: payload.edited }
+                            ? {...m, content: payload.newContent, edited: payload.edited}
                             : m
                     )
                 );
@@ -272,7 +271,7 @@ function Chat({ onSocketReady }) {
                     if (String(ws._id) === String(channel.workspace)) {
                         const alreadyExists = ws.channels?.some(ch => ch._id === channel._id);
                         if (!alreadyExists) {
-                            return { ...ws, channels: [...(ws.channels || []), channel] };
+                            return {...ws, channels: [...(ws.channels || []), channel]};
                         }
                     }
                     return ws;
@@ -285,7 +284,7 @@ function Chat({ onSocketReady }) {
             setMyWorkspaces(prev =>
                 prev.map(ws => {
                     if (ws.channels) {
-                        return { ...ws, channels: ws.channels.filter(ch => ch._id !== payload.channelId) };
+                        return {...ws, channels: ws.channels.filter(ch => ch._id !== payload.channelId)};
                     }
                     return ws;
                 })
@@ -301,7 +300,7 @@ function Chat({ onSocketReady }) {
                             if (!msg.readBy) msg.readBy = [];
                             const already = msg.readBy.some(rb => rb.user === payload.userId);
                             if (!already) {
-                                msg.readBy.push({ user: payload.userId, readAt: new Date() });
+                                msg.readBy.push({user: payload.userId, readAt: new Date()});
                             }
                         }
                         return msg;
@@ -332,14 +331,13 @@ function Chat({ onSocketReady }) {
             );
         };
 
-        socket.on('dm-message-reacted', handleDmMessageReacted);
 
         const handleDmMessageUpdated = (payload) => {
             // payload = { dmId, newContent, edited }
             setMessages(prev =>
                 prev.map(dm => {
                     if (dm._id === payload.dmId) {
-                        return { ...dm, content: payload.newContent, edited: payload.edited };
+                        return {...dm, content: payload.newContent, edited: payload.edited};
                     }
                     return dm;
                 })
@@ -468,7 +466,7 @@ function Chat({ onSocketReady }) {
             setFocusMessageId(focusMsgParam);
             const newParams = new URLSearchParams(location.search);
             newParams.delete('focusMsg');
-            navigate(`${location.pathname}?${newParams.toString()}`, { replace: true });
+            navigate(`${location.pathname}?${newParams.toString()}`, {replace: true});
         }
     };
 
@@ -487,7 +485,7 @@ function Chat({ onSocketReady }) {
         const queryParams = new URLSearchParams(location.search);
         if (queryParams.has('focusMsg')) {
             queryParams.delete('focusMsg');
-            navigate(`${location.pathname}?${queryParams.toString()}`, { replace: true });
+            navigate(`${location.pathname}?${queryParams.toString()}`, {replace: true});
         }
     };
 
@@ -543,12 +541,12 @@ function Chat({ onSocketReady }) {
 
                 // ❌ Ne fais pas de setMessages ici : ça crée un doublon !
                 await axios.post('/api/direct-messages', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
+                    headers: {'Content-Type': 'multipart/form-data'},
                 });
 
             } else if (selectedChannel) {
                 await axios.post(`/api/channels/${selectedChannel}/messages`, formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' },
+                    headers: {'Content-Type': 'multipart/form-data'},
                 });
             }
 
@@ -560,13 +558,12 @@ function Chat({ onSocketReady }) {
 // ----------------------------------------------------------------
 // 14) Traitement des commandes (ex: /meeting, /poll, /remindme)
 // ----------------------------------------------------------------
-    const handleCommand = (content) => {
+    const handleCommand = async (content) => {
         const fullCommand = content.trim();
         const spaceIndex = fullCommand.indexOf(' ');
         const command = spaceIndex !== -1 ? fullCommand.substring(0, spaceIndex) : fullCommand;
         const argsString = spaceIndex !== -1 ? fullCommand.substring(spaceIndex + 1).trim() : '';
         const lowerCommand = command.toLowerCase();
-
         console.log(`🛠️ Commande détectée :`, lowerCommand);
 
         // -----------------------
@@ -575,63 +572,69 @@ function Chat({ onSocketReady }) {
         if (lowerCommand === '/meeting') {
             const [meetingDate, meetingTime, ...titleParts] = argsString.split(' ');
             const meetingTitle = titleParts.join(' ') || 'Réunion';
-            if (!meetingDate || !meetingTime) {
-                alert("❌ Format : /meeting 2025-04-20 15:30 Réunion hebdo");
+            const isoStartTime = new Date(`${meetingDate}T${meetingTime}`);
+
+            if (isNaN(isoStartTime.getTime())) {
+                console.warn('❌ Format attendu : /meeting YYYY-MM-DD HH:mm Titre');
                 return;
             }
 
-            console.log(`🧩 Commande /meeting : ${meetingTitle} à ${meetingDate} ${meetingTime}`);
-            socket.emit('meeting-reminder', { meetingDate, meetingTime, meetingTitle });
+            try {
+                await axios.post('/api/meetings/create', {
+                    startTime: isoStartTime,
+                    title: meetingTitle,
+                    channel: selectedChannel || null,
+                    receiver: selectedUser || null,
+                });
+
+                socket.emit('meeting-reminder', {
+                    meetingDate,
+                    meetingTime,
+                    meetingTitle,
+                    channelId: selectedChannel,
+                    receiverId: selectedUser,
+                });
+
+            } catch (err) {
+                console.error('Erreur lors de la création de la réunion :', err);
+            }
+
             return;
         }
+
 
         // -----------------------
         // 📊 Commande /poll
         // -----------------------
         if (lowerCommand === '/poll') {
+            // on découpe la question et les options
             const [questionPart, ...optionParts] = argsString.split('|');
             const pollQuestion = questionPart.trim();
             const options = optionParts.map(opt => opt.trim()).filter(Boolean);
-
-            if (!pollQuestion || options.length < 2 || options.length > 4) {
-                alert("❌ Format invalide. Utilise : /poll Question ? | Option1 | Option2 ... (2 à 4 options max)");
-                return;
-            }
-
-
-            console.log(`📊 Émission socket /poll`, { question: pollQuestion, options });
-            socket.emit('poll', { question: pollQuestion, options });
-
-
+            socket.emit('poll', {
+                question: pollQuestion,
+                options,
+                channelId: selectedChannel,
+                receiverId: selectedUser
+            });
             return;
         }
+
 // -----------------------
 // ⏰ Commande /remindme
 // -----------------------
         if (lowerCommand === '/remindme') {
-            const [time, ...reminderParts] = argsString.split(' ');
-            const message = reminderParts.join(' ').trim();
-
-            if (!time || !message) {
-                alert("❌ Format : /remindme 10min Va boire de l'eau !");
-                return;
-            }
-
-            console.log(`⏰ Émission socket /remindme`, { time, message });
-            socket.emit('remindme', { time, message }); // ← 🔥 ICI
-
-            setMessages(prev => [
-                ...prev,
-                {
-                    _id: Date.now(),
-                    content: `⏰ Rappel dans ${time} programmé`,
-                    type: 'system'
-                }
-            ]);
+            // on découpe le délai et le message
+            const [time, ...messageParts] = argsString.split(' ');
+            const message = messageParts.join(' ').trim();
+            socket.emit('remindme', {
+                time,
+                message,
+                channelId: selectedChannel,
+                receiverId: selectedUser
+            });
             return;
         }
-
-
         // -----------------------
         // ❓ Commande inconnue
         // -----------------------
@@ -725,13 +728,14 @@ function Chat({ onSocketReady }) {
 
             <div className="chat-layout-main">
                 <ChatWindow
+                    socket={socket}
                     userId={userId}
                     messages={messages}
                     users={users}
                     selectedUser={selectedUser}
                     selectedChannel={selectedChannel}
                     focusMessageId={focusMessageId}
-                    // canDelete={canDelete} // Optionnel : pour contrôler la suppression selon le rôle
+                    canDelete={canDelete}
                     setMessages={setMessages}
                 />
                 <MessageInput
@@ -746,9 +750,10 @@ function Chat({ onSocketReady }) {
 export default Chat;
 
 
-/*
+/* Commande Bot
 /poll Quelle est votre couleur préférée ? | Rouge | Bleu | Vert
 /remindme 10min meeting !
+/meeting 2025-04-29 15:30 Réunion hebdo
 
 
 *
