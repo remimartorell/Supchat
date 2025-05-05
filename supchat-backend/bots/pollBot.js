@@ -1,5 +1,6 @@
 // bots/pollBot.js
 const { saveBotMessage } = require('../controllers/messageBotController');
+const Message = require('../models/Message');
 
 module.exports = function initPollBot(io, activePolls, userSocketMap) {
     io.on('connection', socket => {
@@ -20,9 +21,13 @@ module.exports = function initPollBot(io, activePolls, userSocketMap) {
             // Sauvegarder le message bot en base
             const saved = await saveBotMessage({
                 content: `📊 Sondage : ${question}`,
-                channel: channelId  || null,
-                receiver: receiverId || null
+                channel: channelId || null,
+                receiver: receiverId || null,
+                question,
+                options,
+                votes
             }, channelId ? 'channel' : 'dm');
+
 
             if (!saved) return;
 
@@ -50,22 +55,24 @@ module.exports = function initPollBot(io, activePolls, userSocketMap) {
             }
         });
 
-        socket.on('vote-poll', ({ pollId, optionIndex }) => {
-            const poll = activePolls.get(pollId);
-            if (!poll) return;
-            if (optionIndex < 0 || optionIndex >= poll.options.length) return;
+        socket.on('vote-poll', async ({ pollId, optionIndex }) => {
+            try {
+                const pollMsg = await Message.findById(pollId);
+                if (!pollMsg || !Array.isArray(pollMsg.votes) || !pollMsg.options?.length) return;
+                if (optionIndex < 0 || optionIndex >= pollMsg.options.length) return;
 
-            // Incrémenter le vote
-            poll.votes[optionIndex]++;
-            activePolls.set(pollId, poll);
+                pollMsg.votes[optionIndex]++;
+                await pollMsg.save();
 
-            // Diffuser les nouveaux résultats
-            io.emit('poll-result', {
-                _id:      pollId,
-                question: poll.question,
-                options:  poll.options,
-                votes:    poll.votes,
-            });
+                io.emit('poll-result', {
+                    _id: pollMsg._id.toString(),
+                    question: pollMsg.question,
+                    options: pollMsg.options,
+                    votes: pollMsg.votes
+                });
+            } catch (err) {
+                console.error('❌ Erreur lors du vote :', err);
+            }
         });
     });
 

@@ -1,4 +1,3 @@
-// src/components/ChatWindow.js
 import React, { useEffect, useRef, useState } from 'react';
 import axios from '../services/axiosConfig';
 import './ChatWindow.css';
@@ -80,6 +79,31 @@ function ChatWindow({
             listRef.current.scrollTop = listRef.current.scrollHeight;
         }
     }, [messages, focusMessageId]);
+
+    useEffect(() => {
+        if (!socket) return;
+
+        const handlePollResult = ({ _id, votes }) => {
+            setMessages(prev =>
+                prev.map(m =>
+                    m._id === _id ? { ...m, votes } : m
+                )
+            );
+        };
+
+        const handleBotMessage = (newMessage) => {
+            setMessages(prev => [...prev, newMessage]);
+        };
+
+        socket.on('poll-result', handlePollResult);
+        socket.on('bot-message', handleBotMessage);
+
+        return () => {
+            socket.off('poll-result', handlePollResult);
+            socket.off('bot-message', handleBotMessage);
+        };
+    }, [socket, setMessages]);
+
 
     const formatTimestamp = (timestamp) => new Date(timestamp).toLocaleString();
 
@@ -178,7 +202,7 @@ function ChatWindow({
                     const timestamp = formatTimestamp(m.createdAt);
                     const validMentions = m.validMentions || [];
                     const avatarUrl = getSenderAvatar(m);
-                    const isPoll = m.type === 'poll' || (m.question && Array.isArray(m.options));
+                    const isPoll = m.type === 'poll' && m.question && Array.isArray(m.options);
 
                     return (
                         <div

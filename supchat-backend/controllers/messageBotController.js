@@ -13,10 +13,13 @@ exports.saveBotMessage = async (messageData, type) => {
             saved = await new Message({
                 content: messageData.content,
                 channel: messageData.channel,
-                // Définir un identifiant fixe pour le bot ou laisser null
-                // sender: '000000000000000000000000', // ID spécial pour bot
-                type: 'bot' // Ajoutez un champ pour identifier comme message bot
+                type: messageData.question && messageData.options ? 'poll' : 'bot',
+                question: messageData.question || null,
+                options: messageData.options || [],
+                votes: messageData.votes || []
             }).save();
+
+
 
         } else if (type === 'dm') {
             // Messages directs
