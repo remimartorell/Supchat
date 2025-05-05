@@ -4,15 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Débugage des bots:&#10;-Metting&#10;-Annonce&#10;&#10;reste a debuguer -Sondage problème avec la liaison entre la base de données">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/middleware/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/middleware/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/channels.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/channels.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/package-lock.json" afterDir="false" />
-    </list>
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout du dossier supchat-mobile&#10;Remis les IP dans le .env car sinon le mobile ne marchait pas.&#10;Modif des fichiers backend/middleware/auth.js et ajout d'une route dans backend/routes/channel.js puis enfin ajout de commentaires dans le docker-compose.yml" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -82,7 +74,7 @@
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "vcs.Git",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.3\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "ts.external.directory.path": "C:\\Users\\marto\\Desktop\\Cours\\3eAnnee\\3PROJ\\Projet Final\\Supchat\\supchat-mobile\\node_modules\\typescript\\lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -137,7 +129,7 @@
       <workItem from="1744873661538" duration="20883000" />
       <workItem from="1744961451786" duration="12957000" />
       <workItem from="1745916636311" duration="15586000" />
-      <workItem from="1746443505552" duration="1439000" />
+      <workItem from="1746443505552" duration="2009000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -363,7 +355,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746435789550</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Ajout du dossier supchat-mobile&#10;Remis les IP dans le .env car sinon le mobile ne marchait pas.&#10;Modif des fichiers backend/middleware/auth.js et ajout d'une route dans backend/routes/channel.js puis enfin ajout de commentaires dans le docker-compose.yml">
+      <option name="closed" value="true" />
+      <created>1746445423626</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1746445423626</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -381,7 +381,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="- Channels : Création de canal, lister les canaux d'un workspace, supprimer un canal&#10;- Modification du index.js" />
     <MESSAGE value="- Messages : Envoyer un message dans un canal, récupérer les messages d'un canal&#10;- Modification du index.js" />
     <MESSAGE value="- Messages : Envoyer des messages privés, envoyer un fichier, ajouter des réactions.&#10;- Modification du index.js" />
     <MESSAGE value="- Messages : Envoyer des fichiers en message privé, ajouter des réactions aux messages privés.&#10;- Modification du docket-compose" />
@@ -406,7 +405,8 @@
     <MESSAGE value="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage" />
     <MESSAGE value="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage&#10;Attention a améliorer le visuel" />
     <MESSAGE value="Débugage des bots:&#10;-Metting&#10;-Annonce&#10;&#10;reste a debuguer -Sondage problème avec la liaison entre la base de données" />
-    <option name="LAST_COMMIT_MESSAGE" value="Débugage des bots:&#10;-Metting&#10;-Annonce&#10;&#10;reste a debuguer -Sondage problème avec la liaison entre la base de données" />
+    <MESSAGE value="Ajout du dossier supchat-mobile&#10;Remis les IP dans le .env car sinon le mobile ne marchait pas.&#10;Modif des fichiers backend/middleware/auth.js et ajout d'une route dans backend/routes/channel.js puis enfin ajout de commentaires dans le docker-compose.yml" />
+    <option name="LAST_COMMIT_MESSAGE" value="Ajout du dossier supchat-mobile&#10;Remis les IP dans le .env car sinon le mobile ne marchait pas.&#10;Modif des fichiers backend/middleware/auth.js et ajout d'une route dans backend/routes/channel.js puis enfin ajout de commentaires dans le docker-compose.yml" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
