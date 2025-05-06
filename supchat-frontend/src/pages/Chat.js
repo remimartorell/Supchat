@@ -98,12 +98,6 @@ function Chat({onSocketReady}) {
             console.log('[Socket] joined:', msg);
         });
 
-        newSocket.on('bot-message', (botMsg) => {
-            console.log('[Socket] bot-message:', botMsg);
-            setMessages(prev => [...prev, {...botMsg, type: 'bot'}]);
-        });
-
-
         newSocket.on('poll-result', (data) => {
             console.log('[Socket] poll-result:', data);
             // On met à jour le sondage existant, pas besoin d'ajouter un message.

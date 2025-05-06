@@ -5,14 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout du dossier supchat-mobile&#10;Remis les IP dans le .env car sinon le mobile ne marchait pas.&#10;Modif des fichiers backend/middleware/auth.js et ajout d'une route dans backend/routes/channel.js puis enfin ajout de commentaires dans le docker-compose.yml">
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/meeting-avatar.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/poll-avatar.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img/reminder-avatar.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-mobile" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-mobile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-mobile/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-mobile/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-mobile/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-mobile/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-mobile/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-mobile/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-mobile/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-mobile/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/controllers/messageBotController.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/controllers/messageBotController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/nginx.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +33,7 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="RESET_MODE" value="MIXED" />
+    <option name="RESET_MODE" value="HARD" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -39,12 +41,12 @@
     &quot;assignee&quot;: &quot;remimartorell&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/remimartorell/Supchat.git&quot;,
-    &quot;accountId&quot;: &quot;39a550c0-b14e-4748-9a4e-1ebd85ade2a8&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/remimartorell/Supchat.git",
+    "accountId": "41714712-62ae-4952-accd-af807ed350c6"
   }
-}</component>
+}]]></component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -72,7 +74,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/hugod/Github/Supchat/supchat-frontend/public/img/avatars",
+    "last_opened_file_path": "C:/Users/hugod/Github/Supchat/img",
     "list.type.of.created.stylesheet": "CSS",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -83,12 +85,13 @@
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
-    "ts.external.directory.path": "C:\\Users\\marto\\Desktop\\Cours\\3eAnnee\\3PROJ\\Projet Final\\Supchat\\supchat-mobile\\node_modules\\typescript\\lib",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.3.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\hugod\Github\Supchat\img" />
       <recent name="C:\Users\hugod\Github\Supchat\supchat-frontend\public\img\avatars" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -99,8 +102,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.24807.4" />
-        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.24807.4" />
+        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.24978.46" />
+        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-IU-243.24978.46" />
       </set>
     </attachedChunks>
   </component>
@@ -140,6 +143,7 @@
       <workItem from="1745916636311" duration="15586000" />
       <workItem from="1746443505552" duration="2572000" />
       <workItem from="1746446166208" duration="81000" />
+      <workItem from="1746515222284" duration="6571000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />

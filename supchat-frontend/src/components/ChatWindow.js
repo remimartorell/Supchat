@@ -83,6 +83,7 @@ function ChatWindow({
     useEffect(() => {
         if (!socket) return;
 
+        // Mise à jour des résultats de sondage
         const handlePollResult = ({ _id, votes }) => {
             setMessages(prev =>
                 prev.map(m =>
@@ -91,6 +92,7 @@ function ChatWindow({
             );
         };
 
+        // Nouveau message bot
         const handleBotMessage = (newMessage) => {
             setMessages(prev => [...prev, newMessage]);
         };
@@ -103,7 +105,6 @@ function ChatWindow({
             socket.off('bot-message', handleBotMessage);
         };
     }, [socket, setMessages]);
-
 
     const formatTimestamp = (timestamp) => new Date(timestamp).toLocaleString();
 
@@ -140,7 +141,7 @@ function ChatWindow({
         if (!window.confirm('Supprimer ce message ?')) return;
         try {
             await axios.delete(`/api/channels/${m.channel}/messages/${m._id}`);
-            setMessages((prev) => prev.filter((msg) => msg._id !== m._id));
+            setMessages(prev => prev.filter(msg => msg._id !== m._id));
         } catch (err) {
             console.error('Erreur suppression message:', err);
             alert('Impossible de supprimer ce message');
@@ -196,8 +197,10 @@ function ChatWindow({
     return (
         <div className="chat-window-container">
             <div ref={listRef} className="chat-window-messages">
-                {messages.map((m) => {
-                    const isMe = (m.sender && typeof m.sender === 'object' && m.sender._id === userId) || m.sender === userId;
+                {messages.map(m => {
+                    const isMe =
+                        (m.sender && typeof m.sender === 'object' && m.sender._id === userId) ||
+                        m.sender === userId;
                     const senderLabel = getSenderLabel(m);
                     const timestamp = formatTimestamp(m.createdAt);
                     const validMentions = m.validMentions || [];
@@ -208,7 +211,9 @@ function ChatWindow({
                         <div
                             key={m._id}
                             id={`msg-${m._id}`}
-                            className={`message-container ${isMe ? 'message-bg-me' : 'message-bg-other'}`}
+                            className={`message-container ${
+                                isMe ? 'message-bg-me' : 'message-bg-other'
+                            }`}
                         >
                             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
                                 <img
@@ -219,7 +224,7 @@ function ChatWindow({
                                         height: '32px',
                                         borderRadius: '50%',
                                         marginRight: '8px',
-                                        objectFit: 'cover'
+                                        objectFit: 'cover',
                                     }}
                                 />
                                 <div className="message-header">
@@ -233,88 +238,135 @@ function ChatWindow({
                                     <textarea
                                         className="message-edit-textarea"
                                         value={editContent}
-                                        onChange={(e) => setEditContent(e.target.value)}
+                                        onChange={e => setEditContent(e.target.value)}
                                     />
                                     <div className="message-edit-buttons">
-                                        <button className="action-button" onClick={() => handleSaveEdit(m)}>Enregistrer</button>
-                                        <button className="action-button" onClick={handleCancelEdit}>Annuler</button>
+                                        <button
+                                            className="action-button"
+                                            onClick={() => handleSaveEdit(m)}
+                                        >
+                                            Enregistrer
+                                        </button>
+                                        <button
+                                            className="action-button"
+                                            onClick={handleCancelEdit}
+                                        >
+                                            Annuler
+                                        </button>
                                     </div>
                                 </>
-                            ) : (
-                                <>
-                                    {isPoll ? (
-                                        <div className="poll-container">
-                                            <div className="poll-question">📊 {m.question}</div>
-                                            {(() => {
-                                                const total = m.votes.reduce((sum, v) => sum + v, 0);
-                                                return m.options.map((opt, idx) => {
-                                                    const count = m.votes[idx] || 0;
-                                                    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-                                                    return (
+                            ) : isPoll ? (
+                                <div className="poll-container">
+                                    <div className="poll-question">📊 {m.question}</div>
+                                    {(() => {
+                                        const total = m.votes.reduce((sum, v) => sum + v, 0);
+                                        return m.options.map((opt, idx) => {
+                                            const count = m.votes[idx] || 0;
+                                            const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                                            return (
+                                                <div
+                                                    key={idx}
+                                                    className="poll-option-bar"
+                                                    onClick={() => !votedPolls.has(m._id) && handleVote(m._id, idx)}
+                                                    style={{ cursor: votedPolls.has(m._id) ? 'default' : 'pointer' }}
+                                                >
+                                                    <span className="poll-option-label">{opt}</span>
+                                                    <div className="poll-bar-outer">
                                                         <div
-                                                            key={idx}
-                                                            className="poll-option-bar"
-                                                            onClick={() => !votedPolls.has(m._id) && handleVote(m._id, idx)}
-                                                            style={{ cursor: votedPolls.has(m._id) ? 'default' : 'pointer' }}
-                                                        >
-                                                            <span className="poll-option-label">{opt}</span>
-                                                            <div className="poll-bar-outer">
-                                                                <div
-                                                                    className="poll-bar-inner"
-                                                                    style={{ width: `${pct}%` }}
-                                                                />
-                                                            </div>
-                                                            <span className="poll-bar-count">
-                                                                {count} ({pct}%)
-                                                            </span>
-                                                        </div>
-                                                    );
-                                                });
-                                            })()}
-                                        </div>
+                                                            className="poll-bar-inner"
+                                                            style={{ width: `${pct}%` }}
+                                                        />
+                                                    </div>
+                                                    <span className="poll-bar-count">
+                                                        {count} ({pct}%
+                                                    </span>
+                                                </div>
+                                            );
+                                        });
+                                    })()}
+                                </div>
+                            ) : (
+                                <div className="message-content">
+                                    {/^https?:\/\/.*\.(gif|png|jpe?g)$/i.test(m.content) ? (
+                                        <img
+                                            src={m.content}
+                                            alt="img"
+                                            style={{ maxWidth: '200px', height: 'auto', borderRadius: '4px' }}
+                                        />
                                     ) : (
-                                        <div className="message-content">
-                                            {/^https?:\/\/.*\.(gif|png|jpe?g)$/i.test(m.content)
-                                                ? <img src={m.content} alt="img" style={{ maxWidth: '200px', height: 'auto', borderRadius: '4px' }} />
-                                                : highlightMentions(m.content || '', validMentions)}
-                                            {m.edited && <span className="message-edited">(Modifié)</span>}
-                                        </div>
+                                        highlightMentions(m.content || '', validMentions)
                                     )}
+                                    {m.edited && <span className="message-edited">(Modifié)</span>}
+                                </div>
+                            )}
 
-                                    {m.fileUrl && (
-                                        <div className="message-file">
-                                            {m.fileUrl.match(/\.(png|jpe?g|gif)$/i)
-                                                ? <img src={process.env.REACT_APP_API_URL + m.fileUrl} alt="file" style={{ maxWidth: '200px', height: 'auto' }} />
-                                                : <a href={m.fileUrl} target="_blank" rel="noreferrer">Télécharger le fichier</a>}
-                                        </div>
+                            {m.fileUrl && (
+                                <div className="message-file">
+                                    {m.fileUrl.match(/\.(png|jpe?g|gif)$/i) ? (
+                                        <img
+                                            src={process.env.REACT_APP_API_URL + m.fileUrl}
+                                            alt="file"
+                                            style={{ maxWidth: '200px', height: 'auto' }}
+                                        />
+                                    ) : (
+                                        <a href={m.fileUrl} target="_blank" rel="noreferrer">
+                                            Télécharger le fichier
+                                        </a>
                                     )}
+                                </div>
+                            )}
 
-                                    {!isPoll && (
-                                        <div className="message-actions">
-                                            <button className="action-button" onClick={() => openEmojiPickerForMessage(m)}>Réagir</button>
-                                            {isMe && <button className="action-button" onClick={() => startEditingMessage(m)}>Modifier</button>}
-                                            {canDelete && <button className="action-button delete-button" onClick={() => handleDeleteMsg(m)}>X</button>}
-                                        </div>
+                            {!isPoll && editingMessageId !== m._id && (
+                                <div className="message-actions">
+                                    <button
+                                        className="action-button"
+                                        onClick={() => openEmojiPickerForMessage(m)}
+                                    >
+                                        Réagir
+                                    </button>
+                                    {isMe && (
+                                        <button
+                                            className="action-button"
+                                            onClick={() => startEditingMessage(m)}
+                                        >
+                                            Modifier
+                                        </button>
                                     )}
-
-                                    <div className="message-reactions">
-                                        {m.reactions?.map((react, i) => (
-                                            <span key={i} className="reaction" title={`Réaction de ${react.user?.name || '(Inconnu)'}`}>
-                                                {react.emoji}
-                                            </span>
-                                        ))}
-                                    </div>
-
-                                    {showEmojiPickerFor === m._id && (
-                                        <div className="emoji-picker">
-                                            {['😃', '👍', '❤️', '🔥', '🎉'].map((emoji) => (
-                                                <span key={emoji} className="emoji" onClick={() => handleChooseEmoji(m, emoji)}>
-                                                    {emoji}
-                                                </span>
-                                            ))}
-                                        </div>
+                                    {canDelete && (
+                                        <button
+                                            className="action-button delete-button"
+                                            onClick={() => handleDeleteMsg(m)}
+                                        >
+                                            X
+                                        </button>
                                     )}
-                                </>
+                                </div>
+                            )}
+
+                            <div className="message-reactions">
+                                {m.reactions?.map((react, i) => (
+                                    <span
+                                        key={i}
+                                        className="reaction"
+                                        title={`Réaction de ${react.user?.name || '(Inconnu)'}`}
+                                    >
+                                        {react.emoji}
+                                    </span>
+                                ))}
+                            </div>
+
+                            {showEmojiPickerFor === m._id && (
+                                <div className="emoji-picker">
+                                    {['😃', '👍', '❤️', '🔥', '🎉'].map(emoji => (
+                                        <span
+                                            key={emoji}
+                                            className="emoji"
+                                            onClick={() => handleChooseEmoji(m, emoji)}
+                                        >
+                                            {emoji}
+                                        </span>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     );
