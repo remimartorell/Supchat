@@ -4,17 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout du dossier supchat-mobile&#10;Remis les IP dans le .env car sinon le mobile ne marchait pas.&#10;Modif des fichiers backend/middleware/auth.js et ajout d'une route dans backend/routes/channel.js puis enfin ajout de commentaires dans le docker-compose.yml">
-      <change afterPath="$PROJECT_DIR$/img/meeting-avatar.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/img/poll-avatar.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/img/reminder-avatar.png" afterDir="false" />
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Les bots fonctionne bien reste juste le sondage petit problème de nom">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/controllers/messageBotController.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/controllers/messageBotController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/nginx.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,12 +34,12 @@
     &quot;assignee&quot;: &quot;remimartorell&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/remimartorell/Supchat.git",
-    "accountId": "41714712-62ae-4952-accd-af807ed350c6"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/remimartorell/Supchat.git&quot;,
+    &quot;accountId&quot;: &quot;41714712-62ae-4952-accd-af807ed350c6&quot;
   }
-}]]></component>
+}</component>
   <component name="KubernetesApiPersistence">{}</component>
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
@@ -65,30 +58,30 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Node.js.directMessages.js.executor": "Run",
-    "Node.js.index.js.executor": "Run",
-    "Node.js.workspaces.js.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/hugod/Github/Supchat/img",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Problems",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
-    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.3.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Node.js.directMessages.js.executor&quot;: &quot;Run&quot;,
+    &quot;Node.js.index.js.executor&quot;: &quot;Run&quot;,
+    &quot;Node.js.workspaces.js.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/hugod/Github/Supchat/img&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Problems&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.3.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\hugod\Github\Supchat\img" />
@@ -144,6 +137,7 @@
       <workItem from="1746443505552" duration="2572000" />
       <workItem from="1746446166208" duration="81000" />
       <workItem from="1746515222284" duration="6571000" />
+      <workItem from="1746530228349" duration="2258000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -385,7 +379,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746445892983</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="Les bots fonctionne bien reste juste le sondage petit problème de nom">
+      <option name="closed" value="true" />
+      <created>1746530399248</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1746530399248</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -403,7 +405,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="- Messages : Envoyer un message dans un canal, récupérer les messages d'un canal&#10;- Modification du index.js" />
     <MESSAGE value="- Messages : Envoyer des messages privés, envoyer un fichier, ajouter des réactions.&#10;- Modification du index.js" />
     <MESSAGE value="- Messages : Envoyer des fichiers en message privé, ajouter des réactions aux messages privés.&#10;- Modification du docket-compose" />
     <MESSAGE value="- Régler le problème de socket.io . Maintenant les notifications et messages reçu via l'event new-private-message ainsi que join des rooms." />
@@ -428,7 +429,8 @@
     <MESSAGE value="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage&#10;Attention a améliorer le visuel" />
     <MESSAGE value="Débugage des bots:&#10;-Metting&#10;-Annonce&#10;&#10;reste a debuguer -Sondage problème avec la liaison entre la base de données" />
     <MESSAGE value="Ajout du dossier supchat-mobile&#10;Remis les IP dans le .env car sinon le mobile ne marchait pas.&#10;Modif des fichiers backend/middleware/auth.js et ajout d'une route dans backend/routes/channel.js puis enfin ajout de commentaires dans le docker-compose.yml" />
-    <option name="LAST_COMMIT_MESSAGE" value="Ajout du dossier supchat-mobile&#10;Remis les IP dans le .env car sinon le mobile ne marchait pas.&#10;Modif des fichiers backend/middleware/auth.js et ajout d'une route dans backend/routes/channel.js puis enfin ajout de commentaires dans le docker-compose.yml" />
+    <MESSAGE value="Les bots fonctionne bien reste juste le sondage petit problème de nom" />
+    <option name="LAST_COMMIT_MESSAGE" value="Les bots fonctionne bien reste juste le sondage petit problème de nom" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

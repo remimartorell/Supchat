@@ -208,3 +208,24 @@ src/components/ChatWindows.css
     text-align: right;
     font-size: 0.85em;
 }
+
+/* ========= Read receipts ========= */
+.message-read-receipt {
+    margin-top: 4px;
+    font-size: 0.75rem;      /* un peu plus petit */
+    color: #ffffff;          /* en blanc */
+    font-style: italic;      /* italique */
+}
+
+.message-read-receipt .check-icon {
+    display: inline-block;
+    font-weight: bold;
+    color: #4caf50;    /* vert */
+    margin-right: 4px;
+}
+
+.check-icon {
+    color: #ffffff;          /* icône blanche */
+    font-size: 0.75rem;      /* même taille que le texte */
+    font-style: italic;      /* italique également */
+}

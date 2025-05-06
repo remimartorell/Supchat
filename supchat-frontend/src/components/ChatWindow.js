@@ -1,3 +1,4 @@
+// src/components/ChatWindow.js
 import React, { useEffect, useRef, useState } from 'react';
 import axios from '../services/axiosConfig';
 import './ChatWindow.css';
@@ -35,7 +36,6 @@ function ChatWindow({
     const [editContent, setEditContent] = useState('');
     const [showEmojiPickerFor, setShowEmojiPickerFor] = useState(null);
     const [votedPolls, setVotedPolls] = useState(new Set());
-
     const avatarBaseUrl = `${process.env.REACT_APP_API_URL}/api/users`;
 
     useEffect(() => {
@@ -56,7 +56,8 @@ function ChatWindow({
             ? `/api/channels/${m.channel}/messages/${m._id}/reactions`
             : `/api/direct-messages/${m._id}/reactions`;
 
-        axios.post(url, { emoji: chosenEmoji })
+        axios
+            .post(url, { emoji: chosenEmoji })
             .then(() => setShowEmojiPickerFor(null))
             .catch((err) => console.error('Erreur réaction emoji :', err));
     };
@@ -83,18 +84,14 @@ function ChatWindow({
     useEffect(() => {
         if (!socket) return;
 
-        // Mise à jour des résultats de sondage
         const handlePollResult = ({ _id, votes }) => {
-            setMessages(prev =>
-                prev.map(m =>
-                    m._id === _id ? { ...m, votes } : m
-                )
+            setMessages((prev) =>
+                prev.map((m) => (m._id === _id ? { ...m, votes } : m))
             );
         };
 
-        // Nouveau message bot
         const handleBotMessage = (newMessage) => {
-            setMessages(prev => [...prev, newMessage]);
+            setMessages((prev) => [...prev, newMessage]);
         };
 
         socket.on('poll-result', handlePollResult);
@@ -141,7 +138,7 @@ function ChatWindow({
         if (!window.confirm('Supprimer ce message ?')) return;
         try {
             await axios.delete(`/api/channels/${m.channel}/messages/${m._id}`);
-            setMessages(prev => prev.filter(msg => msg._id !== m._id));
+            setMessages((prev) => prev.filter((msg) => msg._id !== m._id));
         } catch (err) {
             console.error('Erreur suppression message:', err);
             alert('Impossible de supprimer ce message');
@@ -181,11 +178,13 @@ function ChatWindow({
 
         socket.emit('vote-poll', { pollId, optionIndex });
 
-        setVotedPolls(prev => new Set(prev).add(pollId));
-        setMessages(prev =>
-            prev.map(m => {
+        setVotedPolls((prev) => new Set(prev).add(pollId));
+        setMessages((prev) =>
+            prev.map((m) => {
                 if (m._id === pollId) {
-                    const updatedVotes = [...(m.votes || Array(m.options.length).fill(0))];
+                    const updatedVotes = [
+                        ...(m.votes || Array(m.options.length).fill(0)),
+                    ];
                     updatedVotes[optionIndex]++;
                     return { ...m, votes: updatedVotes };
                 }
@@ -197,9 +196,11 @@ function ChatWindow({
     return (
         <div className="chat-window-container">
             <div ref={listRef} className="chat-window-messages">
-                {messages.map(m => {
+                {messages.map((m) => {
                     const isMe =
-                        (m.sender && typeof m.sender === 'object' && m.sender._id === userId) ||
+                        (m.sender &&
+                            typeof m.sender === 'object' &&
+                            m.sender._id === userId) ||
                         m.sender === userId;
                     const senderLabel = getSenderLabel(m);
                     const timestamp = formatTimestamp(m.createdAt);
@@ -215,7 +216,14 @@ function ChatWindow({
                                 isMe ? 'message-bg-me' : 'message-bg-other'
                             }`}
                         >
-                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                            {/* Avatar + header */}
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    marginBottom: '5px',
+                                }}
+                            >
                                 <img
                                     src={avatarUrl}
                                     alt="avatar"
@@ -233,12 +241,13 @@ function ChatWindow({
                                 </div>
                             </div>
 
+                            {/* Édition / Sondage / Contenu */}
                             {editingMessageId === m._id ? (
                                 <>
                                     <textarea
                                         className="message-edit-textarea"
                                         value={editContent}
-                                        onChange={e => setEditContent(e.target.value)}
+                                        onChange={(e) => setEditContent(e.target.value)}
                                     />
                                     <div className="message-edit-buttons">
                                         <button
@@ -267,8 +276,14 @@ function ChatWindow({
                                                 <div
                                                     key={idx}
                                                     className="poll-option-bar"
-                                                    onClick={() => !votedPolls.has(m._id) && handleVote(m._id, idx)}
-                                                    style={{ cursor: votedPolls.has(m._id) ? 'default' : 'pointer' }}
+                                                    onClick={() =>
+                                                        !votedPolls.has(m._id) && handleVote(m._id, idx)
+                                                    }
+                                                    style={{
+                                                        cursor: votedPolls.has(m._id)
+                                                            ? 'default'
+                                                            : 'pointer',
+                                                    }}
                                                 >
                                                     <span className="poll-option-label">{opt}</span>
                                                     <div className="poll-bar-outer">
@@ -278,7 +293,7 @@ function ChatWindow({
                                                         />
                                                     </div>
                                                     <span className="poll-bar-count">
-                                                        {count} ({pct}%
+                                                        {count} ({pct}%)
                                                     </span>
                                                 </div>
                                             );
@@ -287,26 +302,36 @@ function ChatWindow({
                                 </div>
                             ) : (
                                 <div className="message-content">
-                                    {/^https?:\/\/.*\.(gif|png|jpe?g)$/i.test(m.content) ? (
+                                    {/https?:\/\/.*\.(gif|png|jpe?g)$/i.test(m.content) ? (
                                         <img
                                             src={m.content}
                                             alt="img"
-                                            style={{ maxWidth: '200px', height: 'auto', borderRadius: '4px' }}
+                                            style={{
+                                                maxWidth: '200px',
+                                                height: 'auto',
+                                                borderRadius: '4px',
+                                            }}
                                         />
                                     ) : (
                                         highlightMentions(m.content || '', validMentions)
                                     )}
-                                    {m.edited && <span className="message-edited">(Modifié)</span>}
+                                    {m.edited && (
+                                        <span className="message-edited">(Modifié)</span>
+                                    )}
                                 </div>
                             )}
 
+                            {/* Fichier joint */}
                             {m.fileUrl && (
                                 <div className="message-file">
                                     {m.fileUrl.match(/\.(png|jpe?g|gif)$/i) ? (
                                         <img
                                             src={process.env.REACT_APP_API_URL + m.fileUrl}
                                             alt="file"
-                                            style={{ maxWidth: '200px', height: 'auto' }}
+                                            style={{
+                                                maxWidth: '200px',
+                                                height: 'auto',
+                                            }}
                                         />
                                     ) : (
                                         <a href={m.fileUrl} target="_blank" rel="noreferrer">
@@ -316,6 +341,7 @@ function ChatWindow({
                                 </div>
                             )}
 
+                            {/* Actions */}
                             {!isPoll && editingMessageId !== m._id && (
                                 <div className="message-actions">
                                     <button
@@ -343,21 +369,47 @@ function ChatWindow({
                                 </div>
                             )}
 
+                            {/* Réactions */}
                             <div className="message-reactions">
                                 {m.reactions?.map((react, i) => (
                                     <span
                                         key={i}
                                         className="reaction"
-                                        title={`Réaction de ${react.user?.name || '(Inconnu)'}`}
+                                        title={`Réaction de ${
+                                            react.userName || react.user?._id || '(Inconnu)'
+                                        }`}
                                     >
                                         {react.emoji}
                                     </span>
                                 ))}
                             </div>
 
+                            {/* ——— Read receipts ——— */}
+                            {m.readBy && m.readBy.length > 0 && (
+                                <div
+                                    className="message-read-receipt"
+                                    title={m.readBy
+                                        .map((rb) => {
+                                            // rb.user peut être un string ou un objet { _id, ... }
+                                            const uid =
+                                                typeof rb.user === 'object'
+                                                    ? rb.user._id
+                                                    : rb.user;
+                                            const u = users.find((u) => u._id === uid);
+                                            return u ? u.name : uid;
+                                        })
+                                        .join(', ')}
+                                >
+                                    {selectedChannel
+                                        ? `Lu par ${m.readBy.length}`
+                                        : isMe && <span className="check-icon">✓</span>}
+                                </div>
+                            )}
+
+                            {/* Emoji picker */}
                             {showEmojiPickerFor === m._id && (
                                 <div className="emoji-picker">
-                                    {['😃', '👍', '❤️', '🔥', '🎉'].map(emoji => (
+                                    {['😃', '👍', '❤️', '🔥', '🎉'].map((emoji) => (
                                         <span
                                             key={emoji}
                                             className="emoji"
