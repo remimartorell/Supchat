@@ -1,4 +1,3 @@
-// supchat-backend/index.js
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -96,10 +95,16 @@ io.on('connection', socket => {
     }
   });
 
+  // Enregistrement du userId et notification des autres utilisateurs
   socket.on('join', userId => {
     if (!userId) return console.error("❌ Aucun userId pour 'join'");
     userSocketMap[userId] = socket.id;
     socket.emit('joined', { message: `Connecté avec socket ${socket.id}` });
+    // Notification broadcast : user en ligne
+    socket.broadcast.emit('user-connected', userId);
+    // ----> NOUVELLE LIGNE À BIEN GARDER <----
+    // Envoi au nouvel arrivant de la liste de tous les users actuellement en ligne
+    socket.emit('active-users', Object.keys(userSocketMap));
   });
 
   socket.on('joinChannel', channelId => {
@@ -116,13 +121,20 @@ io.on('connection', socket => {
     if (targetSocketId) io.to(targetSocketId).emit('receiveDirectMessage', { message });
   });
 
+  // Gestion de la déconnexion et notification des autres utilisateurs
   socket.on('disconnect', () => {
     console.log(`⚠️ Déconnexion : ${socket.id}`);
+    let disconnectedUserId = null;
     for (const [uId, sid] of Object.entries(userSocketMap)) {
       if (sid === socket.id) {
+        disconnectedUserId = uId;
         delete userSocketMap[uId];
         break;
       }
+    }
+    if (disconnectedUserId) {
+      // Notification broadcast : user hors ligne
+      socket.broadcast.emit('user-disconnected', disconnectedUserId);
     }
   });
 });

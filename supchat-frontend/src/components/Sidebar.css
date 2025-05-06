@@ -108,3 +108,22 @@
     text-overflow: ellipsis;
     display: inline-block;
 }
+/* pastille par défaut (gris si pas de status) */
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+    background-color: #999; /* fallback */
+}
+
+/* connecté → vert */
+.status-dot.online {
+    background-color: #4CAF50;
+}
+
+/* déconnecté → rouge */
+.status-dot.offline {
+    background-color: #F44336;
+}
