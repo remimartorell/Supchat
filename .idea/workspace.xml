@@ -4,11 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Réparations des &quot;vu&quot;">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout des conditions d'utilisations ainsi qu'une options pour voir les mdp en clair reste a mettre en rouge lorsque l'utilisateur ne coche pas la case">
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Cgu.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Cgu.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Register.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Register.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Register.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Register.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,8 +31,8 @@
       <list>
         <option value="Dockerfile" />
         <option value="TypeScript File" />
-        <option value="CSS File" />
         <option value="JavaScript File" />
+        <option value="CSS File" />
       </list>
     </option>
   </component>
@@ -414,7 +425,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="- Messages : Envoyer des fichiers en message privé, ajouter des réactions aux messages privés.&#10;- Modification du docket-compose" />
     <MESSAGE value="- Régler le problème de socket.io . Maintenant les notifications et messages reçu via l'event new-private-message ainsi que join des rooms." />
     <MESSAGE value="- Ajout du front-end, amélioration de l'application" />
     <MESSAGE value="- Ajout des fichiers qui n'étaient pas ajoutés dans git" />
@@ -439,7 +449,8 @@
     <MESSAGE value="Ajout du dossier supchat-mobile&#10;Remis les IP dans le .env car sinon le mobile ne marchait pas.&#10;Modif des fichiers backend/middleware/auth.js et ajout d'une route dans backend/routes/channel.js puis enfin ajout de commentaires dans le docker-compose.yml" />
     <MESSAGE value="Les bots fonctionne bien reste juste le sondage petit problème de nom" />
     <MESSAGE value="Réparations des &quot;vu&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="Réparations des &quot;vu&quot;" />
+    <MESSAGE value="Ajout des conditions d'utilisations ainsi qu'une options pour voir les mdp en clair reste a mettre en rouge lorsque l'utilisateur ne coche pas la case" />
+    <option name="LAST_COMMIT_MESSAGE" value="Ajout des conditions d'utilisations ainsi qu'une options pour voir les mdp en clair reste a mettre en rouge lorsque l'utilisateur ne coche pas la case" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -452,8 +463,13 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js</url>
           <line>74</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/supchat-frontend/src/pages/Register.js</url>
+          <line>90</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

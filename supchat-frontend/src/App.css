@@ -5,4 +5,16 @@
   background: transparent !important;
 }
 
-/* (Optionnel) Si tu veux un style supplémentaire, tu peux le mettre ici. */
+/* Espace entre les liens Login / Register */
+.navbar .nav-left a {
+  margin-right: 1rem;
+}
+
+/* Rendre la zone de contenu scrollable */
+.app-container {
+  /* calc(100vh - hauteur de la navbar) */
+  height: calc(100vh - 60px);
+  overflow-y: auto;
+  /* facultatif : pour éviter un scrollbar horizontal */
+  overflow-x: hidden;
+}

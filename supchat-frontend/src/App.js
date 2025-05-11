@@ -15,6 +15,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import './App.css';
 import './styles/themes.css';
+import Terms from './pages/Cgu';
 
 function App() {
     const navigate = useNavigate();
@@ -123,6 +124,8 @@ function App() {
                     <Route path="/profile-settings" element={<PrivateRoute><ProfileSettings /></PrivateRoute>} />
                     <Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
                     <Route path="*" element={<div style={{ textAlign: 'center', marginTop: '40px' }}>404 Not Found</div>} />
+                    <Route path="/terms" element={<Terms />} />
+
                 </Routes>
             </div>
         </div>

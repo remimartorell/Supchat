@@ -36,6 +36,44 @@
     color: var(--text-color);
 }
 
+/* wrapper du champ mot de passe */
+.password-field {
+    position: relative;
+    margin-bottom: 1rem; /* pour garder l'espacement */
+}
+
+/* laisser de la place à l'icône œil */
+.password-field input {
+    width: 100%;
+    padding-right: 2.5rem;
+}
+
+/* icône œil positionnée verticalement centré */
+.password-field .password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
+
+.terms-field {
+    margin: 1rem 0;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+}
+
+.terms-field input {
+    margin-right: 0.5rem;
+}
+
+.terms-field a {
+    text-decoration: underline;
+}
+
 .register-submit-btn {
     padding: 10px;
     border: none;

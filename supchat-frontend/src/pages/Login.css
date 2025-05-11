@@ -104,3 +104,26 @@
     color: var(--accent-color);
     text-decoration: underline;
 }
+
+/* wrapper du champ mot de passe */
+.password-field {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+/* laisser de la place à l'icône œil */
+.password-field input {
+    width: 100%;
+    padding-right: 2.5rem;
+}
+
+/* icône œil positionnée verticalement centré */
+.password-field .password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+}
