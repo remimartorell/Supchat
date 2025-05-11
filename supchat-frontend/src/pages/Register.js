@@ -10,29 +10,21 @@ function Register() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [acceptedTerms, setAcceptedTerms] = useState(false);
+    const [termsError, setTermsError] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!acceptedTerms) {
-            alert('Vous devez accepter les Conditions d’utilisation & RGPD');
+            setTermsError(true);
             return;
         }
-
         try {
-            const response = await axios.post('/api/auth/register', {
-                name,
-                email,
-                password,
-                acceptedTerms, // on envoie maintenant la checkbox au back
-            });
-
-            // si pas de token, on tombe dans le flow "vérification email"
+            const response = await axios.post('/api/auth/register', { name, email, password, acceptedTerms });
             if (!response.data.token) {
                 alert(response.data.msg || 'Inscription réussie ! Vérifiez votre email pour activer votre compte.');
                 navigate('/login');
             } else {
-                // cas où le back renvoie directement un token
                 localStorage.setItem('token', response.data.token);
                 axios.defaults.headers.common['x-auth-token'] = response.data.token;
                 if (response.data.user && response.data.user._id) {
@@ -42,9 +34,7 @@ function Register() {
             }
         } catch (err) {
             console.error('Erreur register :', err);
-            // on affiche le msg renvoyé par le serveur si présent
-            const serverMsg = err.response?.data?.msg;
-            alert(serverMsg || 'Inscription échouée');
+            alert(err.response?.data?.msg || 'Inscription échouée');
         }
     };
 
@@ -80,17 +70,20 @@ function Register() {
                         />
                         <span
                             className="password-toggle"
-                            onClick={() => setShowPassword((v) => !v)}
+                            onClick={() => setShowPassword(v => !v)}
                         >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                        </span>
                     </div>
-                    <div className="terms-field">
+                    <div className={`terms-field ${termsError ? 'error' : ''}`}>
                         <input
                             type="checkbox"
                             id="acceptTerms"
                             checked={acceptedTerms}
-                            onChange={(e) => setAcceptedTerms(e.target.checked)}
+                            onChange={(e) => {
+                                setAcceptedTerms(e.target.checked);
+                                if (e.target.checked) setTermsError(false);
+                            }}
                         />
                         <label htmlFor="acceptTerms">
                             J’accepte les{' '}
@@ -102,7 +95,6 @@ function Register() {
                     <button
                         type="submit"
                         className="register-submit-btn"
-                        disabled={!acceptedTerms}
                     >
                         Inscription
                     </button>

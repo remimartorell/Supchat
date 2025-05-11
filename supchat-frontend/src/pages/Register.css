@@ -98,3 +98,14 @@
     color: var(--accent-color);
     text-decoration: underline;
 }
+
+/* Lorsque la validation CGU échoue : texte en rouge */
+.terms-field.error label,
+.terms-field.error a {
+    color: #e74c3c; /* rouge d’erreur */
+}
+
+/* (optionnel) rendre le checkbox aussi plus visible */
+.terms-field.error input[type="checkbox"] {
+    outline: 2px solid #e74c3c;
+}
