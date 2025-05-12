@@ -4,13 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Exportations des données conforme au RGPD">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="ATTENTION Back up préremplissage pas encore fonctionnelle code un peut cassé">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/nginx.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -442,7 +441,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="- Ajout des fichiers qui n'étaient pas ajoutés dans git" />
     <MESSAGE value="- Ajout du dernier fichier qui n'était pas dans le git" />
     <MESSAGE value="- Mentions marchent avec notif de type &quot;alert&quot;&#10;- Notif &quot;alert&quot;&#10;- Connexion via un autre PC sur le même réseau&#10;- Bouton déconnexion&#10;- Affichage de la page revu, la barre de message est affichée en bas sans besoin de scroller&#10;- L'envoi de fichier marche&#10;- L'affichage de prévisualisation de l'image avant le message est correctement affiché&#10;- Possibilité de voir l'image envoyée de manière redimenssionnée dans le tchat&#10;- Possibilité de télécharger le fichier, qui n'est pas une image, dans le tchat" />
     <MESSAGE value="- Ajout de la recherche*&#10;- Les images et fichers du dossier uploads sont bien présents lors du redémarrage de l'application" />
@@ -467,7 +465,8 @@
     <MESSAGE value="Ajout des conditions d'utilisations ainsi qu'une options pour voir les mdp en clair reste a mettre en rouge lorsque l'utilisateur ne coche pas la case" />
     <MESSAGE value="Ajout visuel en rouge des conditions d'utilisations lorsque un user ne selectionne pas la cases des CGU" />
     <MESSAGE value="Exportations des données conforme au RGPD" />
-    <option name="LAST_COMMIT_MESSAGE" value="Exportations des données conforme au RGPD" />
+    <MESSAGE value="ATTENTION Back up préremplissage pas encore fonctionnelle code un peut cassé" />
+    <option name="LAST_COMMIT_MESSAGE" value="ATTENTION Back up préremplissage pas encore fonctionnelle code un peut cassé" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

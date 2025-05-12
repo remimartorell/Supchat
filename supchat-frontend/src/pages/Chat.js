@@ -702,11 +702,20 @@ function Chat({onSocketReady}) {
     // Liste des channels du workspace actif (pour les #hashtags)
     const currentChannels = useMemo(() => {
         if (!selectedChannel) return [];
-        const ws = myWorkspaces.find(ws =>
-            ws.channels?.some(ch => ch._id === selectedChannel)
-        );
+        const ws = myWorkspaces.find(ws => ws.channels?.some(c => c._id === selectedChannel));
         return ws?.channels || [];
     }, [myWorkspaces, selectedChannel]);
+
+    // -------------------
+    // données pour MessageInput
+    // -------------------
+    const mentionData = users.map(u => ({ id: u._id, display: u.username || u.name }));
+    const channelData = currentChannels.map(c => ({ id: c._id, display: c.name }));
+    const commandData = [
+        { id: 'meeting', display: 'meeting' },
+        { id: 'poll', display: 'poll' },
+        { id: 'remindme', display: 'remindme' }
+    ];
 
     // -------------------
     // RENDU FINAL
@@ -723,12 +732,9 @@ function Chat({onSocketReady}) {
                     onSelectChannel={handleSelectChannel}
                     selectedUser={selectedUser}
                     selectedChannel={selectedChannel}
-                    onWorkspacesRefresh={async () => {
-                        await fetchWorkspacesAndChannels();
-                    }}
+                    onWorkspacesRefresh={fetchWorkspacesAndChannels}
                 />
             </div>
-
             <div className="chat-layout-main">
                 <ChatWindow
                     socket={socket}
@@ -746,6 +752,9 @@ function Chat({onSocketReady}) {
                 <MessageInput
                     onSend={handleSendMessage}
                     disabled={!selectedUser && !selectedChannel}
+                    users={mentionData}
+                    channels={channelData}
+                    commands={commandData}
                 />
             </div>
         </div>
