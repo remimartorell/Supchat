@@ -229,3 +229,9 @@ src/components/ChatWindows.css
     font-size: 0.75rem;      /* même taille que le texte */
     font-style: italic;      /* italique également */
 }
+
+.highlight-hashtag {
+    color: #2797de;      /* bleu pour les hashtags */
+    font-weight: bold;
+    cursor: pointer;
+}

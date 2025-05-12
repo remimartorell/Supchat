@@ -6,14 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Exportations des données conforme au RGPD">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/auth.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/nginx.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

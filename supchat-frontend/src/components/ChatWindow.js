@@ -30,6 +30,8 @@ function ChatWindow({
                         focusMessageId,
                         canDelete,
                         setMessages,
+                        channels,
+                        onChannelClick,
                     }) {
     const listRef = useRef(null);
     const [editingMessageId, setEditingMessageId] = useState(null);
@@ -144,6 +146,37 @@ function ChatWindow({
             alert('Impossible de supprimer ce message');
         }
     };
+// helper pour mentions ET hashtags
+    function renderContent(text, validMentions, channels, onChannelClick) {
+        if (!text) return text;
+        return text.split(/\s+/).map((word, i) => {
+            // mention
+            if (word.startsWith('@')) {
+                const name = word.slice(1);
+                if (validMentions.includes(name)) {
+                    return <span key={i} className="highlight-mention">{word} </span>;
+                }
+            }
+            // hashtag
+            if (word.startsWith('#')) {
+                const chanName = word.slice(1);
+                const chan = channels.find(c => c.name === chanName);
+                if (chan) {
+                    return (
+                        <span
+                            key={i}
+                            className="highlight-hashtag"
+                            onClick={() => onChannelClick(chan._id)}
+                        >
+            {word}{' '}
+          </span>
+                    );
+                }
+            }
+            // mot normal
+            return word + ' ';
+        });
+    }
 
     const startEditingMessage = (m) => {
         setEditingMessageId(m._id);
@@ -313,7 +346,7 @@ function ChatWindow({
                                             }}
                                         />
                                     ) : (
-                                        highlightMentions(m.content || '', validMentions)
+                                        renderContent(m.content || '', validMentions, channels, onChannelClick)
                                     )}
                                     {m.edited && (
                                         <span className="message-edited">(Modifié)</span>

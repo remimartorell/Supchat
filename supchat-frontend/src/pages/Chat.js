@@ -1,5 +1,5 @@
 // src/pages/Chat.js
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {io} from 'socket.io-client';
 import axios from '../services/axiosConfig';
@@ -699,6 +699,15 @@ function Chat({onSocketReady}) {
         }
     }, [selectedUser, selectedChannel]);
 
+    // Liste des channels du workspace actif (pour les #hashtags)
+    const currentChannels = useMemo(() => {
+        if (!selectedChannel) return [];
+        const ws = myWorkspaces.find(ws =>
+            ws.channels?.some(ch => ch._id === selectedChannel)
+        );
+        return ws?.channels || [];
+    }, [myWorkspaces, selectedChannel]);
+
     // -------------------
     // RENDU FINAL
     // -------------------
@@ -731,6 +740,8 @@ function Chat({onSocketReady}) {
                     focusMessageId={focusMessageId}
                     canDelete={canDelete}
                     setMessages={setMessages}
+                    channels={currentChannels}
+                    onChannelClick={handleSelectChannel}
                 />
                 <MessageInput
                     onSend={handleSendMessage}
