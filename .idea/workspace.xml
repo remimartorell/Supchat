@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Fonctionalité fonctionne il reste jsute a implémenté le CSS concernant le /, @ et #">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Reste juste a avoir les 3 sugestions sur les # @ et / et tout seras correectement implenté">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/nginx.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -435,7 +438,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747062444866</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="Reste juste a avoir les 3 sugestions sur les # @ et / et tout seras correectement implenté">
+      <option name="closed" value="true" />
+      <created>1747073550879</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1747073550879</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -453,7 +464,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="- Mentions marchent avec notif de type &quot;alert&quot;&#10;- Notif &quot;alert&quot;&#10;- Connexion via un autre PC sur le même réseau&#10;- Bouton déconnexion&#10;- Affichage de la page revu, la barre de message est affichée en bas sans besoin de scroller&#10;- L'envoi de fichier marche&#10;- L'affichage de prévisualisation de l'image avant le message est correctement affiché&#10;- Possibilité de voir l'image envoyée de manière redimenssionnée dans le tchat&#10;- Possibilité de télécharger le fichier, qui n'est pas une image, dans le tchat" />
     <MESSAGE value="- Ajout de la recherche*&#10;- Les images et fichers du dossier uploads sont bien présents lors du redémarrage de l'application" />
     <MESSAGE value="- Modification de la recherche" />
     <MESSAGE value="- Derniers problèmes de la recherche réglés." />
@@ -478,7 +488,8 @@
     <MESSAGE value="Exportations des données conforme au RGPD" />
     <MESSAGE value="ATTENTION Back up préremplissage pas encore fonctionnelle code un peut cassé" />
     <MESSAGE value="Fonctionalité fonctionne il reste jsute a implémenté le CSS concernant le /, @ et #" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fonctionalité fonctionne il reste jsute a implémenté le CSS concernant le /, @ et #" />
+    <MESSAGE value="Reste juste a avoir les 3 sugestions sur les # @ et / et tout seras correectement implenté" />
+    <option name="LAST_COMMIT_MESSAGE" value="Reste juste a avoir les 3 sugestions sur les # @ et / et tout seras correectement implenté" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
