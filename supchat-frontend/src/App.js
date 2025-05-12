@@ -13,9 +13,9 @@ import ProfileSettings from './pages/ProfileSettings';
 import About from './pages/About';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import Terms from './pages/Cgu';
 import './App.css';
 import './styles/themes.css';
-import Terms from './pages/Cgu';
 
 function App() {
     const navigate = useNavigate();
@@ -25,13 +25,13 @@ function App() {
     const token = localStorage.getItem('token') || '';
     const [theSocket, setTheSocket] = useState(null);
 
-    // Appliquer le thème dès le chargement (optionnel, car déjà géré dans index.js)
+    // Appliquer le thème à chaque chargement
     useEffect(() => {
         const savedTheme = localStorage.getItem('appTheme') || 'dark';
         document.documentElement.setAttribute('data-theme', savedTheme);
     }, []);
 
-    // Utilisé pour masquer la navbar sur certaines pages
+    // Pages sans navbar
     const hideNavbarPaths = ['/', '/login', '/register', '/forgot-password', '/reset-password'];
     const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
 
@@ -41,27 +41,20 @@ function App() {
         navigate(`/search?query=${encodeURIComponent(searchInput.trim())}`);
     };
 
-    // --------------------------
-    // Intégration du bot de rappel de réunion
-    // --------------------------
+    // Rappel réunion via socket
     useEffect(() => {
         if (theSocket) {
             theSocket.on('meeting-reminder', (data) => {
-                // data doit contenir meetingTitle et meetingTime
                 alert(`Rappel Réunion : ${data.meetingTitle} à ${data.meetingTime}`);
-                // Vous pouvez remplacer alert par une notification personnalisée
             });
-            return () => {
-                theSocket.off('meeting-reminder');
-            };
+            return () => theSocket.off('meeting-reminder');
         }
     }, [theSocket]);
-    // --------------------------
 
     return (
         <div id="root-app">
             {!shouldHideNavbar && (
-                <div className="navbar">
+                <nav className="navbar">
                     <div className="nav-left">
                         {token ? (
                             <Link to="/chat" className="chat-link">Chat</Link>
@@ -69,40 +62,37 @@ function App() {
                             <>
                                 <Link to="/login">Login</Link>
                                 <Link to="/register">Register</Link>
+                                <Link to="/terms" className="terms-link">CGU / RGPD</Link>
                             </>
                         )}
                     </div>
-                    <div className="nav-center">
-                        {token && (
+                    {token && (
+                        <div className="nav-center">
                             <form onSubmit={handleSearchSubmit} className="nav-search">
                                 <input
                                     type="text"
                                     value={searchInput}
-                                    onChange={(e) => setSearchInput(e.target.value)}
+                                    onChange={e => setSearchInput(e.target.value)}
                                     placeholder="Rechercher..."
                                 />
                                 <button type="submit">Go</button>
                             </form>
-                        )}
-                    </div>
-                    <div className="nav-right">
-                        {token && (
-                            <>
-                                <NotificationHub socket={theSocket} />
-                                <UserMenu />
-                            </>
-                        )}
-                    </div>
-                </div>
+                        </div>
+                    )}
+                    {token && (
+                        <div className="nav-right">
+                            <NotificationHub socket={theSocket} />
+                            <UserMenu />
+                        </div>
+                    )}
+                </nav>
             )}
-            <div className="app-container" style={{ marginTop: shouldHideNavbar ? 0 : '60px' }}>
+            <main className="app-container" style={{ marginTop: shouldHideNavbar ? 0 : '60px' }}>
                 <Routes>
                     <Route
                         path="/"
                         element={
-                            token ? (
-                                <Navigate to="/chat" replace />
-                            ) : (
+                            token ? <Navigate to="/chat" replace /> : (
                                 <div style={{ textAlign: 'center', marginTop: '40px' }}>
                                     <h2>Accueil</h2>
                                     <p>Bienvenue sur SupChat !</p>
@@ -118,16 +108,23 @@ function App() {
                     <Route path="/register" element={<Register />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/chat" element={<PrivateRoute><Chat onSocketReady={setTheSocket} /></PrivateRoute>} />
+
+                    <Route
+                        path="/chat"
+                        element={<PrivateRoute><Chat onSocketReady={setTheSocket} /></PrivateRoute>}
+                    />
                     <Route path="/search" element={<PrivateRoute><SearchResults /></PrivateRoute>} />
                     <Route path="/workspace/:workspaceId/settings" element={<PrivateRoute><WorkspaceSettings /></PrivateRoute>} />
                     <Route path="/profile-settings" element={<PrivateRoute><ProfileSettings /></PrivateRoute>} />
                     <Route path="/about" element={<PrivateRoute><About /></PrivateRoute>} />
-                    <Route path="*" element={<div style={{ textAlign: 'center', marginTop: '40px' }}>404 Not Found</div>} />
+
+                    {/* Conditions et RGPD */}
                     <Route path="/terms" element={<Terms />} />
 
+                    {/* 404 */}
+                    <Route path="*" element={<div style={{ textAlign: 'center', marginTop: '40px' }}>404 Not Found</div>} />
                 </Routes>
-            </div>
+            </main>
         </div>
     );
 }
