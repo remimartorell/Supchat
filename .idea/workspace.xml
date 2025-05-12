@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="ATTENTION Back up préremplissage pas encore fonctionnelle code un peut cassé">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Fonctionalité fonctionne il reste jsute a implémenté le CSS concernant le /, @ et #">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -427,7 +427,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747060915580</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="Fonctionalité fonctionne il reste jsute a implémenté le CSS concernant le /, @ et #">
+      <option name="closed" value="true" />
+      <created>1747062444865</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1747062444866</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -445,7 +453,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="- Ajout du dernier fichier qui n'était pas dans le git" />
     <MESSAGE value="- Mentions marchent avec notif de type &quot;alert&quot;&#10;- Notif &quot;alert&quot;&#10;- Connexion via un autre PC sur le même réseau&#10;- Bouton déconnexion&#10;- Affichage de la page revu, la barre de message est affichée en bas sans besoin de scroller&#10;- L'envoi de fichier marche&#10;- L'affichage de prévisualisation de l'image avant le message est correctement affiché&#10;- Possibilité de voir l'image envoyée de manière redimenssionnée dans le tchat&#10;- Possibilité de télécharger le fichier, qui n'est pas une image, dans le tchat" />
     <MESSAGE value="- Ajout de la recherche*&#10;- Les images et fichers du dossier uploads sont bien présents lors du redémarrage de l'application" />
     <MESSAGE value="- Modification de la recherche" />
@@ -470,7 +477,8 @@
     <MESSAGE value="Ajout visuel en rouge des conditions d'utilisations lorsque un user ne selectionne pas la cases des CGU" />
     <MESSAGE value="Exportations des données conforme au RGPD" />
     <MESSAGE value="ATTENTION Back up préremplissage pas encore fonctionnelle code un peut cassé" />
-    <option name="LAST_COMMIT_MESSAGE" value="ATTENTION Back up préremplissage pas encore fonctionnelle code un peut cassé" />
+    <MESSAGE value="Fonctionalité fonctionne il reste jsute a implémenté le CSS concernant le /, @ et #" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fonctionalité fonctionne il reste jsute a implémenté le CSS concernant le /, @ et #" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

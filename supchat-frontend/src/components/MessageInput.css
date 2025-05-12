@@ -1,5 +1,7 @@
 /* src/components/MessageInput.css */
 
+/* ========== Barre de saisie & boutons ========== */
+
 /* Container principal de l'input */
 .message-input-container {
     position: relative;
@@ -7,12 +9,12 @@
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
-    /* Utiliser la couleur de fond d’une "carte" pour s’harmoniser */
     background-color: var(--card-bg);
     border-top: 1px solid var(--border-color);
+    overflow: visible; /* autorise suggestion dropdown au-dessus */
 }
 
-/* Champ texte */
+/* Champ texte (pour fallback, pas utilisé si on a MentionsInput singleLine) */
 .message-input-field {
     flex: 1;
     padding: 6px 8px;
@@ -38,7 +40,6 @@
     color: var(--text-color);
 }
 .message-clip-label:hover {
-    /* Passe sur une teinte légèrement différente, ici on utilise une variation de var(--card-bg) */
     background-color: var(--card-bg);
     filter: brightness(1.05);
 }
@@ -93,13 +94,15 @@
     border: 1px solid var(--border-color);
 }
 
+/* ========== GIF / Emoji picker ========== */
+
 /* Menu déroulant GIF/Emoji */
 .gif-emoji-menu {
     position: absolute;
-    bottom: 60px; /* Ajustez selon la hauteur de la barre d'envoi */
+    bottom: 60px; /* juste au-dessus de la barre */
     left: 50%;
     transform: translateX(-50%);
-    width: 320px;  /* Largeur désirée */
+    width: 320px;
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 6px;
@@ -116,7 +119,6 @@
     gap: 8px;
     margin-bottom: 10px;
 }
-
 .gif-emoji-tab {
     flex: 1;
     padding: 6px 0;
@@ -130,27 +132,10 @@
 }
 .gif-emoji-tab.active {
     background-color: var(--accent-color);
-    border-color: var(--border-color);
     color: #fff;
 }
 
-/* Panel GIF */
-.gif-panel {
-    width: 100%;
-}
-
-/* Champ de recherche pour GIF */
-.gif-search-input {
-    width: 100%;
-    padding: 4px 8px;
-    margin-bottom: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--input-bg);
-    color: var(--text-color);
-}
-
-/* Galerie GIF scrollable */
+/* Galerie GIF */
 .gif-gallery {
     display: flex;
     flex-wrap: wrap;
@@ -169,7 +154,18 @@
     border-color: var(--accent-color);
 }
 
-/* Panel Emoji */
+/* Champ de recherche pour GIF */
+.gif-search-input {
+    width: 100%;
+    padding: 4px 8px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+/* Galerie Emoji */
 .emoji-gallery {
     text-align: center;
 }
@@ -181,4 +177,69 @@
 }
 .emoji-gallery span:hover {
     transform: scale(1.2);
+}
+
+/* ========== Overrides React-Mentions ========== */
+
+/* Conteneur global des suggestions */
+.mentions__suggestions {
+    /* on place la dropdown juste au-dessus */
+    top: auto !important;
+    bottom: calc(100% + 4px) !important; /* 4px de marge entre l’input et la dropdown */
+    left: 0 !important;
+    width: 100% !important;              /* même largeur que l’input */
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 4px !important;
+    z-index: 10000 !important;
+}
+
+/* Liste / items */
+.mentions__suggestions__list,
+.mentions__suggestions__item {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Chaque suggestion */
+.mentions__suggestions__item {
+    padding: 6px 8px;
+    color: var(--text-color) !important;
+    cursor: pointer;
+}
+
+/* Item survolé ou focus clavier */
+.mentions__suggestions__item--focused,
+.mentions__suggestions__item:hover {
+    background-color: var(--input-bg) !important;
+}
+
+/* Highlighter (texte caché) */
+.mentions__highlighter {
+    color: transparent !important;
+}
+
+/* Conteneur MentionsInput (singleLine) */
+.mentions {
+    position: relative;
+    flex: 1;
+    min-height: 40px;  /* même hauteur que boutons */
+    overflow: visible;
+}
+
+/* Le textarea lui-même */
+.mentions__input {
+    background-color: var(--input-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 4px;
+    padding: 6px 8px !important;
+    line-height: 1.5;
+    width: 100% !important;
+    box-sizing: border-box;
+    resize: none;
 }
