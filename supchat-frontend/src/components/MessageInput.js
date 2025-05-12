@@ -168,14 +168,16 @@ export default function MessageInput({
         <div className="message-input-container">
             {/* === MentionsInput avec @, #, / === */}
             <MentionsInput
+                singleLine
+                markup="@\[__display__\](__id__)"
                 value={value}
-                onChange={(e, newVal, newPlain)=>{
+                onChange={(e, newVal, newPlain) => {
                     setValue(newVal);
                     setPlainText(newPlain);
                 }}
                 onKeyDown={handleKeyDown}
                 placeholder="Tapez votre message…"
-                className="mentions"
+                className="mentions message-input-field"
                 allowSuggestionsAboveCursor
                 disabled={disabled}
             >
