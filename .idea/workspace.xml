@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Les mentions des user limiter a 3 sugestions">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Les mentions des user limiter a 3 sugestions et les emoji sont réparer">
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/src/components/usePinned.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/styles/navbar.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/styles/navbar.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,8 +21,8 @@
       <list>
         <option value="Dockerfile" />
         <option value="TypeScript File" />
-        <option value="JavaScript File" />
         <option value="CSS File" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -451,7 +454,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747075122586</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="Les mentions des user limiter a 3 sugestions et les emoji sont réparer">
+      <option name="closed" value="true" />
+      <created>1747120862049</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1747120862050</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -469,7 +480,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="- Modification de la recherche" />
     <MESSAGE value="- Derniers problèmes de la recherche réglés." />
     <MESSAGE value="- Ajout de boutons pour créer un workspace, créer un channel, supprimer un message.&#10;- Page settings d'un workspace, où on peut supprimer le workspace, renommer le workspace, ajouter un membre, modifier le rôle d'un membre.&#10;- Ajout de l'impossibilité pour un rôle inférieur de modifier un rôle supérieur à lui.&#10;- Ajout de l'actualisation en direct d'actions, comme création de workspace, ajout d'un membre, supprimer channel etc." />
     <MESSAGE value="- La suppression de messages fonctionne correctement et est actualisé en direct pour celui qui supprime et ceux dans le même chanel.&#10;- On peut éditer ses propres messages (et seulement les siens même si on est owner ou admin) et il est actualisé en direct pour celui qui modifie et ceux dans le channel.&#10;- Affiche  &quot;(Modifié)&quot; en italique à la fin des messages modifiés" />
@@ -494,7 +504,8 @@
     <MESSAGE value="Fonctionalité fonctionne il reste jsute a implémenté le CSS concernant le /, @ et #" />
     <MESSAGE value="Reste juste a avoir les 3 sugestions sur les # @ et / et tout seras correectement implenté" />
     <MESSAGE value="Les mentions des user limiter a 3 sugestions" />
-    <option name="LAST_COMMIT_MESSAGE" value="Les mentions des user limiter a 3 sugestions" />
+    <MESSAGE value="Les mentions des user limiter a 3 sugestions et les emoji sont réparer" />
+    <option name="LAST_COMMIT_MESSAGE" value="Les mentions des user limiter a 3 sugestions et les emoji sont réparer" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -503,11 +514,6 @@
           <url>file://$PROJECT_DIR$/supchat-frontend/src/index.js</url>
           <line>1</line>
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js</url>
-          <line>74</line>
-          <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/supchat-frontend/src/pages/Register.js</url>
