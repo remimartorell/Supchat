@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Reste juste a avoir les 3 sugestions sur les # @ et / et tout seras correectement implenté">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Les mentions des user limiter a 3 sugestions">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/nginx.conf" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/MessageInput.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -446,7 +443,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747073550879</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="Les mentions des user limiter a 3 sugestions">
+      <option name="closed" value="true" />
+      <created>1747075122586</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1747075122586</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -464,7 +469,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="- Ajout de la recherche*&#10;- Les images et fichers du dossier uploads sont bien présents lors du redémarrage de l'application" />
     <MESSAGE value="- Modification de la recherche" />
     <MESSAGE value="- Derniers problèmes de la recherche réglés." />
     <MESSAGE value="- Ajout de boutons pour créer un workspace, créer un channel, supprimer un message.&#10;- Page settings d'un workspace, où on peut supprimer le workspace, renommer le workspace, ajouter un membre, modifier le rôle d'un membre.&#10;- Ajout de l'impossibilité pour un rôle inférieur de modifier un rôle supérieur à lui.&#10;- Ajout de l'actualisation en direct d'actions, comme création de workspace, ajout d'un membre, supprimer channel etc." />
@@ -489,7 +493,8 @@
     <MESSAGE value="ATTENTION Back up préremplissage pas encore fonctionnelle code un peut cassé" />
     <MESSAGE value="Fonctionalité fonctionne il reste jsute a implémenté le CSS concernant le /, @ et #" />
     <MESSAGE value="Reste juste a avoir les 3 sugestions sur les # @ et / et tout seras correectement implenté" />
-    <option name="LAST_COMMIT_MESSAGE" value="Reste juste a avoir les 3 sugestions sur les # @ et / et tout seras correectement implenté" />
+    <MESSAGE value="Les mentions des user limiter a 3 sugestions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Les mentions des user limiter a 3 sugestions" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -1,9 +1,9 @@
 // src/components/MessageInput.js
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import axiosGiphy from '../services/axiosGiphy';
 import axiosEmoji from '../services/axiosEmoji';
-import { IoMdAttach, IoMdHappy } from 'react-icons/io';
-import { MentionsInput, Mention } from 'react-mentions';
+import {IoMdAttach, IoMdHappy} from 'react-icons/io';
+import {MentionsInput, Mention} from 'react-mentions';
 import './MessageInput.css';
 
 const GIF_LIMIT = 15;
@@ -60,7 +60,7 @@ export default function MessageInput({
     const [emojiSearch, setEmojiSearch] = useState('');
     const [emojiListData, setEmojiListData] = useState([]);
     const [recentEmojis, setRecentEmojis] = useState(loadLocalArray(STORAGE_KEY_RECENT_EMOJIS));
-    const fallbackEmojiList = ['😃','😂','😍','😎','😉','👍','🎉','🔥','😭','🙌'];
+    const fallbackEmojiList = ['😃', '😂', '😍', '😎', '😉', '👍', '🎉', '🔥', '😭', '🙌'];
 
     const filteredEmojiList = emojiListData.filter(item => {
         const ch = typeof item === 'object' ? item.character : item;
@@ -73,21 +73,21 @@ export default function MessageInput({
 
     // Effets pour GIFs
     useEffect(() => {
-        if (!showMenu || activeMainTab!=='gif') return;
-        if (gifTab==='trending') fetchTrendingGifs();
-        else if (gifTab==='search') fetchSearchGifs(gifSearch);
+        if (!showMenu || activeMainTab !== 'gif') return;
+        if (gifTab === 'trending') fetchTrendingGifs();
+        else if (gifTab === 'search') fetchSearchGifs(gifSearch);
     }, [showMenu, activeMainTab, gifTab, gifSearch]);
 
     // Effet pour Emojis
     useEffect(() => {
-        if (activeMainTab==='emoji' && emojiListData.length===0) {
+        if (activeMainTab === 'emoji' && emojiListData.length === 0) {
             (async () => {
                 try {
                     const res = await axiosEmoji.get('/emojis', {
-                        params:{ access_key: process.env.REACT_APP_EMOJI_API_KEY }
+                        params: {access_key: process.env.REACT_APP_EMOJI_API_KEY}
                     });
                     setEmojiListData(res.data || []);
-                } catch(e) {
+                } catch (e) {
                     console.error('Erreur fetchEmojis :', e);
                 }
             })();
@@ -99,24 +99,24 @@ export default function MessageInput({
         setLoadingGifs(true);
         try {
             const res = await axiosGiphy.get('/v1/gifs/trending', {
-                params:{ api_key:giphyKey, limit:GIF_LIMIT, rating:'pg-13' }
+                params: {api_key: giphyKey, limit: GIF_LIMIT, rating: 'pg-13'}
             });
-            setGifResults(res.data.data||[]);
-        } catch(e) {
+            setGifResults(res.data.data || []);
+        } catch (e) {
             console.error('Erreur fetchTrendingGifs :', e);
         }
         setLoadingGifs(false);
     }
 
     async function fetchSearchGifs(q) {
-        if (!giphyKey||!q.trim()) return setGifResults([]);
+        if (!giphyKey || !q.trim()) return setGifResults([]);
         setLoadingGifs(true);
-        try{
+        try {
             const res = await axiosGiphy.get('/v1/gifs/search', {
-                params:{ api_key:giphyKey, q, limit:GIF_LIMIT, rating:'pg-13', lang:'fr' }
+                params: {api_key: giphyKey, q, limit: GIF_LIMIT, rating: 'pg-13', lang: 'fr'}
             });
-            setGifResults(res.data.data||[]);
-        }catch(e){
+            setGifResults(res.data.data || []);
+        } catch (e) {
             console.error('Erreur fetchSearchGifs :', e);
         }
         setLoadingGifs(false);
@@ -124,25 +124,25 @@ export default function MessageInput({
 
     // Handlers
     const handleGifSelect = url => {
-        onSend(url,null);
-        pushRecentItem(STORAGE_KEY_RECENT_GIFS,url);
+        onSend(url, null);
+        pushRecentItem(STORAGE_KEY_RECENT_GIFS, url);
         setRecentGifs(loadLocalArray(STORAGE_KEY_RECENT_GIFS));
         setShowMenu(false);
     };
     const handleEmojiSelect = emoji => {
-        onSend(emoji,null);
-        pushRecentItem(STORAGE_KEY_RECENT_EMOJIS,emoji,30);
+        onSend(emoji, null);
+        pushRecentItem(STORAGE_KEY_RECENT_EMOJIS, emoji, 30);
         setRecentEmojis(loadLocalArray(STORAGE_KEY_RECENT_EMOJIS));
         setShowMenu(false);
     };
 
     const handleFileChange = e => {
-        if(e.target.files?.[0]) setFile(e.target.files[0]);
+        if (e.target.files?.[0]) setFile(e.target.files[0]);
     };
 
     const handleSend = () => {
         const content = plainText.trim();
-        if(!content && !file) return;
+        if (!content && !file) return;
         onSend(content, file);
         setValue('');
         setPlainText('');
@@ -150,19 +150,30 @@ export default function MessageInput({
     };
 
     const handleKeyDown = e => {
-        if(e.key==='Enter' && !e.shiftKey){
+        if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSend();
         }
     };
 
+    // filtre les users en fonction de ce que l'on tape après le "@"
+    const filterUsers = (search, callback) => {
+        if (!search) return callback([]);
+        const q = search.toLowerCase();
+        const matches = users
+            .filter(u => u.display.toLowerCase().includes(q))
+            .slice(0, 3);              // on limite déjà à 3 ici
+        callback(matches);
+    };
+
+
     // Choix des emojis à afficher
     let emojisToDisplay;
-    if(emojiSubTab==='recent') emojisToDisplay = recentEmojis;
-    else if(emojiSubTab==='search')
-        emojisToDisplay = emojiSearch.trim()==='' ? emojiListData : filteredEmojiList;
+    if (emojiSubTab === 'recent') emojisToDisplay = recentEmojis;
+    else if (emojiSubTab === 'search')
+        emojisToDisplay = emojiSearch.trim() === '' ? emojiListData : filteredEmojiList;
     else
-        emojisToDisplay = emojiListData.length?emojiListData:fallbackEmojiList;
+        emojisToDisplay = emojiListData.length ? emojiListData : fallbackEmojiList;
 
     return (
         <div className="message-input-container">
@@ -184,7 +195,7 @@ export default function MessageInput({
                 {/* @mentions */}
                 <Mention
                     trigger="@"
-                    data={users}
+                    data={filterUsers}
                     markup="@\[__display__\](__id__)"
                     displayTransform={(id, display) => `@${display}`}
                     appendSpaceOnAdd
@@ -195,11 +206,11 @@ export default function MessageInput({
                     trigger="#"
                     data={channels}
                     markup="#[__display__](__id__)"
-                    displayTransform={(id,display)=>`#${display}`}
+                    displayTransform={(id, display) => `#${display}`}
                     appendSpaceOnAdd
                     suggestionsLimit={3}
-                    renderSuggestion={(suggestion, search, highlighted)=>(
-                        <div style={{padding:'4px 8px'}}>{highlighted}</div>
+                    renderSuggestion={(suggestion, search, highlighted) => (
+                        <div style={{padding: '4px 8px'}}>{highlighted}</div>
                     )}
                 />
 
@@ -208,8 +219,9 @@ export default function MessageInput({
                     trigger="/"
                     data={commands}
                     markup="/[__display__](__id__)"
-                    displayTransform={(id,display)=>`/${display}`}
+                    displayTransform={(id, display) => `/${display}`}
                     appendSpaceOnAdd
+                    suggestionsLimit={3}
                 />
             </MentionsInput>
 
@@ -217,7 +229,7 @@ export default function MessageInput({
             <input
                 id="fileInput"
                 type="file"
-                style={{display:'none'}}
+                style={{display: 'none'}}
                 disabled={disabled}
                 onChange={handleFileChange}
             />
@@ -229,7 +241,7 @@ export default function MessageInput({
             <button
                 type="button"
                 className="gif-emoji-toggle-btn"
-                onClick={()=>setShowMenu(v=>!v)}
+                onClick={() => setShowMenu(v => !v)}
                 disabled={disabled}
             >
                 <IoMdHappy size={20} color="#fff"/>
@@ -298,14 +310,14 @@ export default function MessageInput({
                                     value={gifSearch}
                                     onChange={(e) => setGifSearch(e.target.value)}
                                     className="gif-search-input"
-                                    style={{ marginTop: '8px' }}
+                                    style={{marginTop: '8px'}}
                                 />
                             )}
-                            <div style={{ marginTop: '10px' }}>
+                            <div style={{marginTop: '10px'}}>
                                 {gifTab === 'recent' ? (
                                     <div className="gif-gallery">
                                         {recentGifs.length === 0 ? (
-                                            <p style={{ textAlign: 'center', color: '#fff' }}>
+                                            <p style={{textAlign: 'center', color: '#fff'}}>
                                                 Aucun GIF récent
                                             </p>
                                         ) : (
@@ -320,7 +332,7 @@ export default function MessageInput({
                                         )}
                                     </div>
                                 ) : loadingGifs ? (
-                                    <p style={{ textAlign: 'center', color: '#fff' }}>
+                                    <p style={{textAlign: 'center', color: '#fff'}}>
                                         Chargement...
                                     </p>
                                 ) : (
@@ -370,10 +382,10 @@ export default function MessageInput({
                                     value={emojiSearch}
                                     onChange={(e) => setEmojiSearch(e.target.value)}
                                     className="gif-search-input"
-                                    style={{ marginTop: '8px' }}
+                                    style={{marginTop: '8px'}}
                                 />
                             )}
-                            <div className="emoji-gallery" style={{ marginTop: '10px', textAlign: 'center' }}>
+                            <div className="emoji-gallery" style={{marginTop: '10px', textAlign: 'center'}}>
                                 {(
                                     emojiSubTab === 'recent'
                                         ? recentEmojis
@@ -388,7 +400,7 @@ export default function MessageInput({
                                         return (
                                             <span
                                                 key={idx}
-                                                style={{ fontSize: '1.8rem', cursor: 'pointer', margin: '5px' }}
+                                                style={{fontSize: '1.8rem', cursor: 'pointer', margin: '5px'}}
                                                 onClick={() => handleEmojiSelect(displayEmoji)}
                                             >
                         {displayEmoji}
