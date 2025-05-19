@@ -1,36 +1,36 @@
-const express = require('express');
-const router = express.Router();
-const auth = require('../middleware/auth');
+// supchat-backend/routes/directMessages.js
+const express       = require('express');
+const router        = express.Router();
+const auth          = require('../middleware/auth');
 const DirectMessage = require('../models/DirectMessage');
-const User = require('../models/User');
-const multer = require('multer');
+const Notification  = require('../models/Notification');   // ← ajouté
+const User          = require('../models/User');
+const multer        = require('multer');
 
-// Configuration Multer
+// Configuration Multer (inchangée)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, 'uploads/'),
-    filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
+    filename:    (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`),
 });
 const upload = multer({ storage });
 
-// @route   GET /api/direct-messages/:userId
-// @desc    Voir les messages échangés avec un utilisateur
-// @access  Privé
+/**
+ * GET /api/direct-messages/:userId
+ * Récupère l’historique des DM avec un autre utilisateur
+ */
 router.get('/:userId', auth, async (req, res) => {
     try {
         const user = await User.findById(req.params.userId);
-        if (!user) {
-            return res.status(404).json({ msg: 'User not found' });
-        }
+        if (!user) return res.status(404).json({ msg: 'User not found' });
 
         const messages = await DirectMessage.find({
             $or: [
-                { sender: req.user.id, receiver: req.params.userId },
-                { sender: req.params.userId, receiver: req.user.id },
-                { sender: '000000000000000000000000', receiver: req.user.id }
-
+                { sender:   req.user.id, receiver: req.params.userId },
+                { sender:   req.params.userId, receiver: req.user.id },
+                { sender:   '000000000000000000000000', receiver: req.user.id }
             ],
         })
-            .populate('sender', 'name email avatarFileId')
+            .populate('sender',   'name email avatarFileId')
             .populate('receiver', 'name email avatarFileId')
             .populate('readBy.user', 'name')
             .sort({ createdAt: 'asc' });
@@ -42,45 +42,39 @@ router.get('/:userId', auth, async (req, res) => {
     }
 });
 
-// @route  POST /api/direct-messages/:messageId/reactions
-// @desc   Ajouter/modifier une réaction sur un DM
-// @access Privé
+/**
+ * POST /api/direct-messages/:messageId/reactions
+ * Ajouter / modifier une réaction sur un DM
+ */
 router.post('/:messageId/reactions', auth, async (req, res) => {
     const { emoji } = req.body;
     try {
         const dm = await DirectMessage.findById(req.params.messageId);
-        if (!dm) {
-            return res.status(404).json({ msg: 'DM not found' });
-        }
-        // Vérifier que l’utilisateur est sender ou receiver
+        if (!dm) return res.status(404).json({ msg: 'DM not found' });
+
         if (![dm.sender.toString(), dm.receiver.toString()].includes(req.user.id)) {
             return res.status(403).json({ msg: 'Not allowed (not participant)' });
         }
-        // Ajouter ou mettre à jour la réaction
-        const existingIdx = dm.reactions.findIndex(r => String(r.user) === req.user.id);
-        if (existingIdx !== -1) {
-            dm.reactions[existingIdx].emoji = emoji;
-        } else {
-            dm.reactions.push({ emoji, user: req.user.id });
-        }
+
+        const idx = dm.reactions.findIndex(r => String(r.user) === req.user.id);
+        if (idx !== -1) dm.reactions[idx].emoji = emoji;
+        else            dm.reactions.push({ emoji, user: req.user.id });
+
         await dm.save();
-        // Peupler pour renvoyer user.name
         await dm.populate('reactions.user', 'name');
 
-        // Émettre un event "dm-message-reacted" aux deux participants
-        const io = req.app.get('socketio');
+        // Émission socket aux deux participants
+        const io            = req.app.get('socketio');
         const userSocketMap = req.app.get('userSocketMap');
-        const senderSock = userSocketMap[dm.sender.toString()];
-        const receiverSock = userSocketMap[dm.receiver.toString()];
-        const reactionObj = dm.reactions.find(r => String(r.user._id) === req.user.id);
-
+        const reactionObj   = dm.reactions.find(r => String(r.user._id) === req.user.id);
         const payload = {
             dmId: dm._id.toString(),
-            reaction: {
-                ...reactionObj.toObject(), // { emoji, user: { _id, name }, ... }
-            },
+            reaction: reactionObj.toObject()
         };
-        if (senderSock) io.to(senderSock).emit('dm-message-reacted', payload);
+
+        const senderSock   = userSocketMap[dm.sender.toString()];
+        const receiverSock = userSocketMap[dm.receiver.toString()];
+        if (senderSock)   io.to(senderSock).emit('dm-message-reacted', payload);
         if (receiverSock) io.to(receiverSock).emit('dm-message-reacted', payload);
 
         res.json(dm);
@@ -90,11 +84,14 @@ router.post('/:messageId/reactions', auth, async (req, res) => {
     }
 });
 
-// @route   POST /api/direct-messages
-// @desc    Envoyer un message privé
-// @access  Privé
+/**
+ * POST /api/direct-messages
+ * Envoie un message privé, gère les mentions et crée/émet les notifications
+ */
 router.post('/', auth, upload.single('file'), async (req, res) => {
-    const { content, receiverId } = req.body;
+    // on attend désormais un champ "mentions" JSON.stringify([...usernames])
+    const { content, receiverId, mentions } = req.body;
+    const mentionsList = JSON.parse(mentions || '[]');
 
     try {
         const receiver = await User.findById(receiverId?.trim());
@@ -102,52 +99,60 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
             return res.status(404).json({ msg: 'Receiver not found' });
         }
 
-        // Création + sauvegarde
+        // 1️⃣ Création et sauvegarde du DM
         const newMessage = new DirectMessage({
-            sender: req.user.id,
+            sender:   req.user.id,
             receiver: receiverId,
             content,
-            fileUrl: req.file ? `/uploads/${req.file.filename}` : null,
+            fileUrl:  req.file ? `/uploads/${req.file.filename}` : null,
         });
         const message = await newMessage.save();
 
-        // Socket.IO
-        const io = req.app.get('socketio');
+        // 2️⃣ Emission du DM vers l’expéditeur et le destinataire
+        const io            = req.app.get('socketio');
         const userSocketMap = req.app.get('userSocketMap');
+        const senderSock    = userSocketMap[req.user.id];
+        const receiverSock  = userSocketMap[receiverId];
 
-        // SocketId du destinataire
-        const receiverSocketId = userSocketMap[receiverId];
-        // SocketId de l'expéditeur
-        const senderSocketId = userSocketMap[req.user.id];
-
-        // 1) Émettre à l’expéditeur
-        if (senderSocketId) {
-            io.to(senderSocketId).emit('new-private-message', {
-                _id: message._id,   // <= AJOUT
-                sender: req.user.id,
-                receiver: receiverId,
-                content: message.content,
-                fileUrl: message.fileUrl,
-                createdAt: message.createdAt
-            });
+        const payload = {
+            _id:       message._id,
+            sender:    req.user.id,
+            receiver:  receiverId,
+            content:   message.content,
+            fileUrl:   message.fileUrl,
+            createdAt: message.createdAt
+        };
+        if (senderSock)   io.to(senderSock).emit('new-private-message', payload);
+        if (receiverSock) {
+            io.to(receiverSock).emit('new-private-message', payload);
+            console.log(`Message privé émis à ${receiverId} via socket ${receiverSock}`);
         }
 
-        // 2) Émettre au destinataire
-        if (receiverSocketId) {
-            io.to(receiverSocketId).emit('new-private-message', {
-                _id: message._id,   // <= AJOUT
-                sender: req.user.id,
-                receiver: receiverId,
-                content: message.content,
-                fileUrl: message.fileUrl,
-                createdAt: message.createdAt
+        // 3️⃣ Pour chaque @mention, on crée une Notification et on l’émet
+        for (const username of mentionsList) {
+            const userMentioned = await User.findOne({ username });
+            if (!userMentioned) continue;
+
+            // Création de la notification
+            let notif = new Notification({
+                user:      userMentioned._id,
+                fromUser:  req.user.id,
+                type:      'mention',
+                channel:   null,
+                messageId: message._id
             });
-            console.log(`Message privé émis au destinataire socketId : ${receiverSocketId}`);
-        } else {
-            console.log('Le destinataire n’est pas connecté ou pas "join"');
+            await notif.save();
+
+            // Repopulate pour récupérer fromUser.username
+            notif = await Notification
+                .findById(notif._id)
+                .populate('fromUser', 'username');
+
+            // Émission de la notification
+            const sockId = userSocketMap[userMentioned._id.toString()];
+            if (sockId) io.to(sockId).emit('new-notification', notif);
         }
 
-        // On renvoie le message sauvegardé
         return res.json(message);
     } catch (err) {
         console.error(err.message);
@@ -155,47 +160,34 @@ router.post('/', auth, upload.single('file'), async (req, res) => {
     }
 });
 
-// 2) Nouveau routeur pour marquer un DM comme lu
+/**
+ * PUT /api/direct-messages/:messageId/markAsRead
+ * Marquer un DM comme lu et émettre l’événement "dm-message-read"
+ */
 router.put('/:messageId/markAsRead', auth, async (req, res) => {
     try {
-        const messageId = req.params.messageId;
-        let dm = await DirectMessage.findById(messageId);
-        if (!dm) {
-            return res.status(404).json({ msg: 'DM not found' });
-        }
+        const dm = await DirectMessage.findById(req.params.messageId);
+        if (!dm) return res.status(404).json({ msg: 'DM not found' });
 
-        // Vérif: Seules les personnes “sender” ou “receiver” ont le droit de le “lire”
-        if (
-            dm.sender.toString() !== req.user.id &&
-            dm.receiver.toString() !== req.user.id
-        ) {
+        if (String(dm.sender) !== req.user.id && String(dm.receiver) !== req.user.id) {
             return res.status(403).json({ msg: 'Not allowed to read this DM' });
         }
 
-        // 3) Mettre à jour readBy
-        const already = dm.readBy.some((rb) => String(rb.user) === req.user.id);
+        const already = dm.readBy.some(rb => String(rb.user) === req.user.id);
         if (!already) {
             dm.readBy.push({ user: req.user.id, readAt: new Date() });
             await dm.save();
         }
 
-        // 4) Emettre un event socket "dm-message-read"
-        const io = req.app.get('socketio');
-        // On veut envoyer un event en temps réel aux DEUX participants (sender et receiver).
-        // Tu peux soit utiliser "rooms" spécifiques, soit cibler directement le socketId de l’autre.
-        // Pour simplifier, on va faire un broadcast "dm-message-read" à la fois au sender et au receiver.
+        // Émettre update real-time
+        const io            = req.app.get('socketio');
         const userSocketMap = req.app.get('userSocketMap');
+        const payload = { dmId: req.params.messageId, userId: req.user.id };
 
-        const senderSocketId = userSocketMap[dm.sender.toString()];
-        const receiverSocketId = userSocketMap[dm.receiver.toString()];
-
-        const payload = {
-            dmId: messageId,
-            userId: req.user.id,
-        };
-
-        if (senderSocketId) io.to(senderSocketId).emit('dm-message-read', payload);
-        if (receiverSocketId) io.to(receiverSocketId).emit('dm-message-read', payload);
+        const sockSender   = userSocketMap[dm.sender.toString()];
+        const sockReceiver = userSocketMap[dm.receiver.toString()];
+        if (sockSender)   io.to(sockSender).emit('dm-message-read', payload);
+        if (sockReceiver) io.to(sockReceiver).emit('dm-message-read', payload);
 
         return res.json({ msg: 'ok', dm });
     } catch (err) {
@@ -204,40 +196,38 @@ router.put('/:messageId/markAsRead', auth, async (req, res) => {
     }
 });
 
-// @route  PUT /api/direct-messages/:messageId
-// @desc   Modifier le contenu d’un DM
-// @access Privé (seulement l’auteur)
+/**
+ * PUT /api/direct-messages/:messageId
+ * Modifier le contenu d’un DM (seulement l’auteur)
+ */
 router.put('/:messageId', auth, async (req, res) => {
     const { newContent } = req.body;
     try {
         let dm = await DirectMessage.findById(req.params.messageId);
-        if (!dm) {
-            return res.status(404).json({ msg: 'DM not found' });
-        }
-        // Seul l’auteur peut éditer
+        if (!dm) return res.status(404).json({ msg: 'DM not found' });
         if (dm.sender.toString() !== req.user.id) {
             return res.status(403).json({ msg: 'Only the sender can edit this DM' });
         }
+
         dm.content = newContent;
-        // Ajoutez un champ "edited" à votre modèle DirectMessage si vous voulez
-        dm.edited = true;
+        dm.edited  = true;
         await dm.save();
 
-        // Émettre un event "dm-message-updated"
-        const io = req.app.get('socketio');
+        // Émettre l’update
+        const io            = req.app.get('socketio');
         const userSocketMap = req.app.get('userSocketMap');
-        const senderSock = userSocketMap[dm.sender.toString()];
-        const receiverSock = userSocketMap[dm.receiver.toString()];
-
         const payload = {
-            dmId: dm._id.toString(),
-            newContent,
-            edited: dm.edited,
+            dmId:       dm._id.toString(),
+            newContent: dm.content,
+            edited:     dm.edited
         };
-        if (senderSock)   io.to(senderSock).emit('dm-message-updated', payload);
-        if (receiverSock) io.to(receiverSock).emit('dm-message-updated', payload);
 
-        res.json({ msg: 'Message updated', dm });
+        const sockSender   = userSocketMap[dm.sender.toString()];
+        const sockReceiver = userSocketMap[dm.receiver.toString()];
+        if (sockSender)   io.to(sockSender).emit('dm-message-updated', payload);
+        if (sockReceiver) io.to(sockReceiver).emit('dm-message-updated', payload);
+
+        return res.json({ msg: 'Message updated', dm });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');

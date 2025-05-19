@@ -1,4 +1,3 @@
-// routes/messages.js
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
@@ -50,24 +49,31 @@ router.post('/:channelId/messages', auth, upload.single('file'), async (req, res
         const userSocketMap = req.app.get('userSocketMap');
         const mentions = JSON.parse(req.body.mentions || '[]');
         const validMentions = [];
-        const fromUser = await User.findById(req.user.id).select('name');
+        const fromUser = await User.findById(req.user.id).select('name username');
 
         for (const mentionName of mentions) {
             const userMentioned = await User.findOne({ name: mentionName });
             if (!userMentioned) continue;
             validMentions.push(mentionName);
 
-            const newNotif = await Notification.create({
+            // Création d'une SEULE notification AVEC fromUser (champ requis)
+            const notif = await Notification.create({
                 user:      userMentioned._id,
+                fromUser:  req.user.id,
                 type:      'mention',
                 channel:   channel._id,
                 message:   `${fromUser.name} t'a mentionné dans le channel ${channel.name}`,
                 messageId: message._id
             });
 
+            // Populate fromUser pour l'envoi via socket
+            const populatedNotif = await Notification
+                .findById(notif._id)
+                .populate('fromUser', 'username');
+
             const socketId = userSocketMap[userMentioned._id];
             if (socketId) {
-                io.to(socketId).emit('new-notification', newNotif);
+                io.to(socketId).emit('new-notification', populatedNotif);
                 io.to(socketId).emit('mention-notification', {
                     from:          fromUser.name,
                     channelName:   channel.name,

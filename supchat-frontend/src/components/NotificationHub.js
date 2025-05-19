@@ -7,102 +7,105 @@ import './NotificationHub.css';
 
 const NotificationHub = ({ socket }) => {
     const [notifications, setNotifications] = useState([]);
-    const [unreadCount, setUnreadCount] = useState(0);
-    const [showDropdown, setShowDropdown] = useState(false);
+    const [unreadCount,    setUnreadCount]    = useState(0);
+    const [showDropdown,   setShowDropdown]   = useState(false);
     const navigate = useNavigate();
 
-    // Récupérer les notifications initiales depuis l'API
-    const fetchNotifications = async () => {
-        try {
-            const res = await axios.get('/api/notifications');
-            setNotifications(res.data);
-            const unread = res.data.filter(n => !n.read).length;
-            setUnreadCount(unread);
-        } catch (err) {
-            console.error('Erreur lors de la récupération des notifications', err);
-        }
-    };
-
+    // 1) Chargement initial des notifs
     useEffect(() => {
-        fetchNotifications();
+        (async () => {
+            try {
+                const { data } = await axios.get('/api/notifications');
+                setNotifications(data);
+                setUnreadCount(data.filter(n => !n.read).length);
+            } catch (e) {
+                console.error('Erreur fetch notifications :', e);
+            }
+        })();
     }, []);
 
-    // Écouter l'événement "new-notification" pour mettre à jour en temps réel
+    // 2) Réception socket + récupération complète si besoin
     useEffect(() => {
         if (!socket) return;
-        const handleNewNotification = (notif) => {
-            console.log('Notification reçue via socket:', notif);
-            // Ajoute la nouvelle notification en début de liste
-            setNotifications(prev => [notif, ...prev]);
-            setUnreadCount(prev => prev + 1);
+
+        const onNew = async (notif) => {
+            let fullNotif = notif;
+
+            // Si fromUser.username n’est pas fourni via le socket, on va chercher la notif populée
+            if (!notif.fromUser?.username) {
+                try {
+                    const { data } = await axios.get(`/api/notifications/${notif._id}`);
+                    fullNotif = data;
+                } catch (err) {
+                    console.error('Impossible de récupérer la notification peuplée :', err);
+                }
+            }
+
+            setNotifications(prev => [fullNotif, ...prev]);
+            setUnreadCount(c => c + 1);
         };
-        socket.on('new-notification', handleNewNotification);
-        return () => {
-            socket.off('new-notification', handleNewNotification);
-        };
+
+        socket.on('new-notification', onNew);
+        return () => socket.off('new-notification', onNew);
     }, [socket]);
 
-    // Lorsqu'on clique sur une notification, la marquer comme lue et naviguer vers le message
-    const handleNotificationClick = async (notif) => {
+    // 3) Clic sur une notif
+    const handleClick = async (notif) => {
         if (!notif.read) {
             try {
-                await axios.put(`/api/notifications/${notif._id}/read`);
+                const { data: updated } = await axios.put(`/api/notifications/${notif._id}/read`);
+                // remplace la notif dans notre state pour avoir fromUser.username + read=true
                 setNotifications(prev =>
-                    prev.map(n => n._id === notif._id ? { ...n, read: true } : n)
+                    prev.map(n => n._id === updated._id ? updated : n)
                 );
-                setUnreadCount(prev => Math.max(prev - 1, 0));
+                setUnreadCount(c => Math.max(c - 1, 0));
             } catch (err) {
-                console.error('Erreur lors de la mise à jour de la notification', err);
+                console.error('Erreur marking read :', err);
             }
         }
-        // Navigation : si notif.messageId est présent, aller vers le message précis
-        if (notif.messageId) {
-            navigate(`/chat?channelId=${notif.channel}&focusMsg=${notif.messageId}`);
-        } else {
-            navigate(`/chat?channelId=${notif.channel}`);
-        }
+        // navigation vers le chat + focus message
+        const params = new URLSearchParams({ channelId: notif.channel });
+        if (notif.messageId) params.set('focusMsg', notif.messageId);
+        navigate(`/chat?${params.toString()}`);
         setShowDropdown(false);
     };
 
-
     return (
         <div className="notification-hub-container">
-            {/* Icône cloche */}
             <IoMdNotificationsOutline
                 size={24}
                 className="notification-bell-icon"
-                onClick={() => setShowDropdown(prev => !prev)}
+                onClick={() => setShowDropdown(v => !v)}
             />
             {unreadCount > 0 && (
-                <div className="notification-badge">
-                    {unreadCount}
-                </div>
+                <div className="notification-badge">{unreadCount}</div>
             )}
             {showDropdown && (
                 <div className="notification-dropdown">
-                    {notifications.length === 0 ? (
-                        <div className="notification-item">
-                            Aucune notification
-                        </div>
-                    ) : (
-                        notifications.map(notif => (
+                    {notifications.length === 0
+                        ? <div className="notification-item empty">Aucune notification</div>
+                        : notifications.map(notif => (
                             <div
                                 key={notif._id}
-                                className="notification-item"
-                                style={{
-                                    background: notif.read ? '#444' : '#6858c4'
-                                }}
-                                onClick={() => handleNotificationClick(notif)}
+                                className={`notification-item ${notif.read ? 'read' : 'unread'}`}
+                                onClick={() => handleClick(notif)}
                             >
-                                <div style={{ fontSize: '14px' }}>
-                                    {notif.message}
-                                </div>
-                                <div style={{ fontSize: '10px', color: '#ccc' }}>
-                                    {new Date(notif.createdAt).toLocaleString()}
+                                <div className="notification-message">{notif.message}</div>
+                                <div className="notification-meta">
+                                    {notif.fromUser?.username && (
+                                        <span className="notification-from">
+                      @{notif.fromUser.username}
+                    </span>
+                                    )}
+                                    <span className="notification-time">
+                    {new Date(notif.createdAt)
+                        .toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+                    }
+                  </span>
                                 </div>
                             </div>
                         ))
-                    )}
+                    }
                 </div>
             )}
         </div>

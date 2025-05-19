@@ -1,4 +1,3 @@
-// supchat-backend/models/Notification.js
 const mongoose = require('mongoose');
 
 const NotificationSchema = new mongoose.Schema({
@@ -7,9 +6,14 @@ const NotificationSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    fromUser: {                          // <- obligatoire pour savoir qui mentionne
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
     type: {
         type: String,
-        required: true  // ex: 'mention', 'reaction', 'reminder', etc.
+        required: true   // ex: 'mention', 'reaction', etc.
     },
     channel: {
         type: mongoose.Schema.Types.ObjectId,
@@ -18,18 +22,21 @@ const NotificationSchema = new mongoose.Schema({
     },
     messageId: {
         type: mongoose.Schema.Types.ObjectId,
-        default: null  // pour pointer vers le message concerné, si besoin
+        ref: 'Message',
+        default: null
+    },
+    message: {                          // <- le texte à afficher dans la cloche
+        type: String,
+        required: true
     },
     read: {
         type: Boolean,
         default: false
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
     }
+}, {
+    timestamps: true   // créé createdAt & updatedAt automatiquement
 });
 
-// On évite l’erreur OverwriteModelError en ne déclarant le modèle qu’une seule fois
+// Évite l’erreur OverwriteModelError
 module.exports = mongoose.models.Notification
     || mongoose.model('Notification', NotificationSchema);
