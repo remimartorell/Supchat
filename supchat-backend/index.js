@@ -33,6 +33,7 @@ app.use('/api/direct-messages', require('./routes/directMessages'));
 app.use('/api/search',          require('./routes/search'));
 app.use('/api/notifications',   require('./routes/notifications'));
 app.use('/api/meetings',        require('./routes/meetings'));
+app.use('/api/channels', require('./routes/channels'));
 
 // Serveur HTTP + WebSocket
 const server = http.createServer(app);

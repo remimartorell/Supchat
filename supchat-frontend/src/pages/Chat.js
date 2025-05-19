@@ -38,6 +38,8 @@ function Chat({onSocketReady}) {
     const [users, setUsers] = useState([]);
     const [myWorkspaces, setMyWorkspaces] = useState([]);
     const [focusMessageId, setFocusMessageId] = useState('');
+    const [unreadDMs, setUnreadDMs] = useState({});
+    const [unreadChannels, setUnreadChannels] = useState({});
 
     /**
      * On conserve les refs pour `selectedUser` et `selectedChannel`
@@ -195,17 +197,18 @@ function Chat({onSocketReady}) {
     useEffect(() => {
         if (!socket) return;
 
-        const handleNewChannelMessage = (channelMsg) => {
-            console.log('[Socket] new-channel-message:', channelMsg);
-            if (selectedChannelRef.current && channelMsg.channelId === selectedChannelRef.current) {
-                channelMsg.channel = channelMsg.channelId;
-                setMessages((prev) => [...prev, channelMsg]);
-                if (String(channelMsg.sender) !== userId) {
-                    axios.put(`/api/channels/${selectedChannelRef.current}/messages/${channelMsg._id}/markAsRead`)
-                        .catch(err => console.error('Erreur markAsRead new message:', err));
-                }
-            }
+// Fonction de refresh centralisée
+        const refreshUnreadChannels = async () => {
+            if (!userId || !myWorkspaces) return;
+            myWorkspaces.forEach(ws => {
+                (ws.channels || []).forEach(ch => {
+                    axios.get(`/api/channels/${ch._id}/unread-count`).then(res => {
+                        setUnreadChannels(prev => ({ ...prev, [ch._id]: res.data.count }));
+                    }).catch(() => {});
+                });
+            });
         };
+
 
         const handleChannelMessageDeleted = (payload) => {
             console.log('[Socket] channel-message-deleted:', payload);
@@ -226,6 +229,7 @@ function Chat({onSocketReady}) {
                 );
             }
         };
+
 
         const handleMessageReacted = (payload) => {
             console.log('[Socket] message-reacted:', payload);
@@ -337,6 +341,24 @@ function Chat({onSocketReady}) {
                 })
             );
         };
+        // === AJOUTER CETTE FONCTION ICI ! ===
+        const handleNewChannelMessage = (channelMsg) => {
+            if (selectedChannelRef.current && channelMsg.channelId === selectedChannelRef.current) {
+                channelMsg.channel = channelMsg.channelId;
+                setMessages((prev) => [...prev, channelMsg]);
+                if (String(channelMsg.sender) !== userId) {
+                    axios.put(`/api/channels/${selectedChannelRef.current}/messages/${channelMsg._id}/markAsRead`)
+                        .catch(err => console.error('Erreur markAsRead new message:', err));
+                }
+            } else {
+                // ➕ Si on n'est pas sur ce channel, on incrémente le badge non-lu
+                setUnreadChannels(prev => ({
+                    ...prev,
+                    [channelMsg.channelId]: (prev[channelMsg.channelId] || 0) + 1
+                }));
+            }
+        };
+
 
         socket.on('new-channel-message', handleNewChannelMessage);
         socket.on('channel-message-deleted', handleChannelMessageDeleted);
@@ -421,10 +443,13 @@ function Chat({onSocketReady}) {
                 updated.push(ws);
             }
             setMyWorkspaces(updated);
+            // Pour debug :
+            console.log('WORKSPACES:', updated);
         } catch (err) {
             console.error('Erreur fetchWorkspacesAndChannels:', err);
         }
     };
+
 
     // ----------------------------------------------------------------
     // 8) Surveiller les paramètres d'URL (channelId, userId, focusMsg)
@@ -447,10 +472,11 @@ function Chat({onSocketReady}) {
     // 9) Sélection d’un channel
     // ----------------------------------------------------------------
     const handleSelectChannel = async (chId, focusMsgParam) => {
-        // Réinitialiser la conversation pour ne pas conserver d'anciens messages
         setSelectedUser('');
         setSelectedChannel(chId);
         setMessages([]);
+        // Remise à zéro du compteur de non lus pour ce channel !
+        setUnreadChannels(prev => ({ ...prev, [chId]: 0 }));
 
         const fetched = await fetchChannelHistory(chId);
         await markChannelMessagesAsRead(chId, fetched);
@@ -464,6 +490,7 @@ function Chat({onSocketReady}) {
         }
     };
 
+
     // ----------------------------------------------------------------
     // 10) Sélection d’un utilisateur (DM)
     // ----------------------------------------------------------------
@@ -471,6 +498,8 @@ function Chat({onSocketReady}) {
         setSelectedChannel('');
         setSelectedUser(uId);
         setMessages([]);
+        // Remise à zéro du compteur de non lus pour ce DM !
+        setUnreadDMs(prev => ({ ...prev, [uId]: 0 }));
 
         const fetchedDMs = await fetchDMHistory(uId);
         setMessages(fetchedDMs);
@@ -482,6 +511,7 @@ function Chat({onSocketReady}) {
             navigate(`${location.pathname}?${queryParams.toString()}`, {replace: true});
         }
     };
+
 
     // ----------------------------------------------------------------
     // 11) Historique DM
@@ -501,14 +531,17 @@ function Chat({onSocketReady}) {
     // ----------------------------------------------------------------
     const fetchChannelHistory = async (channelId) => {
         if (!channelId) return [];
+        const ws = myWorkspaces.find(ws => ws.channels?.some(c => c._id === channelId));
+        if (!ws) return [];
         try {
-            const res = await axios.get(`/api/channels/${channelId}/messages`);
+            const res = await axios.get(`/api/workspaces/${ws._id}/channels/${channelId}/messages`);
             return res.data;
         } catch (err) {
             console.error('Erreur fetchChannelHistory:', err);
             return [];
         }
     };
+
 
     // ----------------------------------------------------------------
 // 13) Envoyer un message (DM ou channel)
@@ -692,12 +725,16 @@ function Chat({onSocketReady}) {
     // 18) Recharger la liste des utilisateurs lors du changement de conversation
     // ----------------------------------------------------------------
     useEffect(() => {
-        if (selectedUser || selectedChannel) {
-            axios.get('/api/auth/allUsers')
-                .then(res => setUsers(res.data))
-                .catch(err => console.error('Erreur fetch allUsers:', err));
-        }
-    }, [selectedUser, selectedChannel]);
+        if (!socket) return;
+        const handleNewNotification = (notif) => {
+            alert("Nouvelle notification : " + (notif.type || "Notification !"));
+        };
+        socket.on('new-notification', handleNewNotification);
+        return () => {
+            socket.off('new-notification', handleNewNotification);
+        };
+    }, [socket]);
+
 
     // Liste des channels du workspace actif (pour les #hashtags)
     const currentChannels = useMemo(() => {
@@ -733,6 +770,10 @@ function Chat({onSocketReady}) {
                     selectedUser={selectedUser}
                     selectedChannel={selectedChannel}
                     onWorkspacesRefresh={fetchWorkspacesAndChannels}
+                    unreadDMs={unreadDMs}
+                    setUnreadDMs={setUnreadDMs}
+                    unreadChannels={unreadChannels}
+                    setUnreadChannels={setUnreadChannels}
                 />
             </div>
             <div className="chat-layout-main">

@@ -165,3 +165,13 @@
     color: #fff;
 }
 
+.unread-badge {
+    background: #e74c3c;
+    color: white;
+    border-radius: 12px;
+    font-size: 12px;
+    padding: 1px 7px;
+    margin-left: 6px;
+    font-weight: bold;
+    display: inline-block;
+}

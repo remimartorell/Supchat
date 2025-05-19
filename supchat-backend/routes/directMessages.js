@@ -195,6 +195,21 @@ router.put('/:messageId/markAsRead', auth, async (req, res) => {
         res.status(500).send('Server Error');
     }
 });
+// GET /api/direct-messages/:userId/unread-count
+router.get('/:userId/unread-count', auth, async (req, res) => {
+    try {
+        const otherId = req.params.userId;
+        // Comptage des messages reçus par l'utilisateur connecté et non lus
+        const count = await DirectMessage.countDocuments({
+            sender: otherId,
+            receiver: req.user.id,
+            'readBy.user': { $ne: req.user.id }
+        });
+        res.json({ count });
+    } catch (err) {
+        res.status(500).send('Server Error');
+    }
+});
 
 /**
  * PUT /api/direct-messages/:messageId

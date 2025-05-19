@@ -1,4 +1,4 @@
-// src/components/Slidebar.js
+// src/components/Sidebar.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../services/axiosConfig';
@@ -6,7 +6,11 @@ import { RiPushpinLine, RiPushpinFill } from 'react-icons/ri';
 import { usePinned } from './usePinned';
 import './Sidebar.css';
 
-function Sidebar({ userId, users, myWorkspaces, onSelectUser, onSelectChannel, selectedUser, selectedChannel, onWorkspacesRefresh, socket }) {
+function Sidebar({
+                     userId, users, myWorkspaces, onSelectUser, onSelectChannel, selectedUser, selectedChannel,
+                     onWorkspacesRefresh, socket,
+                     unreadDMs, setUnreadDMs, unreadChannels, setUnreadChannels
+                 }) {
     const navigate = useNavigate();
     const [pinned, togglePin] = usePinned();
     const [showCreateWs, setShowCreateWs] = useState(false);
@@ -18,19 +22,48 @@ function Sidebar({ userId, users, myWorkspaces, onSelectUser, onSelectChannel, s
     const [channelMembers, setChannelMembers] = useState([]);
     const [userStatuses, setUserStatuses] = useState({});
 
+
+
+
     useEffect(() => {
-        if (!socket) return;
-        socket.on('active-users', ids =>
-            setUserStatuses(prev => ids.reduce((acc, id) => ({ ...acc, [id]: 'online' }), prev))
-        );
-        socket.on('user-connected', id => setUserStatuses(prev => ({ ...prev, [id]: 'online' })));
-        socket.on('user-disconnected', id => setUserStatuses(prev => ({ ...prev, [id]: 'offline' })));
-        return () => {
-            socket.off('active-users');
-            socket.off('user-connected');
-            socket.off('user-disconnected');
-        };
-    }, [socket]);
+        // Récupère tous les unread DM d'un coup
+        if (users && userId) {
+            const fetchUnreadDMs = async () => {
+                const unread = {};
+                await Promise.all(
+                    users.filter(u => u._id !== userId).map(async (u) => {
+                        try {
+                            const res = await axios.get(`/api/direct-messages/${u._id}/unread-count`);
+                            unread[u._id] = res.data.count || 0;
+                        } catch (e) {
+                            unread[u._id] = 0;
+                        }
+                    })
+                );
+                setUnreadDMs(unread);
+            };
+            fetchUnreadDMs();
+        }
+
+        // Récupère tous les unread channels d'un coup
+        if (myWorkspaces && userId) {
+            const fetchUnreadChannels = async () => {
+                const unread = {};
+                await Promise.all(
+                    myWorkspaces.flatMap(ws => (ws.channels || [])).map(async (ch) => {
+                        try {
+                            const res = await axios.get(`/api/channels/${ch._id}/unread-count`);
+                            unread[ch._id] = res.data.count || 0;
+                        } catch (e) {
+                            unread[ch._id] = 0;
+                        }
+                    })
+                );
+                setUnreadChannels(unread);
+            };
+            fetchUnreadChannels();
+        }
+    }, [users, myWorkspaces, userId]);
 
     const getUserAvatar = u => {
         if (u.profilePicture) return process.env.REACT_APP_API_URL + u.profilePicture;
@@ -76,6 +109,7 @@ function Sidebar({ userId, users, myWorkspaces, onSelectUser, onSelectChannel, s
         const isSel = u._id === selectedUser;
         const status = userStatuses[u._id] || 'offline';
         const dotColor = status === 'online' ? 'green' : 'red';
+        const unread = unreadDMs[u._id] || 0;
 
         return (
             <li
@@ -90,6 +124,9 @@ function Sidebar({ userId, users, myWorkspaces, onSelectUser, onSelectChannel, s
                         style={{ backgroundColor: dotColor }}
                     />
                     <span className="sidebar-username">{u.name}</span>
+                    {unread > 0 && (
+                        <span className="unread-badge">+{unread}</span>
+                    )}
                 </div>
                 <button
                     className="sidebar-pin-btn"
@@ -101,7 +138,6 @@ function Sidebar({ userId, users, myWorkspaces, onSelectUser, onSelectChannel, s
                         : <RiPushpinLine className="unpinned" />
                     }
                 </button>
-
             </li>
         );
     };
@@ -185,7 +221,7 @@ function Sidebar({ userId, users, myWorkspaces, onSelectUser, onSelectChannel, s
                                 .filter(ch =>
                                     ch.type === 'public' ||
                                     (ch.type === 'private' &&
-                                        ch.members.some(m =>
+                                          ch.members.some(m =>
                                             typeof m === 'string'
                                                 ? m === userId
                                                 : m._id === userId
@@ -202,9 +238,13 @@ function Sidebar({ userId, users, myWorkspaces, onSelectUser, onSelectChannel, s
                                             }`}
                                             onClick={() => onSelectChannel(ch._id)}
                                         >
-                      <span className="sidebar-channel-name">
-                        #{ch.name}
-                      </span>
+                                        <span className="sidebar-channel-name">
+                                            #{ch.name}
+                                            {unreadChannels[ch._id] && unreadChannels[ch._id] > 0 && (
+                                                <span className="unread-badge">+{unreadChannels[ch._id]}</span>
+                                            )}
+                                        </span>
+
                                             {(role === 'owner' || role === 'admin') && (
                                                 <button
                                                     className="sidebar-button"
