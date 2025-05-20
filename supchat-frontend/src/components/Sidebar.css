@@ -175,3 +175,14 @@
     font-weight: bold;
     display: inline-block;
 }
+
+.sidebar-channel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+}
+.sidebar-channel .mute-toggle {
+    cursor: pointer;
+    margin-left: 8px;
+}

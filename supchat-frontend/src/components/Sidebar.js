@@ -7,9 +7,21 @@ import { usePinned } from './usePinned';
 import './Sidebar.css';
 
 function Sidebar({
-                     userId, users, myWorkspaces, onSelectUser, onSelectChannel, selectedUser, selectedChannel,
-                     onWorkspacesRefresh, socket,
-                     unreadDMs, setUnreadDMs, unreadChannels, setUnreadChannels
+                     userId,
+                     users,
+                     myWorkspaces,
+                     onSelectUser,
+                     onSelectChannel,
+                     selectedUser,
+                     selectedChannel,
+                     onWorkspacesRefresh,
+                     socket,
+                     unreadDMs,
+                     setUnreadDMs,
+                     unreadChannels,
+                     setUnreadChannels,
+                     mutedChannels,
+                     onToggleChannelMute
                  }) {
     const navigate = useNavigate();
     const [pinned, togglePin] = usePinned();
@@ -22,48 +34,42 @@ function Sidebar({
     const [channelMembers, setChannelMembers] = useState([]);
     const [userStatuses, setUserStatuses] = useState({});
 
-
-
-
+    // Charge les compteurs non-lus
     useEffect(() => {
-        // Récupère tous les unread DM d'un coup
         if (users && userId) {
-            const fetchUnreadDMs = async () => {
+            (async () => {
                 const unread = {};
                 await Promise.all(
-                    users.filter(u => u._id !== userId).map(async (u) => {
+                    users.filter(u => u._id !== userId).map(async u => {
                         try {
                             const res = await axios.get(`/api/direct-messages/${u._id}/unread-count`);
                             unread[u._id] = res.data.count || 0;
-                        } catch (e) {
+                        } catch {
                             unread[u._id] = 0;
                         }
                     })
                 );
                 setUnreadDMs(unread);
-            };
-            fetchUnreadDMs();
+            })();
         }
 
-        // Récupère tous les unread channels d'un coup
         if (myWorkspaces && userId) {
-            const fetchUnreadChannels = async () => {
+            (async () => {
                 const unread = {};
                 await Promise.all(
-                    myWorkspaces.flatMap(ws => (ws.channels || [])).map(async (ch) => {
+                    myWorkspaces.flatMap(ws => ws.channels || []).map(async ch => {
                         try {
                             const res = await axios.get(`/api/channels/${ch._id}/unread-count`);
                             unread[ch._id] = res.data.count || 0;
-                        } catch (e) {
+                        } catch {
                             unread[ch._id] = 0;
                         }
                     })
                 );
                 setUnreadChannels(unread);
-            };
-            fetchUnreadChannels();
+            })();
         }
-    }, [users, myWorkspaces, userId]);
+    }, [users, myWorkspaces, userId, setUnreadDMs, setUnreadChannels]);
 
     const getUserAvatar = u => {
         if (u.profilePicture) return process.env.REACT_APP_API_URL + u.profilePicture;
@@ -78,8 +84,7 @@ function Sidebar({
             onWorkspacesRefresh();
             setNewWsName('');
             setShowCreateWs(false);
-        } catch (err) {
-            console.error(err);
+        } catch {
             alert('Échec création workspace');
         }
     };
@@ -90,14 +95,13 @@ function Sidebar({
             await axios.post(`/api/workspaces/${targetWsId}/channels`, {
                 name: newChannelName.trim(),
                 type: channelType,
-                members: channelType === 'private' ? channelMembers : [],
+                members: channelType === 'private' ? channelMembers : []
             });
             onWorkspacesRefresh();
             setNewChannelName('');
             setShowCreateChannel(false);
             setTargetWsId('');
-        } catch (err) {
-            console.error(err);
+        } catch {
             alert('Échec création channel');
         }
     };
@@ -119,24 +123,23 @@ function Sidebar({
             >
                 <div className="sidebar-user-row">
                     <img src={getUserAvatar(u)} alt="avatar" className="sidebar-avatar" />
-                    <span
-                        className="sidebar-status-dot"
-                        style={{ backgroundColor: dotColor }}
-                    />
+                    <span className="sidebar-status-dot" style={{ backgroundColor: dotColor }} />
                     <span className="sidebar-username">{u.name}</span>
-                    {unread > 0 && (
-                        <span className="unread-badge">+{unread}</span>
-                    )}
+                    {unread > 0 && <span className="unread-badge">+{unread}</span>}
                 </div>
                 <button
                     className="sidebar-pin-btn"
-                    onClick={e => { e.stopPropagation(); togglePin(u._id); }}
+                    onClick={e => {
+                        e.stopPropagation();
+                        togglePin(u._id);
+                    }}
                     title={pinned.includes(u._id) ? 'Désépingler' : 'Épingler'}
                 >
-                    {pinned.includes(u._id)
-                        ? <RiPushpinFill className="pinned" />
-                        : <RiPushpinLine className="unpinned" />
-                    }
+                    {pinned.includes(u._id) ? (
+                        <RiPushpinFill className="pinned" />
+                    ) : (
+                        <RiPushpinLine className="unpinned" />
+                    )}
                 </button>
             </li>
         );
@@ -147,17 +150,13 @@ function Sidebar({
             {pinnedUsers.length > 0 && (
                 <>
                     <h4 className="sidebar-section-title">UTILISATEURS ÉPINGLÉS</h4>
-                    <ul className="sidebar-list pinned-list">
-                        {pinnedUsers.map(renderUser)}
-                    </ul>
+                    <ul className="sidebar-list pinned-list">{pinnedUsers.map(renderUser)}</ul>
                     <hr className="pinned-separator" />
                 </>
             )}
 
             <h4 className="sidebar-section-title">Utilisateurs</h4>
-            <ul className="sidebar-list">
-                {otherUsers.map(renderUser)}
-            </ul>
+            <ul className="sidebar-list">{otherUsers.map(renderUser)}</ul>
 
             {!showCreateWs ? (
                 <button className="sidebar-button" onClick={() => setShowCreateWs(true)}>
@@ -182,16 +181,15 @@ function Sidebar({
                 </div>
             )}
 
-            {/* Workspaces + Channels… */}
             <h4 className="sidebar-section-title" style={{ marginTop: 20 }}>
                 Workspaces + Channels
             </h4>
-            {myWorkspaces.map((ws) => {
-                const member = ws.members.find((m) =>
-                    m.user === userId ||
-                    (typeof m.user === 'object' && m.user._id === userId)
+            {myWorkspaces.map(ws => {
+                const member = ws.members.find(
+                    m => m.user === userId || (typeof m.user === 'object' && m.user._id === userId)
                 );
                 const role = member?.role || '';
+
                 return (
                     <div key={ws._id} className="sidebar-workspace">
                         <div className="sidebar-ws-header">
@@ -216,44 +214,53 @@ function Sidebar({
                                 )}
                             </div>
                         </div>
+
                         <ul className="sidebar-list" style={{ paddingLeft: 16 }}>
                             {(ws.channels || [])
-                                .filter(ch =>
-                                    ch.type === 'public' ||
-                                    (ch.type === 'private' &&
-                                          ch.members.some(m =>
-                                            typeof m === 'string'
-                                                ? m === userId
-                                                : m._id === userId
-                                        )
-                                    )
+                                .filter(
+                                    ch =>
+                                        ch.type === 'public' ||
+                                        (ch.type === 'private' &&
+                                            ch.members.some(m =>
+                                                typeof m === 'string' ? m === userId : m._id === userId
+                                            ))
                                 )
-                                .map((ch) => {
+                                .map(ch => {
                                     const isChSel = ch._id === selectedChannel;
+                                    const unread = unreadChannels[ch._id] || 0;
+                                    const isMuted = mutedChannels.includes(ch._id);
+
                                     return (
                                         <li
                                             key={ch._id}
-                                            className={`sidebar-item ${
-                                                isChSel ? 'sidebar-item-selected' : ''
-                                            }`}
+                                            className={`sidebar-item ${isChSel ? 'sidebar-item-selected' : ''}`}
                                             onClick={() => onSelectChannel(ch._id)}
                                         >
-                                        <span className="sidebar-channel-name">
-                                            #{ch.name}
-                                            {unreadChannels[ch._id] && unreadChannels[ch._id] > 0 && (
-                                                <span className="unread-badge">+{unreadChannels[ch._id]}</span>
-                                            )}
-                                        </span>
-
+                                            <span className="sidebar-channel-name">
+                                                #{ch.name}
+                                                {ch.type === 'private' && ' 🔒'}
+                                                {/* n’affiche la pastille que si non-muted */}
+                                                {!isMuted && unread > 0 && (
+                                                    <span className="unread-badge">+{unread}</span>
+                                                )}
+                                            </span>
+                                            <button
+                                                className="sidebar-button mute-toggle-btn"
+                                                onClick={e => {
+                                                    e.stopPropagation();
+                                                    onToggleChannelMute(ch._id);
+                                                }}
+                                                title={isMuted ? 'Unmute channel' : 'Mute channel'}
+                                            >
+                                                {isMuted ? '🔕' : '🔔'}
+                                            </button>
                                             {(role === 'owner' || role === 'admin') && (
                                                 <button
                                                     className="sidebar-button"
-                                                    onClick={async (e) => {
+                                                    onClick={async e => {
                                                         e.stopPropagation();
                                                         if (
-                                                            window.confirm(
-                                                                `Supprimer le channel "${ch.name}" ?`
-                                                            )
+                                                            window.confirm(`Supprimer le channel "${ch.name}" ?`)
                                                         ) {
                                                             await axios.delete(
                                                                 `/api/workspaces/${ws._id}/channels/${ch._id}`
@@ -273,22 +280,18 @@ function Sidebar({
                 );
             })}
 
-            {/* Form création channel */}
             {showCreateChannel && (
                 <div className="sidebar-form" style={{ background: '#2c2c2c' }}>
                     <h5>Créer channel dans {targetWsId}</h5>
                     <input
                         className="sidebar-input"
                         value={newChannelName}
-                        onChange={(e) => setNewChannelName(e.target.value)}
+                        onChange={e => setNewChannelName(e.target.value)}
                         placeholder="Nom channel…"
                     />
                     <div>
                         <label>Type :</label>
-                        <select
-                            value={channelType}
-                            onChange={(e) => setChannelType(e.target.value)}
-                        >
+                        <select value={channelType} onChange={e => setChannelType(e.target.value)}>
                             <option value="public">Public</option>
                             <option value="private">Privé</option>
                         </select>
@@ -296,13 +299,11 @@ function Sidebar({
                     {channelType === 'private' && (
                         <select
                             multiple
-                            onChange={(e) =>
-                                setChannelMembers(
-                                    Array.from(e.target.selectedOptions).map((o) => o.value)
-                                )
+                            onChange={e =>
+                                setChannelMembers(Array.from(e.target.selectedOptions).map(o => o.value))
                             }
                         >
-                            {users.map((u) => (
+                            {users.map(u => (
                                 <option key={u._id} value={u._id}>
                                     {u.name}
                                 </option>
@@ -313,10 +314,7 @@ function Sidebar({
                         <button className="sidebar-button" onClick={handleCreateChannel}>
                             Créer
                         </button>
-                        <button
-                            className="sidebar-button"
-                            onClick={() => setShowCreateChannel(false)}
-                        >
+                        <button className="sidebar-button" onClick={() => setShowCreateChannel(false)}>
                             Annuler
                         </button>
                     </div>

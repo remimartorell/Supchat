@@ -11,7 +11,23 @@ function WorkspaceSettings() {
     const [workspace, setWorkspace] = useState(null);
     const [allUsers, setAllUsers] = useState([]);
     const [channels, setChannels] = useState([]);
+    const [mutedChannels, setMutedChannels] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('mutedChannels')) || [];
+        } catch {
+            return []
+        }
+    });
 
+    const toggleChannelMute = (channelId) => {
+        setMutedChannels(prev => {
+            const next = prev.includes(channelId)
+                ? prev.filter(id => id !== channelId)
+                : [...prev, channelId];
+            localStorage.setItem('mutedChannels', JSON.stringify(next));
+            return next;
+        });
+    };
     // Ajout membre workspace
     const [selectedUserId, setSelectedUserId] = useState('');
     const [newMemberRole, setNewMemberRole] = useState('member');
@@ -241,6 +257,31 @@ function WorkspaceSettings() {
                 <button className="delete-workspace-button" onClick={handleDeleteWorkspace}>
                     Supprimer le Workspace
                 </button>
+            </div>
+            {/* Section : Notifications par Channel */}
+            <div className="settings-section">
+                <h3>Notifications par Channel</h3>
+                <ul className="notif-channels-list">
+                    {channels.map(ch => {
+                        const isMuted = mutedChannels.includes(ch._id);
+                        return (
+                            <li key={ch._id} className="notif-channel-item">
+        <span className="notif-channel-name">
+          {ch.name}
+            {ch.type === 'private' && ' 🔒'}
+        </span>
+                                <button
+                                    type="button"
+                                    className="settings-button mute-toggle-btn"
+                                    onClick={() => toggleChannelMute(ch._id)}
+                                >
+                                    {isMuted ? '🔕 Muted' : '🔔 Unmuted'}
+                                </button>
+                            </li>
+                        )
+                    })}
+                </ul>
+
             </div>
 
             {/* Section : Channels Privés */}

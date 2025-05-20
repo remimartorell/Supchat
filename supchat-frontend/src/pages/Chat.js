@@ -43,6 +43,26 @@ function Chat({onSocketReady}) {
     const [notifications, setNotifications]     = useState([]);
     const [unreadNotifCount, setUnreadNotifCount] = useState(0);
 
+    // Liste des channels mutés (mutedChannels stocké en localStorage)
+    const [mutedChannels, setMutedChannels] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('mutedChannels')) || [];
+        } catch {
+            return [];
+        }
+    });
+
+    // Basculer le mute/unmute d’un channel
+    const toggleChannelMute = (channelId) => {
+        setMutedChannels(prev => {
+            const next = prev.includes(channelId)
+                ? prev.filter(id => id !== channelId)
+                : [...prev, channelId];
+            localStorage.setItem('mutedChannels', JSON.stringify(next));
+            return next;
+        });
+    };
+
     /**
      * On conserve les refs pour `selectedUser` et `selectedChannel`
      * afin d'y accéder dans les callbacks socket,
@@ -733,16 +753,25 @@ function Chat({onSocketReady}) {
         return ws?.channels || [];
     }, [myWorkspaces, selectedChannel]);
 
-    // -------------------
-    // données pour MessageInput
-    // -------------------
+// -------------------
+// données pour MessageInput
+// -------------------
     const mentionData = users.map(u => ({ id: u._id, display: u.username || u.name }));
-    const channelData = currentChannels.map(c => ({ id: c._id, display: c.name }));
+    const channelData  = currentChannels.map(c => {
+        // 🔒 si privé, 🔕 si muté
+        const lockIcon = c.type === 'private' ? ' 🔒' : '';
+        const muteIcon = mutedChannels.includes(c._id) ? ' 🔕' : '';
+        return {
+            id: c._id,
+            display: c.name + lockIcon + muteIcon
+        };
+    });
     const commandData = [
         { id: 'meeting', display: 'meeting' },
-        { id: 'poll', display: 'poll' },
-        { id: 'remindme', display: 'remindme' }
+        { id: 'poll',    display: 'poll'    },
+        { id: 'remindme',display: 'remindme'}
     ];
+
 
     // -------------------
     // RENDU FINAL
@@ -766,7 +795,8 @@ function Chat({onSocketReady}) {
                     setUnreadChannels={setUnreadChannels}
                     unreadNotifCount={unreadNotifCount}
                     notifications={notifications}
-
+                    mutedChannels={mutedChannels}
+                    onToggleChannelMute={toggleChannelMute}
                 />
             </div>
             <div className="chat-layout-main">
