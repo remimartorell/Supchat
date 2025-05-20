@@ -40,6 +40,8 @@ function Chat({onSocketReady}) {
     const [focusMessageId, setFocusMessageId] = useState('');
     const [unreadDMs, setUnreadDMs] = useState({});
     const [unreadChannels, setUnreadChannels] = useState({});
+    const [notifications, setNotifications]     = useState([]);
+    const [unreadNotifCount, setUnreadNotifCount] = useState(0);
 
     /**
      * On conserve les refs pour `selectedUser` et `selectedChannel`
@@ -77,6 +79,28 @@ function Chat({onSocketReady}) {
         };
         fetchUserProfile();
     }, []);
+
+    // → Charger les notifications existantes au login
+    // → Charger les compteurs DM non-lus pour chaque utilisateur
+    useEffect(() => {
+        if (!isLoggedIn || users.length === 0) return;
+        const fetchUnreadDMs = async () => {
+            const counts = {};
+            await Promise.all(
+                users.map(async u => {
+                    try {
+                        const res = await axios.get(`/api/direct-messages/${u._id}/unread-count`);
+                        counts[u._id] = res.data.count;
+                    } catch (err) {
+                        console.error(`Erreur fetch DM count pour ${u._id}:`, err);
+                    }
+                })
+            );
+            setUnreadDMs(counts);
+        };
+        fetchUnreadDMs();
+    }, [isLoggedIn, users]);
+
 
     // ----------------------------------------------------------------
     // 2) Création du socket (unique) et écoute des événements "globaux"
@@ -140,10 +164,11 @@ function Chat({onSocketReady}) {
 
         const handleNewPrivateMessage = (dm) => {
             console.log('[Socket] new-private-message:', dm);
-            const amISender = String(dm.sender) === userId;
+            const amISender   = String(dm.sender) === userId;
             const amIReceiver = String(dm.receiver) === userId;
             if (!amISender && !amIReceiver) return;
 
+            // Si on est DANS la conversation, on ajoute le message
             if (
                 selectedUserRef.current &&
                 (
@@ -151,13 +176,21 @@ function Chat({onSocketReady}) {
                     (String(dm.sender) === selectedUserRef.current && String(dm.receiver) === userId)
                 )
             ) {
-                setMessages((prev) => [...prev, dm]);
+                setMessages(prev => [...prev, dm]);
                 if (!amISender) {
                     axios.put(`/api/direct-messages/${dm._id}/markAsRead`)
                         .catch(err => console.error('Erreur markAsRead DM:', err));
                 }
             }
+            // Sinon, si c'est un DM entrant, on incrémente le badge
+            else if (!amISender && amIReceiver) {
+                setUnreadDMs(prev => ({
+                    ...prev,
+                    [dm.sender]: (prev[dm.sender] || 0) + 1
+                }));
+            }
         };
+
 
         const handleDmMessageRead = (payload) => {
             console.log('[Socket] dm-message-read:', payload);
@@ -191,34 +224,62 @@ function Chat({onSocketReady}) {
         };
     }, [socket, userId]);
 
+    // Écoute en temps réel des notifications
+    useEffect(() => {
+        if (!socket) return;
+        const handleNewNotification = (notif) => {
+            setNotifications(prev => [notif, ...prev]);
+            setUnreadNotifCount(c => c + 1);
+        };
+        socket.on('new-notification', handleNewNotification);
+        return () => {
+            socket.off('new-notification', handleNewNotification);
+        };
+    }, [socket]);
+
+
     // ----------------------------------------------------------------
-    // 4) Événements liés aux Channels
-    // ----------------------------------------------------------------
+// 4) Événements liés aux Channels
+// ----------------------------------------------------------------
     useEffect(() => {
         if (!socket) return;
 
-// Fonction de refresh centralisée
-        const refreshUnreadChannels = async () => {
-            if (!userId || !myWorkspaces) return;
-            myWorkspaces.forEach(ws => {
-                (ws.channels || []).forEach(ch => {
-                    axios.get(`/api/channels/${ch._id}/unread-count`).then(res => {
-                        setUnreadChannels(prev => ({ ...prev, [ch._id]: res.data.count }));
-                    }).catch(() => {});
-                });
-            });
+        // Quand on reçoit un message dans un channel :
+        const handleNewChannelMessage = (msg) => {
+            // Si on est DANS le channel concerné => on ajoute le message à la liste
+            if (selectedChannelRef.current && msg.channelId === selectedChannelRef.current) {
+                setMessages(prev => [...prev, msg]);
+                // Marque comme lu si ce n'est pas toi
+                if (String(msg.sender) !== userId) {
+                    axios.put(`/api/channels/${selectedChannelRef.current}/messages/${msg._id}/markAsRead`)
+                        .catch(err => console.error('Erreur markAsRead new message:', err));
+                }
+            } else {
+                // Sinon on incrémente le badge non-lu
+                setUnreadChannels(prev => ({
+                    ...prev,
+                    [msg.channelId]: (prev[msg.channelId] || 0) + 1
+                }));
+            }
         };
 
+        // Quand un message est lu (depuis le backend)
+        const handleUnreadUpdate = ({ channelId, count, userId: payloadUserId }) => {
+            // Si c'est bien toi le user concerné par l'update
+            if (payloadUserId && String(payloadUserId) !== String(userId)) return;
+            setUnreadChannels(prev => ({
+                ...prev,
+                [channelId]: count
+            }));
+        };
 
+        // Tous les autres handlers socket (déjà en place)…
         const handleChannelMessageDeleted = (payload) => {
-            console.log('[Socket] channel-message-deleted:', payload);
             if (selectedChannelRef.current && payload.channelId === selectedChannelRef.current) {
                 setMessages(prev => prev.filter(m => m._id !== payload.messageId));
             }
         };
-
         const handleChannelMessageUpdated = (payload) => {
-            console.log('[Socket] channel-message-updated:', payload);
             if (selectedChannelRef.current && payload.channelId === selectedChannelRef.current) {
                 setMessages(prev =>
                     prev.map(m =>
@@ -229,33 +290,6 @@ function Chat({onSocketReady}) {
                 );
             }
         };
-
-
-        const handleMessageReacted = (payload) => {
-            console.log('[Socket] message-reacted:', payload);
-            if (selectedChannelRef.current && payload.channelId === selectedChannelRef.current) {
-                setMessages(prev =>
-                    prev.map(msg => {
-                        if (msg._id === payload.messageId) {
-                            if (!msg.reactions) msg.reactions = [];
-                            const existingIndex = msg.reactions.findIndex(r =>
-                                (r.user._id && r.user._id === payload.reaction.user._id) ||
-                                (typeof r.user === 'string' && r.user === payload.reaction.user)
-                            );
-                            if (existingIndex !== -1) {
-                                const newReactions = [...msg.reactions];
-                                newReactions[existingIndex] = payload.reaction;
-                                msg.reactions = newReactions;
-                            } else {
-                                msg.reactions = [...msg.reactions, payload.reaction];
-                            }
-                        }
-                        return msg;
-                    })
-                );
-            }
-        };
-
         const handleMentionNotification = (notif) => {
             alert(
                 `Tu as été mentionné par ${notif.from}\nDans le channel ${notif.channelName}\nDu workspace ${notif.workspaceName}`
@@ -263,7 +297,6 @@ function Chat({onSocketReady}) {
         };
 
         const handleChannelAdded = (channel) => {
-            console.log('[Socket] channel-added:', channel);
             setMyWorkspaces(prev =>
                 prev.map(ws => {
                     if (String(ws._id) === String(channel.workspace)) {
@@ -278,7 +311,6 @@ function Chat({onSocketReady}) {
         };
 
         const handleChannelDeleted = (payload) => {
-            console.log('[Socket] channel-deleted:', payload);
             setMyWorkspaces(prev =>
                 prev.map(ws => {
                     if (ws.channels) {
@@ -290,7 +322,6 @@ function Chat({onSocketReady}) {
         };
 
         const handleMessageRead = (payload) => {
-            console.log('[Socket] message-read:', payload);
             if (selectedChannelRef.current && payload.channelId === selectedChannelRef.current) {
                 setMessages(prev =>
                     prev.map(msg => {
@@ -308,7 +339,6 @@ function Chat({onSocketReady}) {
         };
 
         const handleDmMessageReacted = (payload) => {
-            console.log('[Socket] dm-message-reacted:', payload);
             setMessages(prev =>
                 prev.map(dm => {
                     if (dm._id === payload.dmId) {
@@ -329,9 +359,7 @@ function Chat({onSocketReady}) {
             );
         };
 
-
         const handleDmMessageUpdated = (payload) => {
-            // payload = { dmId, newContent, edited }
             setMessages(prev =>
                 prev.map(dm => {
                     if (dm._id === payload.dmId) {
@@ -341,41 +369,17 @@ function Chat({onSocketReady}) {
                 })
             );
         };
-        // === AJOUTER CETTE FONCTION ICI ! ===
-        const handleNewChannelMessage = (channelMsg) => {
-            if (selectedChannelRef.current && channelMsg.channelId === selectedChannelRef.current) {
-                channelMsg.channel = channelMsg.channelId;
-                setMessages((prev) => [...prev, channelMsg]);
-                if (String(channelMsg.sender) !== userId) {
-                    axios.put(`/api/channels/${selectedChannelRef.current}/messages/${channelMsg._id}/markAsRead`)
-                        .catch(err => console.error('Erreur markAsRead new message:', err));
-                }
-            } else {
-                // ➕ Si on n'est pas sur ce channel, on incrémente le badge non-lu
-                setUnreadChannels(prev => ({
-                    ...prev,
-                    [channelMsg.channelId]: (prev[channelMsg.channelId] || 0) + 1
-                }));
-            }
-        };
-
-
+        // --- ENREGISTREMENT DES EVENTS ---
         socket.on('new-channel-message', handleNewChannelMessage);
+        socket.on('channel:unread-update', handleUnreadUpdate);
         socket.on('channel-message-deleted', handleChannelMessageDeleted);
         socket.on('channel-message-updated', handleChannelMessageUpdated);
-        socket.on('message-reacted', handleMessageReacted);
-        socket.on('mention-notification', handleMentionNotification);
-        socket.on('channel-added', handleChannelAdded);
-        socket.on('channel-deleted', handleChannelDeleted);
-        socket.on('message-read', handleMessageRead);
-        socket.on('dm-message-reacted', handleDmMessageReacted);
-        socket.on('dm-message-updated', handleDmMessageUpdated);
 
         return () => {
             socket.off('new-channel-message', handleNewChannelMessage);
+            socket.off('channel:unread-update', handleUnreadUpdate);
             socket.off('channel-message-deleted', handleChannelMessageDeleted);
             socket.off('channel-message-updated', handleChannelMessageUpdated);
-            socket.off('message-reacted', handleMessageReacted);
             socket.off('mention-notification', handleMentionNotification);
             socket.off('channel-added', handleChannelAdded);
             socket.off('channel-deleted', handleChannelDeleted);
@@ -721,20 +725,6 @@ function Chat({onSocketReady}) {
         }
     };
 
-    // ----------------------------------------------------------------
-    // 18) Recharger la liste des utilisateurs lors du changement de conversation
-    // ----------------------------------------------------------------
-    useEffect(() => {
-        if (!socket) return;
-        const handleNewNotification = (notif) => {
-            alert("Nouvelle notification : " + (notif.type || "Notification !"));
-        };
-        socket.on('new-notification', handleNewNotification);
-        return () => {
-            socket.off('new-notification', handleNewNotification);
-        };
-    }, [socket]);
-
 
     // Liste des channels du workspace actif (pour les #hashtags)
     const currentChannels = useMemo(() => {
@@ -774,6 +764,9 @@ function Chat({onSocketReady}) {
                     setUnreadDMs={setUnreadDMs}
                     unreadChannels={unreadChannels}
                     setUnreadChannels={setUnreadChannels}
+                    unreadNotifCount={unreadNotifCount}
+                    notifications={notifications}
+
                 />
             </div>
             <div className="chat-layout-main">
