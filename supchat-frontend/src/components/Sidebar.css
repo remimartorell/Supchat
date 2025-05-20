@@ -186,3 +186,24 @@
     cursor: pointer;
     margin-left: 8px;
 }
+
+.settings-section h3 {
+    display: inline-block;
+    margin-right: 1rem;
+    vertical-align: middle;
+}
+
+.settings-section .settings-button {
+    vertical-align: middle;
+}
+
+/* Spécifiquement pour les boutons 🔕/🔔 des channels privés */
+.private-channel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.private-channel-header .bell-btn {
+    margin-left: auto;
+}

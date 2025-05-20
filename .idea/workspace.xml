@@ -7,9 +7,6 @@
     <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout du sysstème de mute pour les channels">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Chat.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/WorkspaceSettings.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/WorkspaceSettings.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/WorkspaceSettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/WorkspaceSettings.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -143,7 +140,7 @@
       <workItem from="1746530228349" duration="6117000" />
       <workItem from="1747033883929" duration="853000" />
       <workItem from="1747638932025" duration="19861000" />
-      <workItem from="1747740568500" duration="5631000" />
+      <workItem from="1747740568500" duration="6718000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -489,7 +486,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747742597267</updated>
     </task>
-    <option name="localTasksCounter" value="44" />
+    <task id="LOCAL-00044" summary="Ajout du sysstème de mute pour les channels">
+      <option name="closed" value="true" />
+      <created>1747746632220</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1747746632221</updated>
+    </task>
+    <option name="localTasksCounter" value="45" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
