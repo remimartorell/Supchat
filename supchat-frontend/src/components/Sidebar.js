@@ -310,18 +310,25 @@ function Sidebar({
                         </select>
                     </div>
                     {channelType === 'private' && (
-                        <select
-                            multiple
-                            onChange={e =>
-                                setChannelMembers(Array.from(e.target.selectedOptions).map(o => o.value))
-                            }
-                        >
+                        <div className="channel-members-checkboxes">
                             {users.map(u => (
-                                <option key={u._id} value={u._id}>
-                                    {u.name}
-                                </option>
+                                <label key={u._id} style={{ display: 'block', marginBottom: 4 }}>
+                                    <input
+                                        type="checkbox"
+                                        value={u._id}
+                                        checked={channelMembers.includes(u._id)}
+                                        onChange={e => {
+                                            if (e.target.checked) {
+                                                setChannelMembers([...channelMembers, u._id]);
+                                            } else {
+                                                setChannelMembers(channelMembers.filter(id => id !== u._id));
+                                            }
+                                        }}
+                                    />
+                                    {' '}{u.name}
+                                </label>
                             ))}
-                        </select>
+                        </div>
                     )}
                     <div className="sidebar-form-buttons">
                         <button className="sidebar-button" onClick={handleCreateChannel}>

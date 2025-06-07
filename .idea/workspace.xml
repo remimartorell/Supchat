@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Amélioration du boutton de création de workspace">
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.css" afterDir="false" />
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Indicateur visuel en cas dz nom remplissage du nom de channels">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -501,7 +501,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749323501110</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="Indicateur visuel en cas dz nom remplissage du nom de channels">
+      <option name="closed" value="true" />
+      <created>1749323861947</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1749323861947</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -519,7 +527,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Problèmes réglés du premier commit d'Hugo qui étaient : &#10;- Pages login et register sans css&#10;- Barre du haut affichée sur / , /login et /register &#10;- Absence de la barre du haut lors de la connexion et une fois dans le chat&#10;- Impossibilité de se connecter via la page localhost (on était obligé d'aller sur la page de notre IP)" />
     <MESSAGE value="Photo de profile ATTENTION ERREUR" />
     <MESSAGE value="Ajout d'une API pour avoir de nombreux GIFS" />
     <MESSAGE value="Amélioration du css pour les paramètre" />
@@ -544,7 +551,8 @@
     <MESSAGE value="Ajout du sysstème de mute pour les channels" />
     <MESSAGE value="Amélioration du css lors du bouttons de la création de workspace" />
     <MESSAGE value="Amélioration du boutton de création de workspace" />
-    <option name="LAST_COMMIT_MESSAGE" value="Amélioration du boutton de création de workspace" />
+    <MESSAGE value="Indicateur visuel en cas dz nom remplissage du nom de channels" />
+    <option name="LAST_COMMIT_MESSAGE" value="Indicateur visuel en cas dz nom remplissage du nom de channels" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
