@@ -33,6 +33,7 @@ function Sidebar({
     const [channelType, setChannelType] = useState('public');
     const [channelMembers, setChannelMembers] = useState([]);
     const [userStatuses, setUserStatuses] = useState({});
+    const [channelNameError, setChannelNameError] = useState(false); // Ajout état d'erreur
 
     // Charge les compteurs non-lus
     useEffect(() => {
@@ -90,7 +91,13 @@ function Sidebar({
     };
 
     const handleCreateChannel = async () => {
-        if (!newChannelName.trim() || !targetWsId) return;
+        if (!newChannelName.trim()) {
+            setChannelNameError(true); // Active l’erreur
+            return;
+        }
+        setChannelNameError(false); // Enlève l’erreur si ok
+
+        if (!targetWsId) return;
         try {
             await axios.post(`/api/workspaces/${targetWsId}/channels`, {
                 name: newChannelName.trim(),
@@ -284,11 +291,17 @@ function Sidebar({
                 <div className="sidebar-form sidebar-form-vertical" style={{ background: '#2c2c2c' }}>
                     <h5>Créer channel dans {targetWsId}</h5>
                     <input
-                        className="sidebar-input"
+                        className={`sidebar-input${channelNameError ? ' input-error' : ''}`}
                         value={newChannelName}
-                        onChange={e => setNewChannelName(e.target.value)}
+                        onChange={e => {
+                            setNewChannelName(e.target.value);
+                            if (e.target.value.trim()) setChannelNameError(false);
+                        }}
                         placeholder="Nom channel…"
                     />
+                    {channelNameError && (
+                        <div className="error-text">Le nom du channel est requis.</div>
+                    )}
                     <div>
                         <label>Type :</label>
                         <select value={channelType} onChange={e => setChannelType(e.target.value)}>
