@@ -158,19 +158,20 @@ function Sidebar({
             <h4 className="sidebar-section-title">Utilisateurs</h4>
             <ul className="sidebar-list">{otherUsers.map(renderUser)}</ul>
 
+            {/* CREATION WORKSPACE */}
             {!showCreateWs ? (
                 <button className="sidebar-button" onClick={() => setShowCreateWs(true)}>
                     + Créer un workspace
                 </button>
             ) : (
-                <div className="sidebar-form">
+                <div className="sidebar-form sidebar-form-vertical">
                     <input
                         className="sidebar-input"
                         value={newWsName}
                         onChange={e => setNewWsName(e.target.value)}
                         placeholder="Nom workspace…"
                     />
-                    <div>
+                    <div className="sidebar-form-buttons">
                         <button className="sidebar-button" onClick={handleCreateWorkspace}>
                             Créer
                         </button>
@@ -239,7 +240,6 @@ function Sidebar({
                                             <span className="sidebar-channel-name">
                                                 #{ch.name}
                                                 {ch.type === 'private' && ' 🔒'}
-                                                {/* n’affiche la pastille que si non-muted */}
                                                 {!isMuted && unread > 0 && (
                                                     <span className="unread-badge">+{unread}</span>
                                                 )}
@@ -281,7 +281,7 @@ function Sidebar({
             })}
 
             {showCreateChannel && (
-                <div className="sidebar-form" style={{ background: '#2c2c2c' }}>
+                <div className="sidebar-form sidebar-form-vertical" style={{ background: '#2c2c2c' }}>
                     <h5>Créer channel dans {targetWsId}</h5>
                     <input
                         className="sidebar-input"
@@ -310,7 +310,7 @@ function Sidebar({
                             ))}
                         </select>
                     )}
-                    <div>
+                    <div className="sidebar-form-buttons">
                         <button className="sidebar-button" onClick={handleCreateChannel}>
                             Créer
                         </button>
