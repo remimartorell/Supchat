@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Indicateur visuel en cas dz nom remplissage du nom de channels">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/styles/themes.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/styles/themes.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

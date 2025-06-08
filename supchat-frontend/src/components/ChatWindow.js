@@ -60,7 +60,28 @@ function ChatWindow({
 
         axios
             .post(url, { emoji: chosenEmoji })
-            .then(() => setShowEmojiPickerFor(null))
+            .then(() => {
+                setShowEmojiPickerFor(null);
+                // Mise à jour locale optimiste des réactions :
+                setMessages(prev =>
+                    prev.map(msg => {
+                        if (msg._id === m._id) {
+                            const reactions = msg.reactions ? [...msg.reactions] : [];
+                            // Ajoute la réaction, en supposant utilisateur courant connu par userId
+                            const existingIndex = reactions.findIndex(
+                                r => r.user && (r.user._id === userId || r.user === userId)
+                            );
+                            if (existingIndex !== -1) {
+                                reactions[existingIndex] = { emoji: chosenEmoji, userName: 'Moi', user: userId };
+                            } else {
+                                reactions.push({ emoji: chosenEmoji, userName: 'Moi', user: userId });
+                            }
+                            return { ...msg, reactions };
+                        }
+                        return msg;
+                    })
+                );
+            })
             .catch((err) => console.error('Erreur réaction emoji :', err));
     };
 
@@ -96,14 +117,62 @@ function ChatWindow({
             setMessages((prev) => [...prev, newMessage]);
         };
 
+        // Nouveau : gestion des réactions sur DM
+        const handleDmMessageReacted = (payload) => {
+            setMessages(prev =>
+                prev.map(dm => {
+                    if (dm._id === payload.dmId) {
+                        if (!dm.reactions) dm.reactions = [];
+                        const existingIndex = dm.reactions.findIndex(
+                            r => r.user && r.user._id === payload.reaction.user._id
+                        );
+                        if (existingIndex !== -1) {
+                            const newReactions = [...dm.reactions];
+                            newReactions[existingIndex] = payload.reaction;
+                            dm.reactions = newReactions;
+                        } else {
+                            dm.reactions = [...dm.reactions, payload.reaction];
+                        }
+                    }
+                    return dm;
+                })
+            );
+        };
+
+        // Nouveau : gestion des réactions sur messages channel
+        const handleChannelMessageReacted = (payload) => {
+            setMessages(prev =>
+                prev.map(msg => {
+                    if (msg._id === payload.messageId) {
+                        if (!msg.reactions) msg.reactions = [];
+                        const existingIndex = msg.reactions.findIndex(
+                            r => r.user && r.user._id === payload.reaction.user._id
+                        );
+                        if (existingIndex !== -1) {
+                            const newReactions = [...msg.reactions];
+                            newReactions[existingIndex] = payload.reaction;
+                            msg.reactions = newReactions;
+                        } else {
+                            msg.reactions = [...msg.reactions, payload.reaction];
+                        }
+                    }
+                    return msg;
+                })
+            );
+        };
+
         socket.on('poll-result', handlePollResult);
         socket.on('bot-message', handleBotMessage);
+        socket.on('dm-message-reacted', handleDmMessageReacted);
+        socket.on('channel-message-reacted', handleChannelMessageReacted);
 
         return () => {
             socket.off('poll-result', handlePollResult);
             socket.off('bot-message', handleBotMessage);
+            socket.off('dm-message-reacted', handleDmMessageReacted);
+            socket.off('channel-message-reacted', handleChannelMessageReacted);
         };
-    }, [socket, setMessages]);
+    }, [socket, setMessages, userId]);
 
     const formatTimestamp = (timestamp) => new Date(timestamp).toLocaleString();
 
@@ -423,7 +492,6 @@ function ChatWindow({
                                     className="message-read-receipt"
                                     title={m.readBy
                                         .map((rb) => {
-                                            // rb.user peut être un string ou un objet { _id, ... }
                                             const uid =
                                                 typeof rb.user === 'object'
                                                     ? rb.user._id
