@@ -1,6 +1,5 @@
 /* ===========================
    THÈMES DYNAMIQUES : LIGHT, DARK, MIDNIGHT, SOLARIZED
-   (À placer dans : src/styles/themes.css)
 =========================== */
 
 /* Thème Dark (défaut) */
@@ -39,7 +38,7 @@
 /* Thème Solarized */
 :root[data-theme="solarized"] {
     --bg-color: #fdf6e3;
-    --text-color: #586e75;
+    --text-color: #111111; /* Couleur texte foncée pour meilleure lisibilité */
     --input-bg: #eee8d5;
     --accent-color: #b58900;
     --border-color: #ddd6c0;
@@ -157,6 +156,12 @@ p, label, span, li, ul {
     border-radius: 4px;
     padding: 8px;
     margin-bottom: 10px;
+}
+
+/* FORCE la couleur du texte dans les messages, quel que soit le thème */
+.message-container,
+.message-container * {
+    color: var(--text-color) !important;
 }
 
 /* ===========================

@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Indicateur visuel en cas dz nom remplissage du nom de channels">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/styles/themes.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/styles/themes.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,6 +140,8 @@
       <workItem from="1747033883929" duration="853000" />
       <workItem from="1747638932025" duration="19861000" />
       <workItem from="1747740568500" duration="6718000" />
+      <workItem from="1749332460242" duration="1882000" />
+      <workItem from="1749384689433" duration="1333000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
