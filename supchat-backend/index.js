@@ -5,6 +5,11 @@ const cors = require('cors');
 const connectDB = require('./db');
 require('dotenv').config();
 
+const passport = require('passport');
+require('./config/passport'); // nouvelle config Passport Facebook
+
+const session = require('express-session');
+
 // 🔧 Bots
 const initPollBot     = require('./bots/pollBot');
 const initMeetingBot  = require('./bots/meetingBot');
@@ -22,6 +27,17 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
+
+// Sessions (nécessaire pour Passport)
+app.use(session({
+  secret: 'supchatsecret',
+  resave: false,
+  saveUninitialized: true,
+}));
+
+// Passport init
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Routes API
 app.use('/api/auth',            require('./routes/auth'));
@@ -103,7 +119,6 @@ io.on('connection', socket => {
     socket.emit('joined', { message: `Connecté avec socket ${socket.id}` });
     // Notification broadcast : user en ligne
     socket.broadcast.emit('user-connected', userId);
-    // ----> NOUVELLE LIGNE À BIEN GARDER <----
     // Envoi au nouvel arrivant de la liste de tous les users actuellement en ligne
     socket.emit('active-users', Object.keys(userSocketMap));
   });
@@ -122,7 +137,6 @@ io.on('connection', socket => {
     if (targetSocketId) io.to(targetSocketId).emit('receiveDirectMessage', { message });
   });
 
-  // Gestion de la déconnexion et notification des autres utilisateurs
   socket.on('disconnect', () => {
     console.log(`⚠️ Déconnexion : ${socket.id}`);
     let disconnectedUserId = null;
@@ -134,7 +148,6 @@ io.on('connection', socket => {
       }
     }
     if (disconnectedUserId) {
-      // Notification broadcast : user hors ligne
       socket.broadcast.emit('user-disconnected', disconnectedUserId);
     }
   });

@@ -4,9 +4,326 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Indicateur visuel en cas dz nom remplissage du nom de channels">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout de l'auhentification via facebook vérifier sur supchata.info si ca marche">
+      <change afterPath="$PROJECT_DIR$/node_modules/cookie-signature/History.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/cookie-signature/Readme.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/cookie-signature/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/cookie-signature/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/cookie/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/cookie/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/cookie/SECURITY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/cookie/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/cookie/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/depd/History.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/depd/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/depd/Readme.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/depd/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/depd/lib/browser/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/depd/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/HISTORY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/.coveralls.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/.eslintrc" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/.npmignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/.travis.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/CHANGELOG.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/Makefile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/component.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/karma.conf.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/node.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/src/browser.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/src/debug.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/src/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/src/inspector-log.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/debug/src/node.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/ms/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/ms/license.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/ms/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/node_modules/ms/readme.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/session/cookie.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/session/memory.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/session/session.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/express-session/session/store.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/on-headers/HISTORY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/on-headers/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/on-headers/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/on-headers/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/on-headers/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/parseurl/HISTORY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/parseurl/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/parseurl/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/parseurl/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/parseurl/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/.github/ISSUE_TEMPLATE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/.github/PULL_REQUEST_TEMPLATE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/.npmignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/CONTRIBUTING.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/lib/errors/facebookauthorizationerror.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/lib/errors/facebookgraphapierror.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/lib/errors/facebooktokenerror.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/lib/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/lib/profile.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/lib/strategy.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/passport-facebook/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/random-bytes/HISTORY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/random-bytes/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/random-bytes/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/random-bytes/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/random-bytes/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/safe-buffer/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/safe-buffer/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/safe-buffer/index.d.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/safe-buffer/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/safe-buffer/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uid-safe/HISTORY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uid-safe/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uid-safe/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uid-safe/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/node_modules/uid-safe/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/config/passport.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/HISTORY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/node_modules/cookie-signature/History.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/node_modules/cookie-signature/Readme.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/node_modules/cookie-signature/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/node_modules/cookie-signature/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/node_modules/cookie/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/node_modules/cookie/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/node_modules/cookie/SECURITY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/node_modules/cookie/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/node_modules/cookie/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/session/cookie.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/session/memory.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/session/session.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/express-session/session/store.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/on-headers/HISTORY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/on-headers/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/on-headers/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/on-headers/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/on-headers/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/.github/ISSUE_TEMPLATE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/.github/PULL_REQUEST_TEMPLATE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/.npmignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/CONTRIBUTING.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/lib/errors/facebookauthorizationerror.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/lib/errors/facebookgraphapierror.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/lib/errors/facebooktokenerror.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/lib/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/lib/profile.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/lib/strategy.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/passport-facebook/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/random-bytes/HISTORY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/random-bytes/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/random-bytes/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/random-bytes/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/random-bytes/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/uid-safe/HISTORY.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/uid-safe/LICENSE" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/uid-safe/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/uid-safe/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/supchat-backend/node_modules/uid-safe/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/node_modules/.package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/bench.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/lib/abort.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/lib/async.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/lib/defer.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/lib/iterate.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/lib/readable_asynckit.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/lib/readable_parallel.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/lib/readable_serial.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/lib/readable_serial_ordered.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/lib/state.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/lib/streamify.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/lib/terminator.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/parallel.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/serial.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/serialOrdered.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/asynckit/stream.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/CHANGELOG.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/MIGRATION_GUIDE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/dist/axios.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/dist/axios.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/dist/axios.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/dist/axios.min.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/dist/browser/axios.cjs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/dist/browser/axios.cjs.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/dist/esm/axios.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/dist/esm/axios.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/dist/esm/axios.min.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/dist/esm/axios.min.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/dist/node/axios.cjs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/dist/node/axios.cjs.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/index.d.cts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/index.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/adapters/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/adapters/adapters.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/adapters/fetch.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/adapters/http.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/adapters/xhr.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/axios.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/cancel/CancelToken.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/cancel/CanceledError.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/cancel/isCancel.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/core/Axios.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/core/AxiosError.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/core/AxiosHeaders.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/core/InterceptorManager.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/core/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/core/buildFullPath.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/core/dispatchRequest.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/core/mergeConfig.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/core/settle.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/core/transformData.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/defaults/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/defaults/transitional.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/env/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/env/classes/FormData.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/env/data.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/AxiosTransformStream.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/AxiosURLSearchParams.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/HttpStatusCode.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/ZlibHeaderTransformStream.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/bind.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/buildURL.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/callbackify.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/combineURLs.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/composeSignals.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/cookies.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/deprecatedMethod.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/formDataToJSON.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/formDataToStream.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/fromDataURI.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/isAbsoluteURL.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/isAxiosError.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/isURLSameOrigin.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/null.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/parseHeaders.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/parseProtocol.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/progressEventReducer.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/readBlob.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/resolveConfig.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/speedometer.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/spread.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/throttle.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/toFormData.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/toURLEncodedForm.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/trackStream.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/helpers/validator.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/platform/browser/classes/Blob.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/platform/browser/classes/FormData.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/platform/browser/classes/URLSearchParams.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/platform/browser/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/platform/common/utils.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/platform/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/platform/node/classes/FormData.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/platform/node/classes/URLSearchParams.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/platform/node/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/lib/utils.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/axios/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/combined-stream/License" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/combined-stream/Readme.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/combined-stream/lib/combined_stream.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/combined-stream/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/combined-stream/yarn.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/delayed-stream/.npmignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/delayed-stream/License" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/delayed-stream/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/delayed-stream/Readme.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/delayed-stream/lib/delayed_stream.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/delayed-stream/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/es-set-tostringtag/.eslintrc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/es-set-tostringtag/.nycrc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/es-set-tostringtag/CHANGELOG.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/es-set-tostringtag/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/es-set-tostringtag/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/es-set-tostringtag/index.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/es-set-tostringtag/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/es-set-tostringtag/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/es-set-tostringtag/test/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/es-set-tostringtag/tsconfig.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/follow-redirects/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/follow-redirects/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/follow-redirects/debug.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/follow-redirects/http.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/follow-redirects/https.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/follow-redirects/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/follow-redirects/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/form-data/License" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/form-data/Readme.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/form-data/index.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/form-data/lib/browser.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/form-data/lib/form_data.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/form-data/lib/populate.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/form-data/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/.eslintrc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/.github/FUNDING.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/.nycrc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/CHANGELOG.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/index.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/shams.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/shams.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/test/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/test/shams/core-js.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/test/shams/get-own-property-symbols.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/test/tests.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/has-tostringtag/tsconfig.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/.github/ISSUE_TEMPLATE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/.github/PULL_REQUEST_TEMPLATE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/.npmignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/CONTRIBUTING.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/lib/errors/googleplusapierror.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/lib/errors/userinfoerror.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/lib/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/lib/profile/googleplus.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/lib/profile/openid.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/lib/strategy.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/passport-google-oauth20/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/proxy-from-env/.eslintrc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/proxy-from-env/.travis.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/proxy-from-env/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/proxy-from-env/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/proxy-from-env/index.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/proxy-from-env/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/proxy-from-env/test.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/nginx.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -142,6 +459,7 @@
       <workItem from="1747740568500" duration="6718000" />
       <workItem from="1749332460242" duration="1882000" />
       <workItem from="1749384689433" duration="1333000" />
+      <workItem from="1749471878795" duration="1174000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -511,7 +829,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749323861947</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="Problème de reload sur les réactions réglé">
+      <option name="closed" value="true" />
+      <created>1749388415705</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1749388415705</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -529,8 +855,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Photo de profile ATTENTION ERREUR" />
-    <MESSAGE value="Ajout d'une API pour avoir de nombreux GIFS" />
     <MESSAGE value="Amélioration du css pour les paramètre" />
     <MESSAGE value="Réimplentation des thèmes amélioré reste a modifire le css du changement de mdp est a renregistré dans la bdd pour chaque user." />
     <MESSAGE value="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage" />
@@ -554,7 +878,9 @@
     <MESSAGE value="Amélioration du css lors du bouttons de la création de workspace" />
     <MESSAGE value="Amélioration du boutton de création de workspace" />
     <MESSAGE value="Indicateur visuel en cas dz nom remplissage du nom de channels" />
-    <option name="LAST_COMMIT_MESSAGE" value="Indicateur visuel en cas dz nom remplissage du nom de channels" />
+    <MESSAGE value="Problème de reload sur les réactions réglé" />
+    <MESSAGE value="Ajout de l'auhentification via facebook vérifier sur supchata.info si ca marche" />
+    <option name="LAST_COMMIT_MESSAGE" value="Ajout de l'auhentification via facebook vérifier sur supchata.info si ca marche" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

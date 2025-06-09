@@ -1,8 +1,7 @@
 // routes/auth.js
-
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');         // pour new mongoose.Types.ObjectId(...)
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -418,5 +417,25 @@ router.get('/export-data', auth, async (req, res) => {
             .json({ msg: 'Erreur serveur lors de l’export des données' });
     }
 });
+
+
+// ========== AJOUT AUTH FACEBOOK (OAuth) ==========
+
+const passport = require('passport');
+
+// Route pour démarrer l'auth Facebook
+router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
+
+// Callback Facebook
+router.get('/facebook/callback',
+    passport.authenticate('facebook', { failureRedirect: `${process.env.CLIENT_URL}/login`, session: false }),
+    (req, res) => {
+        const payload = { user: { id: req.user._id } };
+        const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '8h' });
+
+        // Redirection vers frontend avec token dans le hash URL
+        res.redirect(`${process.env.CLIENT_URL}/login#token=${token}`);
+    }
+);
 
 module.exports = router;

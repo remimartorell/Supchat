@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import axios from '../services/axiosConfig';
 import { useNavigate, Link } from 'react-router-dom';
@@ -9,6 +9,21 @@ function Login() {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
+
+    // Lecture du token dans URL hash (après redirection Facebook)
+    useEffect(() => {
+        const hash = window.location.hash;
+        if (hash) {
+            const tokenParam = hash.match(/token=([^&]+)/);
+            if (tokenParam) {
+                const token = tokenParam[1];
+                localStorage.setItem('token', token);
+                axios.defaults.headers.common['x-auth-token'] = token;
+                // Tu peux récupérer userId via /api/auth/user si besoin
+                navigate('/chat');
+            }
+        }
+    }, [navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -70,8 +85,20 @@ function Login() {
                 </form>
                 <div className="login-separator">OU</div>
                 <div className="login-socials">
-                    <button className="social-btn google-btn">Google</button>
-                    <button className="social-btn facebook-btn">Facebook</button>
+                    <button
+                        className="social-btn google-btn"
+                        disabled // Google à venir
+                    >
+                        Google
+                    </button>
+                    <button
+                        className="social-btn facebook-btn"
+                        onClick={() => {
+                            window.location.href = `${process.env.REACT_APP_API_URL}/api/auth/facebook`;
+                        }}
+                    >
+                        Facebook
+                    </button>
                 </div>
                 <div className="login-footer-link">
                     <span>Vous n’avez pas de compte ?</span>{' '}
