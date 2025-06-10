@@ -4,19 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout de l'auhentification via facebook vérifier sur supchata.info si ca marche">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout de l'auhentification via GOOGLE vérifier sur supchat.info si ca marche">
+      <change afterPath="$PROJECT_DIR$/supchat-frontend/logo.svg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/config/passport.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/config/passport.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/models/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/models/User.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/auth.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/Login.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/public/favicon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/public/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/public/logo192.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/public/logo512.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/public/manifest.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/public/robots.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,32 +64,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Node.js.directMessages.js.executor&quot;: &quot;Run&quot;,
-    &quot;Node.js.index.js.executor&quot;: &quot;Run&quot;,
-    &quot;Node.js.workspaces.js.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/hugod/Github/Supchat/img&quot;,
-    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Problems&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.3.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Node.js.directMessages.js.executor": "Run",
+    "Node.js.index.js.executor": "Run",
+    "Node.js.workspaces.js.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/hugod/Github/Supchat/supchat-frontend",
+    "list.type.of.created.stylesheet": "CSS",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Problems",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.3.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\hugod\Github\Supchat\supchat-frontend" />
       <recent name="C:\Users\hugod\Github\Supchat\img" />
       <recent name="C:\Users\hugod\Github\Supchat\supchat-frontend\public\img\avatars" />
     </key>
@@ -153,7 +151,7 @@
       <workItem from="1749332460242" duration="1882000" />
       <workItem from="1749384689433" duration="1333000" />
       <workItem from="1749471878795" duration="1174000" />
-      <workItem from="1749544119736" duration="1621000" />
+      <workItem from="1749544119736" duration="6545000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -531,7 +529,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749388415705</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="Ajout de l'auhentification via GOOGLE vérifier sur supchat.info si ca marche">
+      <option name="closed" value="true" />
+      <created>1749547390368</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1749547390368</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -549,7 +555,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Amélioration du css pour les paramètre" />
     <MESSAGE value="Réimplentation des thèmes amélioré reste a modifire le css du changement de mdp est a renregistré dans la bdd pour chaque user." />
     <MESSAGE value="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage" />
     <MESSAGE value="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage&#10;Attention a améliorer le visuel" />
@@ -574,7 +579,8 @@
     <MESSAGE value="Indicateur visuel en cas dz nom remplissage du nom de channels" />
     <MESSAGE value="Problème de reload sur les réactions réglé" />
     <MESSAGE value="Ajout de l'auhentification via facebook vérifier sur supchata.info si ca marche" />
-    <option name="LAST_COMMIT_MESSAGE" value="Ajout de l'auhentification via facebook vérifier sur supchata.info si ca marche" />
+    <MESSAGE value="Ajout de l'auhentification via GOOGLE vérifier sur supchat.info si ca marche" />
+    <option name="LAST_COMMIT_MESSAGE" value="Ajout de l'auhentification via GOOGLE vérifier sur supchat.info si ca marche" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -588,6 +594,12 @@
           <url>file://$PROJECT_DIR$/supchat-frontend/src/pages/Register.js</url>
           <line>80</line>
           <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/supchat-frontend/src/App.js</url>
+          <line>35</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
