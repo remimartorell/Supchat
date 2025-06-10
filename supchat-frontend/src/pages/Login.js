@@ -5,12 +5,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
 
 function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    const [email, setEmail]           = useState('');
+    const [password, setPassword]     = useState('');
     const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate();
+    const navigate                    = useNavigate();
 
-    // Lecture du token dans URL hash (après redirection Facebook)
+    // Lecture du token dans URL hash (après redirection OAuth)
     useEffect(() => {
         const hash = window.location.hash;
         if (hash) {
@@ -19,7 +19,6 @@ function Login() {
                 const token = tokenParam[1];
                 localStorage.setItem('token', token);
                 axios.defaults.headers.common['x-auth-token'] = token;
-                // Tu peux récupérer userId via /api/auth/user si besoin
                 navigate('/chat');
             }
         }
@@ -71,7 +70,7 @@ function Login() {
                         />
                         <span
                             className="password-toggle"
-                            onClick={() => setShowPassword((v) => !v)}
+                            onClick={() => setShowPassword(v => !v)}
                         >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
@@ -83,11 +82,15 @@ function Login() {
                         Valider
                     </button>
                 </form>
+
                 <div className="login-separator">OU</div>
+
                 <div className="login-socials">
                     <button
                         className="social-btn google-btn"
-                        disabled // Google à venir
+                        onClick={() => {
+                            window.location.href = `${process.env.REACT_APP_API_URL}/api/auth/google`;
+                        }}
                     >
                         Google
                     </button>
@@ -100,6 +103,7 @@ function Login() {
                         Facebook
                     </button>
                 </div>
+
                 <div className="login-footer-link">
                     <span>Vous n’avez pas de compte ?</span>{' '}
                     <Link to="/register">Inscription</Link>

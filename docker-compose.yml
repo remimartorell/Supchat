@@ -1,4 +1,4 @@
-#version: '3.8'
+version: '3.8'
 
 services:
   backend:
@@ -7,12 +7,12 @@ services:
     container_name: supchat-backend
     ports:
       - "3000:3000"
-    environment:
-      - MONGO_URI=mongodb+srv://adminsupchat:QKnX2fNJMDFW23P4@supchat-cluster.ddto3.mongodb.net/?retryWrites=true&w=majority&appName=supchat-cluster
+    env_file:
+      - ./supchat-backend/.env           # Charge toutes vos vars d’env depuis .env
     depends_on:
       - mongodb
     volumes:
-      - "./supchat-backend/uploads:/app/uploads"
+      - ./supchat-backend/uploads:/app/uploads
     restart: always
 
   frontend:
@@ -23,11 +23,10 @@ services:
       - "3001:80"
     depends_on:
       - backend
-    # Pas forcément besoin d'environnement pour le front,
-    # sauf si tu veux passer des variables à build.
+    # Pas besoin d’autres vars si tout est bundlé à la build
 
   mongodb:
-    image: mongo
+    image: mongo:6.0
     container_name: mongodb
     ports:
       - "27017:27017"
@@ -36,12 +35,3 @@ services:
 
 volumes:
   mongodb_data:
-
-  # Commandes Docker sur le VPS "docker compose [...]" avec espace au lieu de "docker-compose [...]" avec tiret
-
-  # Commande Docker pour lancer le server "docker-compose up --build"
-
-  # Commande Docker pour lancer le server en arrière plan "docker-compose up -d --build"
-  # Commande Docker pour voir les logs à tout moment "docker-compose logs -f"
-
-  # Commande Docker pour stopper le server "docker-compose down"

@@ -1,26 +1,37 @@
+// supchat-backend/models/User.js
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const bcrypt   = require('bcryptjs');
 
 const UserSchema = new mongoose.Schema({
     name:    { type: String, required: true },
     email:   { type: String, required: true, unique: true },
+
+    // Pour les nouveaux comptes classiques ou OAuth
     password:{ type: String, required: true },
 
-    // L'avatar stocké en String (ID de GridFS par exemple)
+    // IDs OAuth (sparsed pour autoriser les documents sans ces champs)
+    facebookId: { type: String, unique: true, sparse: true },
+    googleId:   { type: String, unique: true, sparse: true },
+
+    // Avatar (GridFS)
     avatarFileId: { type: String, default: null },
 
-    // Nouveau champ pour enregistrer le thème choisi par l'utilisateur
+    // Thème utilisateur
     theme: { type: String, default: "dark" },
 
-    isVerified: { type: Boolean, default: false },
+    // Vérification d’email
+    isVerified:               { type: Boolean, default: false },
     emailVerificationToken:   { type: String },
     emailVerificationExpires: { type: Date },
+
+    // Réinitialisation de mot de passe
     resetPasswordToken:   { type: String },
     resetPasswordExpires: { type: Date },
 
     date: { type: Date, default: Date.now },
 });
 
+// Hash du mot de passe avant sauvegarde si modifié
 UserSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     const salt = await bcrypt.genSalt(10);
