@@ -3,16 +3,19 @@ import React, { useEffect, useRef, useState } from 'react';
 import axios from '../services/axiosConfig';
 import './ChatWindow.css';
 
+/**
+ * Met en surbrillance les mentions @username
+ */
 function highlightMentions(content, validMentions) {
     if (!content) return content;
     return content.split(/\s+/).map((word, i) => {
         if (word.startsWith('@')) {
-            const mentionName = word.slice(1);
-            if (validMentions.includes(mentionName)) {
+            const name = word.slice(1);
+            if (validMentions.includes(name)) {
                 return (
                     <span key={i} className="highlight-mention">
-                        {word}{' '}
-                    </span>
+            {word}{' '}
+          </span>
                 );
             }
         }
@@ -20,19 +23,53 @@ function highlightMentions(content, validMentions) {
     });
 }
 
-function ChatWindow({
-                        socket,
-                        userId,
-                        messages,
-                        users,
-                        selectedUser,
-                        selectedChannel,
-                        focusMessageId,
-                        canDelete,
-                        setMessages,
-                        channels,
-                        onChannelClick,
-                    }) {
+/**
+ * Gère à la fois @mentions et #hashtags cliquables
+ */
+function renderContent(text, validMentions, channels, onChannelClick) {
+    if (!text) return text;
+    return text.split(/\s+/).map((word, i) => {
+        if (word.startsWith('@')) {
+            const name = word.slice(1);
+            if (validMentions.includes(name)) {
+                return (
+                    <span key={i} className="highlight-mention">
+            {word}{' '}
+          </span>
+                );
+            }
+        }
+        if (word.startsWith('#')) {
+            const chanName = word.slice(1);
+            const chan = channels.find(c => c.name === chanName);
+            if (chan) {
+                return (
+                    <span
+                        key={i}
+                        className="highlight-hashtag"
+                        onClick={() => onChannelClick(chan._id)}
+                    >
+            {word}{' '}
+          </span>
+                );
+            }
+        }
+        return word + ' ';
+    });
+}
+
+export default function ChatWindow({
+                                       socket,
+                                       userId,
+                                       messages,
+                                       users,
+                                       selectedChannel,
+                                       focusMessageId,
+                                       canDelete,
+                                       setMessages,
+                                       channels,
+                                       onChannelClick,
+                                   }) {
     const listRef = useRef(null);
     const [editingMessageId, setEditingMessageId] = useState(null);
     const [editContent, setEditContent] = useState('');
@@ -40,51 +77,45 @@ function ChatWindow({
     const [votedPolls, setVotedPolls] = useState(new Set());
     const avatarBaseUrl = `${process.env.REACT_APP_API_URL}/api/users`;
 
+    // Charge / sauvegarde localStorage des sondages
     useEffect(() => {
         const stored = localStorage.getItem('votedPolls');
         if (stored) setVotedPolls(new Set(JSON.parse(stored)));
     }, []);
-
     useEffect(() => {
         localStorage.setItem('votedPolls', JSON.stringify([...votedPolls]));
     }, [votedPolls]);
 
-    const openEmojiPickerForMessage = (m) => {
-        setShowEmojiPickerFor(m._id);
-    };
+    const openEmojiPickerForMessage = m => setShowEmojiPickerFor(m._id);
 
     const handleChooseEmoji = (m, chosenEmoji) => {
         const url = selectedChannel
             ? `/api/channels/${m.channel}/messages/${m._id}/reactions`
             : `/api/direct-messages/${m._id}/reactions`;
 
-        axios
-            .post(url, { emoji: chosenEmoji })
+        axios.post(url, { emoji: chosenEmoji })
             .then(() => {
                 setShowEmojiPickerFor(null);
-                // Mise à jour locale optimiste des réactions :
+                // Mise à jour optimiste locale
                 setMessages(prev =>
                     prev.map(msg => {
                         if (msg._id === m._id) {
-                            const reactions = msg.reactions ? [...msg.reactions] : [];
-                            // Ajoute la réaction, en supposant utilisateur courant connu par userId
-                            const existingIndex = reactions.findIndex(
+                            const reactions = msg.reactions ?? [];
+                            const idx = reactions.findIndex(
                                 r => r.user && (r.user._id === userId || r.user === userId)
                             );
-                            if (existingIndex !== -1) {
-                                reactions[existingIndex] = { emoji: chosenEmoji, userName: 'Moi', user: userId };
-                            } else {
-                                reactions.push({ emoji: chosenEmoji, userName: 'Moi', user: userId });
-                            }
+                            if (idx >= 0) reactions[idx] = { emoji: chosenEmoji, userName: 'Moi', user: userId };
+                            else reactions.push({ emoji: chosenEmoji, userName: 'Moi', user: userId });
                             return { ...msg, reactions };
                         }
                         return msg;
                     })
                 );
             })
-            .catch((err) => console.error('Erreur réaction emoji :', err));
+            .catch(console.error);
     };
 
+    // Scroll / highlight focusMessageId
     useEffect(() => {
         if (focusMessageId) {
             setTimeout(() => {
@@ -97,374 +128,282 @@ function ChatWindow({
             }, 100);
         }
     }, [focusMessageId, messages]);
-
     useEffect(() => {
         if (!focusMessageId && listRef.current) {
             listRef.current.scrollTop = listRef.current.scrollHeight;
         }
     }, [messages, focusMessageId]);
 
+    // ─── Socket handlers ───
     useEffect(() => {
         if (!socket) return;
 
-        const handlePollResult = ({ _id, votes }) => {
-            setMessages((prev) =>
-                prev.map((m) => (m._id === _id ? { ...m, votes } : m))
-            );
-        };
+        const handlePollResult = ({ _id, votes }) =>
+            setMessages(prev => prev.map(m => m._id === _id ? { ...m, votes } : m));
 
-        const handleBotMessage = (newMessage) => {
-            setMessages((prev) => [...prev, newMessage]);
-        };
+        const handleBotMessage = newMessage =>
+            setMessages(prev => [...prev, newMessage]);
 
-        // Nouveau : gestion des réactions sur DM
-        const handleDmMessageReacted = (payload) => {
+        const handleDmReaction = payload =>
             setMessages(prev =>
                 prev.map(dm => {
                     if (dm._id === payload.dmId) {
-                        if (!dm.reactions) dm.reactions = [];
-                        const existingIndex = dm.reactions.findIndex(
-                            r => r.user && r.user._id === payload.reaction.user._id
-                        );
-                        if (existingIndex !== -1) {
-                            const newReactions = [...dm.reactions];
-                            newReactions[existingIndex] = payload.reaction;
-                            dm.reactions = newReactions;
-                        } else {
-                            dm.reactions = [...dm.reactions, payload.reaction];
-                        }
+                        const reactions = dm.reactions ?? [];
+                        const idx = reactions.findIndex(r => r.user?._id === payload.reaction.user._id);
+                        if (idx >= 0) reactions[idx] = payload.reaction;
+                        else reactions.push(payload.reaction);
+                        return { ...dm, reactions };
                     }
                     return dm;
                 })
             );
-        };
 
-        // Nouveau : gestion des réactions sur messages channel
-        const handleChannelMessageReacted = (payload) => {
+        const handleChannelReaction = payload =>
             setMessages(prev =>
                 prev.map(msg => {
-                    if (msg._id === payload.messageId) {
-                        if (!msg.reactions) msg.reactions = [];
-                        const existingIndex = msg.reactions.findIndex(
-                            r => r.user && r.user._id === payload.reaction.user._id
-                        );
-                        if (existingIndex !== -1) {
-                            const newReactions = [...msg.reactions];
-                            newReactions[existingIndex] = payload.reaction;
-                            msg.reactions = newReactions;
-                        } else {
-                            msg.reactions = [...msg.reactions, payload.reaction];
-                        }
+                    if (msg._1d === payload.messageId) {
+                        const reactions = msg.reactions ?? [];
+                        const idx = reactions.findIndex(r => r.user?._id === payload.reaction.user._id);
+                        if (idx >= 0) reactions[idx] = payload.reaction;
+                        else reactions.push(payload.reaction);
+                        return { ...msg, reactions };
                     }
                     return msg;
                 })
             );
-        };
+
+        const handleChannelRead = ({ channelId, messageId, userId: readerId }) =>
+            setMessages(prev =>
+                prev.map(m => {
+                    if (m._id === messageId) {
+                        const readBy = m.readBy ?? [];
+                        if (!readBy.some(rb => String(rb.user) === String(readerId))) {
+                            readBy.push({ user: readerId, readAt: new Date() });
+                        }
+                        return { ...m, readBy };
+                    }
+                    return m;
+                })
+            );
+
+        const handleDmRead = ({ dmId, userId: readerId }) =>
+            setMessages(prev =>
+                prev.map(dm => {
+                    if (dm._id === dmId) {
+                        const readBy = dm.readBy ?? [];
+                        if (!readBy.some(rb => String(rb.user) === String(readerId))) {
+                            readBy.push({ user: readerId, readAt: new Date() });
+                        }
+                        return { ...dm, readBy };
+                    }
+                    return dm;
+                })
+            );
 
         socket.on('poll-result', handlePollResult);
         socket.on('bot-message', handleBotMessage);
-        socket.on('dm-message-reacted', handleDmMessageReacted);
-        socket.on('channel-message-reacted', handleChannelMessageReacted);
+        socket.on('dm-message-reacted', handleDmReaction);
+        socket.on('channel-message-reacted', handleChannelReaction);
+        socket.on('channel-message-read', handleChannelRead);
+        socket.on('dm-message-read', handleDmRead);
 
         return () => {
             socket.off('poll-result', handlePollResult);
             socket.off('bot-message', handleBotMessage);
-            socket.off('dm-message-reacted', handleDmMessageReacted);
-            socket.off('channel-message-reacted', handleChannelMessageReacted);
+            socket.off('dm-message-reacted', handleDmReaction);
+            socket.off('channel-message-reacted', handleChannelReaction);
+            socket.off('channel-message-read', handleChannelRead);
+            socket.off('dm-message-read', handleDmRead);
         };
     }, [socket, setMessages, userId]);
 
-    const formatTimestamp = (timestamp) => new Date(timestamp).toLocaleString();
+    const formatTimestamp = ts => new Date(ts).toLocaleString();
 
-    const getSenderLabel = (m) => {
+    const getSenderLabel = m => {
         if (m.sender?.name) return m.sender.name;
         if (typeof m.sender === 'string') {
-            const foundUser = users?.find((u) => u._id === m.sender);
-            return foundUser?.name || m.sender;
+            const u = users.find(u => u._id === m.sender);
+            return u?.name || m.sender;
         }
         return '(Sans nom)';
     };
 
-    const getSenderAvatar = (m) => {
+    const getSenderAvatar = m => {
         if (m.sender?.avatar) return m.sender.avatar;
-
-        if (m.sender && typeof m.sender === 'object') {
-            if (m.sender.profilePicture) {
-                return process.env.REACT_APP_API_URL + m.sender.profilePicture;
-            } else if (m.sender.avatarFileId) {
-                return `${avatarBaseUrl}/${m.sender._id}/avatar`;
-            }
-        } else if (typeof m.sender === 'string') {
-            const foundUser = users?.find((u) => u._id === m.sender);
-            if (foundUser?.profilePicture) {
-                return process.env.REACT_APP_API_URL + foundUser.profilePicture;
-            } else if (foundUser?.avatarFileId) {
-                return `${avatarBaseUrl}/${foundUser._id}/avatar`;
-            }
+        if (m.sender?.profilePicture) return process.env.REACT_APP_API_URL + m.sender.profilePicture;
+        if (m.sender?.avatarFileId) return `${avatarBaseUrl}/${m.sender._id}/avatar`;
+        if (typeof m.sender === 'string') {
+            const u = users.find(u => u._id === m.sender);
+            if (u?.profilePicture) return process.env.REACT_APP_API_URL + u.profilePicture;
+            if (u?.avatarFileId) return `${avatarBaseUrl}/${u._id}/avatar`;
         }
         return '/img/default-avatar.png';
     };
 
-    const handleDeleteMsg = async (m) => {
+    const handleDeleteMsg = async m => {
         if (!window.confirm('Supprimer ce message ?')) return;
         try {
             await axios.delete(`/api/channels/${m.channel}/messages/${m._id}`);
-            setMessages((prev) => prev.filter((msg) => msg._id !== m._id));
+            setMessages(prev => prev.filter(msg => msg._id !== m._id));
         } catch (err) {
-            console.error('Erreur suppression message:', err);
-            alert('Impossible de supprimer ce message');
+            console.error(err);
+            alert('Impossible de supprimer');
         }
     };
-// helper pour mentions ET hashtags
-    function renderContent(text, validMentions, channels, onChannelClick) {
-        if (!text) return text;
-        return text.split(/\s+/).map((word, i) => {
-            // mention
-            if (word.startsWith('@')) {
-                const name = word.slice(1);
-                if (validMentions.includes(name)) {
-                    return <span key={i} className="highlight-mention">{word} </span>;
-                }
-            }
-            // hashtag
-            if (word.startsWith('#')) {
-                const chanName = word.slice(1);
-                const chan = channels.find(c => c.name === chanName);
-                if (chan) {
-                    return (
-                        <span
-                            key={i}
-                            className="highlight-hashtag"
-                            onClick={() => onChannelClick(chan._id)}
-                        >
-            {word}{' '}
-          </span>
-                    );
-                }
-            }
-            // mot normal
-            return word + ' ';
-        });
-    }
 
-    const startEditingMessage = (m) => {
+    const startEditingMessage = m => {
         setEditingMessageId(m._id);
         setEditContent(m.content || '');
     };
-
-    const handleSaveEdit = async (m) => {
+    const handleSaveEdit = async m => {
         if (!editContent.trim()) return alert("Le contenu ne peut pas être vide.");
+        const ep = selectedChannel
+            ? `/api/channels/${m.channel}/messages/${m._id}`
+            : `/api/direct-messages/${m._id}`;
         try {
-            const endpoint = selectedChannel
-                ? `/api/channels/${m.channel}/messages/${m._id}`
-                : `/api/direct-messages/${m._id}`;
-            await axios.put(endpoint, { newContent: editContent.trim() });
+            await axios.put(ep, { newContent: editContent.trim() });
             setEditingMessageId(null);
             setEditContent('');
-        } catch (err) {
-            console.error('Erreur édition message', err);
-            alert('Impossible de modifier ce message');
+        } catch (e) {
+            console.error(e);
+            alert('Échec édition');
         }
     };
-
     const handleCancelEdit = () => {
         setEditingMessageId(null);
         setEditContent('');
     };
 
-    const handleVote = (pollId, optionIndex) => {
-        if (votedPolls.has(pollId)) {
-            alert("Tu as déjà voté.");
-            return;
-        }
-
-        socket.emit('vote-poll', { pollId, optionIndex });
-
-        setVotedPolls((prev) => new Set(prev).add(pollId));
-        setMessages((prev) =>
-            prev.map((m) => {
-                if (m._id === pollId) {
-                    const updatedVotes = [
-                        ...(m.votes || Array(m.options.length).fill(0)),
-                    ];
-                    updatedVotes[optionIndex]++;
-                    return { ...m, votes: updatedVotes };
-                }
-                return m;
-            })
+    const handleVote = (pollId, idx) => {
+        if (votedPolls.has(pollId)) return alert('Tu as déjà voté.');
+        socket.emit('vote-poll', { pollId, optionIndex: idx });
+        setVotedPolls(prev => new Set(prev).add(pollId));
+        setMessages(prev =>
+            prev.map(m =>
+                m._id === pollId
+                    ? { ...m, votes: (m.votes ?? Array(m.options.length).fill(0)).map((v, i) => i === idx ? v + 1 : v) }
+                    : m
+            )
         );
     };
 
     return (
         <div className="chat-window-container">
             <div ref={listRef} className="chat-window-messages">
-                {messages.map((m) => {
-                    const isMe =
-                        (m.sender &&
-                            typeof m.sender === 'object' &&
-                            m.sender._id === userId) ||
-                        m.sender === userId;
-                    const senderLabel = getSenderLabel(m);
-                    const timestamp = formatTimestamp(m.createdAt);
-                    const validMentions = m.validMentions || [];
-                    const avatarUrl = getSenderAvatar(m);
-                    const isPoll = m.type === 'poll' && m.question && Array.isArray(m.options);
+                {messages.map(m => {
+                    const isMe = (m.sender?._id || m.sender) === userId;
+                    const containerProps = {
+                        key: m._id,
+                        id: `msg-${m._id}`,
+                        className: `message-container ${isMe ? 'message-bg-me' : 'message-bg-other'}`,
+                        onMouseEnter: () => {
+                            // marque lu dès qu’on survole le message
+                            if (
+                                selectedChannel &&
+                                !m.readBy?.some(rb => String(rb.user) === userId)
+                            ) {
+                                socket.emit('mark-read', {
+                                    channelId: selectedChannel,
+                                    messageId: m._id
+                                });
+                            }
+                        }
+                    };
 
                     return (
-                        <div
-                            key={m._id}
-                            id={`msg-${m._id}`}
-                            className={`message-container ${
-                                isMe ? 'message-bg-me' : 'message-bg-other'
-                            }`}
-                        >
+                        <div {...containerProps}>
                             {/* Avatar + header */}
-                            <div
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    marginBottom: '5px',
-                                }}
-                            >
+                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: 5 }}>
                                 <img
-                                    src={avatarUrl}
+                                    src={getSenderAvatar(m)}
                                     alt="avatar"
-                                    style={{
-                                        width: '32px',
-                                        height: '32px',
-                                        borderRadius: '50%',
-                                        marginRight: '8px',
-                                        objectFit: 'cover',
-                                    }}
+                                    style={{ width: 32, height: 32, borderRadius: '50%', marginRight: 8, objectFit: 'cover' }}
                                 />
                                 <div className="message-header">
-                                    <span className="sender">{senderLabel}</span>
-                                    <span className="timestamp">{timestamp}</span>
+                                    <span className="sender">{getSenderLabel(m)}</span>
+                                    <span className="timestamp">{formatTimestamp(m.createdAt)}</span>
                                 </div>
                             </div>
 
-                            {/* Édition / Sondage / Contenu */}
+                            {/* Contenu / édition / sondage */}
                             {editingMessageId === m._id ? (
                                 <>
-                                    <textarea
-                                        className="message-edit-textarea"
-                                        value={editContent}
-                                        onChange={(e) => setEditContent(e.target.value)}
-                                    />
+                  <textarea
+                      className="message-edit-textarea"
+                      value={editContent}
+                      onChange={e => setEditContent(e.target.value)}
+                  />
                                     <div className="message-edit-buttons">
-                                        <button
-                                            className="action-button"
-                                            onClick={() => handleSaveEdit(m)}
-                                        >
+                                        <button className="action-button" onClick={() => handleSaveEdit(m)}>
                                             Enregistrer
                                         </button>
-                                        <button
-                                            className="action-button"
-                                            onClick={handleCancelEdit}
-                                        >
+                                        <button className="action-button" onClick={handleCancelEdit}>
                                             Annuler
                                         </button>
                                     </div>
                                 </>
-                            ) : isPoll ? (
+                            ) : m.type === 'poll' && m.question ? (
                                 <div className="poll-container">
                                     <div className="poll-question">📊 {m.question}</div>
-                                    {(() => {
-                                        const total = m.votes.reduce((sum, v) => sum + v, 0);
-                                        return m.options.map((opt, idx) => {
-                                            const count = m.votes[idx] || 0;
-                                            const pct = total > 0 ? Math.round((count / total) * 100) : 0;
-                                            return (
-                                                <div
-                                                    key={idx}
-                                                    className="poll-option-bar"
-                                                    onClick={() =>
-                                                        !votedPolls.has(m._id) && handleVote(m._id, idx)
-                                                    }
-                                                    style={{
-                                                        cursor: votedPolls.has(m._id)
-                                                            ? 'default'
-                                                            : 'pointer',
-                                                    }}
-                                                >
-                                                    <span className="poll-option-label">{opt}</span>
-                                                    <div className="poll-bar-outer">
-                                                        <div
-                                                            className="poll-bar-inner"
-                                                            style={{ width: `${pct}%` }}
-                                                        />
-                                                    </div>
-                                                    <span className="poll-bar-count">
-                                                        {count} ({pct}%)
-                                                    </span>
+                                    {m.options.map((opt, i) => {
+                                        const total = m.votes?.reduce((a, b) => a + b, 0) || 0;
+                                        const count = m.votes?.[i] || 0;
+                                        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+                                        return (
+                                            <div
+                                                key={i}
+                                                className="poll-option-bar"
+                                                onClick={() => !votedPolls.has(m._id) && handleVote(m._id, i)}
+                                                style={{ cursor: votedPolls.has(m._id) ? 'default' : 'pointer' }}
+                                            >
+                                                <span className="poll-option-label">{opt}</span>
+                                                <div className="poll-bar-outer">
+                                                    <div className="poll-bar-inner" style={{ width: `${pct}%` }} />
                                                 </div>
-                                            );
-                                        });
-                                    })()}
+                                                <span className="poll-bar-count">
+                          {count} ({pct}%)
+                        </span>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             ) : (
                                 <div className="message-content">
                                     {/https?:\/\/.*\.(gif|png|jpe?g)$/i.test(m.content) ? (
-                                        <img
-                                            src={m.content}
-                                            alt="img"
-                                            style={{
-                                                maxWidth: '200px',
-                                                height: 'auto',
-                                                borderRadius: '4px',
-                                            }}
-                                        />
+                                        <img src={m.content} alt="img" style={{ maxWidth: 200, borderRadius: 4 }} />
                                     ) : (
-                                        renderContent(m.content || '', validMentions, channels, onChannelClick)
+                                        renderContent(m.content, m.validMentions ?? [], channels, onChannelClick)
                                     )}
-                                    {m.edited && (
-                                        <span className="message-edited">(Modifié)</span>
-                                    )}
+                                    {m.edited && <span className="message-edited">(Modifié)</span>}
                                 </div>
                             )}
 
                             {/* Fichier joint */}
                             {m.fileUrl && (
                                 <div className="message-file">
-                                    {m.fileUrl.match(/\.(png|jpe?g|gif)$/i) ? (
-                                        <img
-                                            src={process.env.REACT_APP_API_URL + m.fileUrl}
-                                            alt="file"
-                                            style={{
-                                                maxWidth: '200px',
-                                                height: 'auto',
-                                            }}
-                                        />
+                                    {/\.(png|jpe?g|gif)$/i.test(m.fileUrl) ? (
+                                        <img src={process.env.REACT_APP_API_URL + m.fileUrl} alt="file" style={{ maxWidth: 200 }} />
                                     ) : (
                                         <a href={m.fileUrl} target="_blank" rel="noreferrer">
-                                            Télécharger le fichier
+                                            Télécharger
                                         </a>
                                     )}
                                 </div>
                             )}
 
                             {/* Actions */}
-                            {!isPoll && editingMessageId !== m._id && (
+                            {m.type !== 'poll' && editingMessageId !== m._id && (
                                 <div className="message-actions">
-                                    <button
-                                        className="action-button"
-                                        onClick={() => openEmojiPickerForMessage(m)}
-                                    >
+                                    <button className="action-button" onClick={() => openEmojiPickerForMessage(m)}>
                                         Réagir
                                     </button>
                                     {isMe && (
-                                        <button
-                                            className="action-button"
-                                            onClick={() => startEditingMessage(m)}
-                                        >
+                                        <button className="action-button" onClick={() => startEditingMessage(m)}>
                                             Modifier
                                         </button>
                                     )}
                                     {canDelete && (
-                                        <button
-                                            className="action-button delete-button"
-                                            onClick={() => handleDeleteMsg(m)}
-                                        >
+                                        <button className="action-button delete-button" onClick={() => handleDeleteMsg(m)}>
                                             X
                                         </button>
                                     )}
@@ -473,33 +412,21 @@ function ChatWindow({
 
                             {/* Réactions */}
                             <div className="message-reactions">
-                                {m.reactions?.map((react, i) => (
-                                    <span
-                                        key={i}
-                                        className="reaction"
-                                        title={`Réaction de ${
-                                            react.userName || react.user?._id || '(Inconnu)'
-                                        }`}
-                                    >
-                                        {react.emoji}
-                                    </span>
+                                {m.reactions?.map((r, i) => (
+                                    <span key={i} className="reaction" title={`Réaction de ${r.userName || r.user?._id}`}>
+                    {r.emoji}
+                  </span>
                                 ))}
                             </div>
 
-                            {/* ——— Read receipts ——— */}
-                            {m.readBy && m.readBy.length > 0 && (
+                            {/* Read receipts */}
+                            {m.readBy?.length > 0 && (
                                 <div
                                     className="message-read-receipt"
-                                    title={m.readBy
-                                        .map((rb) => {
-                                            const uid =
-                                                typeof rb.user === 'object'
-                                                    ? rb.user._id
-                                                    : rb.user;
-                                            const u = users.find((u) => u._id === uid);
-                                            return u ? u.name : uid;
-                                        })
-                                        .join(', ')}
+                                    title={m.readBy.map(rb => {
+                                        const u = users.find(u => u._id === String(rb.user));
+                                        return u ? u.name : rb.user;
+                                    }).join(', ')}
                                 >
                                     {selectedChannel
                                         ? `Lu par ${m.readBy.length}`
@@ -510,14 +437,10 @@ function ChatWindow({
                             {/* Emoji picker */}
                             {showEmojiPickerFor === m._id && (
                                 <div className="emoji-picker">
-                                    {['😃', '👍', '❤️', '🔥', '🎉'].map((emoji) => (
-                                        <span
-                                            key={emoji}
-                                            className="emoji"
-                                            onClick={() => handleChooseEmoji(m, emoji)}
-                                        >
-                                            {emoji}
-                                        </span>
+                                    {['😃','👍','❤️','🔥','🎉'].map(emj => (
+                                        <span key={emj} className="emoji" onClick={() => handleChooseEmoji(m, emj)}>
+                      {emj}
+                    </span>
                                     ))}
                                 </div>
                             )}
@@ -528,5 +451,3 @@ function ChatWindow({
         </div>
     );
 }
-
-export default ChatWindow;
