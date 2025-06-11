@@ -17,6 +17,7 @@ const initPollBot     = require('./bots/pollBot');
 const initMeetingBot  = require('./bots/meetingBot');
 const initReminderBot = require('./bots/reminderBot');
 const { saveBotMessage } = require('./controllers/messageBotController');
+const Call = require('./models/Call');
 
 // 1️⃣ Connexion à Mongo
 connectDB();
@@ -72,6 +73,50 @@ const activePolls = new Map();
 // ⇨ Socket handlers
 io.on('connection', socket => {
   console.log(`✅ Utilisateur connecté : ${socket.id}`);
+
+
+  //Gestion d'appel
+
+  // ➊ client demande d’appeler un user
+  socket.on('call-user', async ({ to, offer, callType }) => {
+    // sauvegarde historique
+    const callDoc = await Call.create({
+      caller: socket.userId,
+      callee: to,
+      type:   callType
+    });
+    const targetSid = userSocketMap[to];
+    if (!targetSid) return;
+    io.to(targetSid).emit('incoming-call', {
+      from:   socket.userId,
+      offer,
+      callType,
+      callId: callDoc._id.toString()
+    });
+  });
+
+  // ➋ le callee accepte et renvoie sa réponse
+  socket.on('answer-call', ({ to, answer, callId }) => {
+    const targetSid = userSocketMap[to];
+    if (targetSid) {
+      io.to(targetSid).emit('call-accepted', { answer, callId });
+    }
+  });
+
+  // ➌ échange ICE candidates
+  socket.on('ice-candidate', ({ to, candidate }) => {
+    const targetSid = userSocketMap[to];
+    if (targetSid) {
+      io.to(targetSid).emit('ice-candidate', { candidate });
+    }
+  });
+
+  // ➍ fin d’appel
+  socket.on('end-call', async ({ to, callId }) => {
+    await Call.findByIdAndUpdate(callId, { endedAt: new Date() });
+    const targetSid = userSocketMap[to];
+    if (targetSid) io.to(targetSid).emit('call-ended', { callId });
+  });
 
   // Création de réunion
   socket.on('meeting', async ({ date, title, channelId }) => {
