@@ -32,8 +32,30 @@ function Sidebar({
     const [newChannelName, setNewChannelName] = useState('');
     const [channelType, setChannelType] = useState('public');
     const [channelMembers, setChannelMembers] = useState([]);
-    const [userStatuses, setUserStatuses] = useState({});
-    const [channelNameError, setChannelNameError] = useState(false); // Ajout état d'erreur
+    const [channelNameError, setChannelNameError] = useState(false);
+
+    // ─── liste des utilisateurs en ligne pour les pastilles ───
+    const [activeUsers, setActiveUsers] = useState([]);
+
+    useEffect(() => {
+        if (!socket) return;
+        // reçu à la connexion, liste initiale
+        socket.on('active-users', list => setActiveUsers(list));
+        // nouveau connecté
+        socket.on('user-connected', id =>
+            setActiveUsers(prev => prev.includes(id) ? prev : [...prev, id])
+        );
+        // déconnecté
+        socket.on('user-disconnected', id =>
+            setActiveUsers(prev => prev.filter(u => u !== id))
+        );
+
+        return () => {
+            socket.off('active-users');
+            socket.off('user-connected');
+            socket.off('user-disconnected');
+        };
+    }, [socket]);
 
     // Charge les compteurs non-lus
     useEffect(() => {
@@ -92,11 +114,10 @@ function Sidebar({
 
     const handleCreateChannel = async () => {
         if (!newChannelName.trim()) {
-            setChannelNameError(true); // Active l’erreur
+            setChannelNameError(true);
             return;
         }
-        setChannelNameError(false); // Enlève l’erreur si ok
-
+        setChannelNameError(false);
         if (!targetWsId) return;
         try {
             await axios.post(`/api/workspaces/${targetWsId}/channels`, {
@@ -118,8 +139,8 @@ function Sidebar({
 
     const renderUser = u => {
         const isSel = u._id === selectedUser;
-        const status = userStatuses[u._id] || 'offline';
-        const dotColor = status === 'online' ? 'green' : 'red';
+        const isOnline = activeUsers.includes(u._id);
+        const dotColor = isOnline ? 'green' : 'red';
         const unread = unreadDMs[u._id] || 0;
 
         return (
@@ -130,7 +151,10 @@ function Sidebar({
             >
                 <div className="sidebar-user-row">
                     <img src={getUserAvatar(u)} alt="avatar" className="sidebar-avatar" />
-                    <span className="sidebar-status-dot" style={{ backgroundColor: dotColor }} />
+                    <span
+                        className="sidebar-status-dot"
+                        style={{ backgroundColor: dotColor }}
+                    />
                     <span className="sidebar-username">{u.name}</span>
                     {unread > 0 && <span className="unread-badge">+{unread}</span>}
                 </div>
@@ -165,7 +189,6 @@ function Sidebar({
             <h4 className="sidebar-section-title">Utilisateurs</h4>
             <ul className="sidebar-list">{otherUsers.map(renderUser)}</ul>
 
-            {/* CREATION WORKSPACE */}
             {!showCreateWs ? (
                 <button className="sidebar-button" onClick={() => setShowCreateWs(true)}>
                     + Créer un workspace
@@ -244,13 +267,13 @@ function Sidebar({
                                             className={`sidebar-item ${isChSel ? 'sidebar-item-selected' : ''}`}
                                             onClick={() => onSelectChannel(ch._id)}
                                         >
-                                            <span className="sidebar-channel-name">
-                                                #{ch.name}
-                                                {ch.type === 'private' && ' 🔒'}
-                                                {!isMuted && unread > 0 && (
-                                                    <span className="unread-badge">+{unread}</span>
-                                                )}
-                                            </span>
+                      <span className="sidebar-channel-name">
+                        #{ch.name}
+                          {ch.type === 'private' && ' 🔒'}
+                          {!isMuted && unread > 0 && (
+                              <span className="unread-badge">+{unread}</span>
+                          )}
+                      </span>
                                             <button
                                                 className="sidebar-button mute-toggle-btn"
                                                 onClick={e => {
@@ -266,12 +289,8 @@ function Sidebar({
                                                     className="sidebar-button"
                                                     onClick={async e => {
                                                         e.stopPropagation();
-                                                        if (
-                                                            window.confirm(`Supprimer le channel "${ch.name}" ?`)
-                                                        ) {
-                                                            await axios.delete(
-                                                                `/api/workspaces/${ws._id}/channels/${ch._id}`
-                                                            );
+                                                        if (window.confirm(`Supprimer le channel "${ch.name}" ?`)) {
+                                                            await axios.delete(`/api/workspaces/${ws._id}/channels/${ch._id}`);
                                                             onWorkspacesRefresh();
                                                         }
                                                     }}
@@ -299,9 +318,7 @@ function Sidebar({
                         }}
                         placeholder="Nom channel…"
                     />
-                    {channelNameError && (
-                        <div className="error-text">Le nom du channel est requis.</div>
-                    )}
+                    {channelNameError && <div className="error-text">Le nom du channel est requis.</div>}
                     <div>
                         <label>Type :</label>
                         <select value={channelType} onChange={e => setChannelType(e.target.value)}>
@@ -324,8 +341,8 @@ function Sidebar({
                                                 setChannelMembers(channelMembers.filter(id => id !== u._id));
                                             }
                                         }}
-                                    />
-                                    {' '}{u.name}
+                                    />{' '}
+                                    {u.name}
                                 </label>
                             ))}
                         </div>
