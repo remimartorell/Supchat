@@ -1,2 +1,2 @@
 Les doccumentations techniques et les guides d'utilisations sont disponibles dans le dossier doccument
-Pour lancer le projet web ou mobile doit être imperativement lancé depuis le système de dockerisation docker 
+Pour lancer le projet web ou mobile doit être imperativement lancé depuis le système de dockerisation docker pensez a bien changer l'adresse ip local par la votre dasns les fichiers .env dans le dossier backend et front end et modifier ngninx du projet. Pour lancer avec docker il faut le lancer ç la racine du projet avec la commande "docker-compose up --build". Vous aurriez ensuite les logs qui apparaitront sur la aconsole docker.
