@@ -5,9 +5,33 @@ const Workspace = require('../models/Workspace');
 const Channel = require('../models/Channel');
 const Message = require('../models/Message');
 
-// @route   POST /api/workspaces/:id/channels
-// @desc    Créer un canal dans un workspace
-// @access  Privé (membre uniquement)
+/**
+ * ————————————————————————————————
+ * ROUTE : NOMBRE DE NON-LUS PAR CHANNEL (API PUBLIC /api/channels)
+ * ————————————————————————————————
+ */
+// GET /api/channels/:channelId/unread-count
+router.get('/:channelId/unread-count', auth, async (req, res) => {
+    try {
+        const channelId = req.params.channelId;
+        const count = await Message.countDocuments({
+            channel: channelId,
+            'readBy.user': { $ne: req.user.id },
+            sender: { $ne: req.user.id }
+        });
+        res.json({ count });
+    } catch (err) {
+        res.status(500).send('Server Error');
+    }
+});
+
+/**
+ * ————————————————————————————————
+ * ROUTES : CHANNELS SCOPÉS PAR WORKSPACE
+ * ————————————————————————————————
+ */
+
+// Créer un canal dans un workspace
 router.post('/:workspaceId/channels', auth, async (req, res) => {
     const { name, type, members } = req.body;
     try {
@@ -30,9 +54,7 @@ router.post('/:workspaceId/channels', auth, async (req, res) => {
         const userSocketMap = req.app.get('userSocketMap');
         workspace.members.forEach(member => {
             const socketId = userSocketMap[member.user.toString()];
-            if (socketId) {
-                io.to(socketId).emit('channel-added', newChannel);
-            }
+            if (socketId) io.to(socketId).emit('channel-added', newChannel);
         });
 
         res.json(newChannel);
@@ -42,9 +64,7 @@ router.post('/:workspaceId/channels', auth, async (req, res) => {
     }
 });
 
-// @route   GET /api/workspaces/:id/channels
-// @desc    Récupérer les canaux d'un workspace
-// @access  Privé
+// Récupérer les canaux d'un workspace
 router.get('/:workspaceId/channels', auth, async (req, res) => {
     try {
         const workspace = await Workspace.findById(req.params.workspaceId);
@@ -61,9 +81,7 @@ router.get('/:workspaceId/channels', auth, async (req, res) => {
     }
 });
 
-// @route GET /api/channels/:channelId/messages
-// @desc Récupérer les messages d’un canal (y compris bots)
-// @access Privé
+// Récupérer les messages d’un canal
 router.get('/:workspaceId/channels/:channelId/messages', auth, async (req, res) => {
     try {
         const workspace = await Workspace.findById(req.params.workspaceId);
@@ -83,9 +101,7 @@ router.get('/:workspaceId/channels/:channelId/messages', auth, async (req, res) 
     }
 });
 
-// @route   DELETE /api/workspaces/:id/channels/:channelId
-// @desc    Supprimer un canal
-// @access  Privé (admin ou owner)
+// Supprimer un canal
 router.delete('/:workspaceId/channels/:channelId', auth, async (req, res) => {
     try {
         const workspace = await Workspace.findById(req.params.workspaceId);
@@ -105,9 +121,7 @@ router.delete('/:workspaceId/channels/:channelId', auth, async (req, res) => {
         const userSocketMap = req.app.get('userSocketMap');
         workspace.members.forEach(member => {
             const socketId = userSocketMap[member.user.toString()];
-            if (socketId) {
-                io.to(socketId).emit('channel-deleted', { channelId: req.params.channelId });
-            }
+            if (socketId) io.to(socketId).emit('channel-deleted', { channelId: req.params.channelId });
         });
 
         res.json({ msg: 'Channel deleted successfully' });
@@ -117,9 +131,7 @@ router.delete('/:workspaceId/channels/:channelId', auth, async (req, res) => {
     }
 });
 
-// @route POST /api/:workspaceId/channels/:channelId/members
-// @desc Ajouter un membre dans un canal privé
-// @access Privé (admin/owner)
+// Ajouter un membre à un canal privé
 router.post('/:workspaceId/channels/:channelId/members', auth, async (req, res) => {
     try {
         const { memberId } = req.body;
@@ -141,9 +153,7 @@ router.post('/:workspaceId/channels/:channelId/members', auth, async (req, res) 
         const io = req.app.get('socketio');
         const userSocketMap = req.app.get('userSocketMap');
         const socketId = userSocketMap[memberId];
-        if (socketId) {
-            io.to(socketId).emit('channel-added', channel);
-        }
+        if (socketId) io.to(socketId).emit('channel-added', channel);
 
         res.json({ msg: 'Member added to channel', channel });
     } catch (err) {
@@ -152,9 +162,30 @@ router.post('/:workspaceId/channels/:channelId/members', auth, async (req, res) 
     }
 });
 
-// @route DELETE /api/:workspaceId/channels/:channelId/members/:userId
-// @desc Retirer un membre d’un canal
-// @access Privé (admin/owner)
+// Récupérer les counts non lus pour chaque channel du workspace
+router.get('/workspace/:workspaceId/unread-counts', auth, async (req, res) => {
+    try {
+        const channels = await Channel.find({ workspace: req.params.workspaceId });
+        const channelIds = channels.map(c => c._id);
+
+        const unreadCounts = {};
+        const msgs = await Message.aggregate([
+            { $match: { channel: { $in: channelIds } } },
+            { $unwind: '$readBy' },
+            { $match: { 'readBy.user': { $ne: req.user._id } } },
+            { $group: { _id: '$channel', count: { $sum: 1 } } }
+        ]);
+
+        channelIds.forEach(id => unreadCounts[id] = 0);
+        msgs.forEach(row => unreadCounts[row._id] = row.count);
+
+        res.json(unreadCounts);
+    } catch (err) {
+        res.status(500).send('Server Error');
+    }
+});
+
+// Retirer un membre d’un canal
 router.delete('/:workspaceId/channels/:channelId/members/:userId', auth, async (req, res) => {
     try {
         const workspace = await Workspace.findById(req.params.workspaceId);
@@ -178,9 +209,7 @@ router.delete('/:workspaceId/channels/:channelId/members/:userId', auth, async (
         const userSocketMap = req.app.get('userSocketMap');
         workspace.members.forEach(member => {
             const socketId = userSocketMap[member.user.toString()];
-            if (socketId) {
-                io.to(socketId).emit('channel-updated', channel);
-            }
+            if (socketId) io.to(socketId).emit('channel-updated', channel);
         });
 
         res.json({ msg: 'Member removed', channel });
@@ -190,7 +219,7 @@ router.delete('/:workspaceId/channels/:channelId/members/:userId', auth, async (
     }
 });
 
-// @route PUT /api/workspaces/:workspaceId/channels/:channelId
+// Modifier un canal
 router.put('/:workspaceId/channels/:channelId', auth, async (req, res) => {
     try {
         const { name, type } = req.body;
@@ -209,7 +238,6 @@ router.put('/:workspaceId/channels/:channelId', auth, async (req, res) => {
         channel.type = type || channel.type;
         await channel.save();
 
-        // 🔁 Emit socket event
         const io = req.app.get('socketio');
         const userSocketMap = req.app.get('userSocketMap');
         workspace.members.forEach(member => {

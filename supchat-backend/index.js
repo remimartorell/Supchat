@@ -1,29 +1,46 @@
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const cors = require('cors');
-const connectDB = require('./db');
+// supchat-backend/index.js
+const express       = require('express');
+const http          = require('http');
+const socketIo      = require('socket.io');
+const cors          = require('cors');
+const connectDB     = require('./db');
 require('dotenv').config();
 
-// 🔧 Bots
+const passport      = require('passport');
+require('./config/passport'); // configure Facebook & Google
+
+const session       = require('express-session');
+const path          = require('path');
+
+// 🔧 Bots et messages
 const initPollBot     = require('./bots/pollBot');
 const initMeetingBot  = require('./bots/meetingBot');
 const initReminderBot = require('./bots/reminderBot');
 const { saveBotMessage } = require('./controllers/messageBotController');
+const Call = require('./models/Call');
 
-// Connexion MongoDB
+// 1️⃣ Connexion à Mongo
 connectDB();
 
-// Express App
+// 2️⃣ Setup Express
 const app = express();
 app.use(cors({
   origin:      process.env.CLIENT_URL,
   credentials: true,
 }));
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Routes API
+// 3️⃣ Sessions & Passport
+app.use(session({
+  secret:           process.env.SESSION_SECRET || 'supchatsecret',
+  resave:           false,
+  saveUninitialized:true,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// 4️⃣ Routes API
 app.use('/api/auth',            require('./routes/auth'));
 app.use('/api/users',           require('./routes/users'));
 app.use('/api/workspaces',      require('./routes/workspaces'));
@@ -33,8 +50,9 @@ app.use('/api/direct-messages', require('./routes/directMessages'));
 app.use('/api/search',          require('./routes/search'));
 app.use('/api/notifications',   require('./routes/notifications'));
 app.use('/api/meetings',        require('./routes/meetings'));
+app.use('/api/channels',        require('./routes/channels'));
 
-// Serveur HTTP + WebSocket
+// 5️⃣ Serveur HTTP + WebSocket
 const server = http.createServer(app);
 const io     = socketIo(server, {
   cors: {
@@ -44,50 +62,85 @@ const io     = socketIo(server, {
   },
 });
 
-// Stockage temporaire userId <-> socketId
+// Partage socket / userMap
 const userSocketMap = {};
 app.set('socketio',      io);
 app.set('userSocketMap', userSocketMap);
 
-// Stockage des sondages en mémoire
+// Polls en mémoire
 const activePolls = new Map();
 
-// ↪︎ Handlers généraux Socket.IO
+// ⇨ Socket handlers
 io.on('connection', socket => {
   console.log(`✅ Utilisateur connecté : ${socket.id}`);
 
-  socket.on('meeting', async ({ date, title, channelId, sender }) => {
+
+  //Gestion d'appel
+
+  // ➊ client demande d’appeler un user
+  socket.on('call-user', async ({ to, offer, callType }) => {
+    // sauvegarde historique
+    const callDoc = await Call.create({
+      caller: socket.userId,
+      callee: to,
+      type:   callType
+    });
+    const targetSid = userSocketMap[to];
+    if (!targetSid) return;
+    io.to(targetSid).emit('incoming-call', {
+      from:   socket.userId,
+      offer,
+      callType,
+      callId: callDoc._id.toString()
+    });
+  });
+
+  // ➋ le callee accepte et renvoie sa réponse
+  socket.on('answer-call', ({ to, answer, callId }) => {
+    const targetSid = userSocketMap[to];
+    if (targetSid) {
+      io.to(targetSid).emit('call-accepted', { answer, callId });
+    }
+  });
+
+  // ➌ échange ICE candidates
+  socket.on('ice-candidate', ({ to, candidate }) => {
+    const targetSid = userSocketMap[to];
+    if (targetSid) {
+      io.to(targetSid).emit('ice-candidate', { candidate });
+    }
+  });
+
+  // ➍ fin d’appel
+  socket.on('end-call', async ({ to, callId }) => {
+    await Call.findByIdAndUpdate(callId, { endedAt: new Date() });
+    const targetSid = userSocketMap[to];
+    if (targetSid) io.to(targetSid).emit('call-ended', { callId });
+  });
+
+  // Création de réunion
+  socket.on('meeting', async ({ date, title, channelId }) => {
     try {
       const Meeting = require('./models/Meeting');
-      const newMeeting = new Meeting({
-        title,
-        startTime: new Date(date),
-        channel: channelId,
-      });
-      await newMeeting.save();
+      const m = new Meeting({ title, startTime: new Date(date), channel: channelId });
+      await m.save();
       console.log('✅ Réunion sauvegardée :', title);
     } catch (err) {
       console.error('❌ Erreur création réunion :', err);
     }
   });
 
-  socket.on('meeting-reminder', async ({ meetingDate, meetingTime, meetingTitle, channelId, receiverId }) => {
-    const content = `✅ Réunion "${meetingTitle}" planifiée à ${meetingTime}.`;
-
+  // Rappels de réunion
+  socket.on('meeting-reminder', async ({ meetingTime, meetingTitle, channelId, receiverId }) => {
+    const content = `✅ Réunion "${meetingTitle}" à ${meetingTime}.`;
     try {
-      const saved = await saveBotMessage({
-        content,
-        channel: channelId || null,
-        receiver: receiverId || null,
-      }, channelId ? 'channel' : 'dm');
-
+      const saved = await saveBotMessage({ content, channel: channelId, receiver: receiverId }, channelId ? 'channel' : 'dm');
       if (!saved) return;
       const payload = saved.toObject();
-
       if (channelId) {
         io.to(channelId).emit('bot-message', payload);
-      } else if (receiverId) {
-        const sockId = userSocketMap[receiverId.toString()];
+      } else {
+        const sockId = userSocketMap[receiverId];
         if (sockId) io.to(sockId).emit('bot-message', payload);
       }
     } catch (err) {
@@ -95,21 +148,18 @@ io.on('connection', socket => {
     }
   });
 
-  // Enregistrement du userId et notification des autres utilisateurs
+  // Gestion des connexions utilisateurs
   socket.on('join', userId => {
-    if (!userId) return console.error("❌ Aucun userId pour 'join'");
+    if (!userId) return;
     userSocketMap[userId] = socket.id;
-    socket.emit('joined', { message: `Connecté avec socket ${socket.id}` });
-    // Notification broadcast : user en ligne
+    socket.emit('joined', { message: `Connecté via ${socket.id}` });
     socket.broadcast.emit('user-connected', userId);
-    // ----> NOUVELLE LIGNE À BIEN GARDER <----
-    // Envoi au nouvel arrivant de la liste de tous les users actuellement en ligne
     socket.emit('active-users', Object.keys(userSocketMap));
   });
 
   socket.on('joinChannel', channelId => {
     socket.join(channelId);
-    console.log(`🧩 Socket ${socket.id} a rejoint le channel ${channelId}`);
+    console.log(`🧩 ${socket.id} rejoint channel ${channelId}`);
   });
 
   socket.on('sendMessage', ({ channelId, message }) => {
@@ -117,40 +167,30 @@ io.on('connection', socket => {
   });
 
   socket.on('sendDirectMessage', ({ toUserId, message }) => {
-    const targetSocketId = userSocketMap[toUserId];
-    if (targetSocketId) io.to(targetSocketId).emit('receiveDirectMessage', { message });
+    const sid = userSocketMap[toUserId];
+    if (sid) io.to(sid).emit('receiveDirectMessage', { message });
   });
 
-  // Gestion de la déconnexion et notification des autres utilisateurs
   socket.on('disconnect', () => {
-    console.log(`⚠️ Déconnexion : ${socket.id}`);
-    let disconnectedUserId = null;
-    for (const [uId, sid] of Object.entries(userSocketMap)) {
+    console.log(`⚠️ Déco : ${socket.id}`);
+    for (const [u, sid] of Object.entries(userSocketMap)) {
       if (sid === socket.id) {
-        disconnectedUserId = uId;
-        delete userSocketMap[uId];
+        delete userSocketMap[u];
+        socket.broadcast.emit('user-disconnected', u);
         break;
       }
-    }
-    if (disconnectedUserId) {
-      // Notification broadcast : user hors ligne
-      socket.broadcast.emit('user-disconnected', disconnectedUserId);
     }
   });
 });
 
-// ✅ Initialisation des bots
+// 6️⃣ Initialisation Bots
 initPollBot(io, activePolls);
 initMeetingBot(io, userSocketMap);
 initReminderBot(io, userSocketMap);
 
-// Route test
-app.get('/', (req, res) => {
-  res.send('✅ SupChat backend is running.');
-});
+// 7️⃣ Route test
+app.get('/', (req, res) => res.send('✅ SupChat backend running'));
 
-// Démarrage
+// 8️⃣ Lancement
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`🚀 SupChat backend en ligne sur le port ${PORT}`);
-});
+server.listen(PORT, () => console.log(`🚀 Backend sur port ${PORT}`));

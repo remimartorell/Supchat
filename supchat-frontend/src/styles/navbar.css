@@ -8,6 +8,10 @@
     padding: 12px 20px;
     background-color: var(--card-bg);
     box-shadow: 0 2px 4px var(--shadow);
+    bottom: 25px;
+    height: 56px;
+    padding: 0 20px;
+    z-index: 1000;
 }
 
 /* Zone gauche : liens / logo */
@@ -59,7 +63,6 @@
     display: inline-block;
     width: 24px;
     height: 24px;
-    background: url('/img/logo_hamburger.png') no-repeat center center;
     background-size: contain;
 }
 

@@ -6,6 +6,7 @@ import App from './App';
 
 import './global.css';          // Styles globaux
 import './styles/themes.css';   // Import du thème
+<link rel="icon" href="%PUBLIC_URL%/icon.ico" />
 
 // Appliquer le thème sauvegardé dès le chargement
 const savedTheme = localStorage.getItem('appTheme') || 'dark';

@@ -4,16 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Exportations des données conforme au RGPD">
+    <list default="true" id="d2d459f3-2198-4b89-987f-cc3638fb0873" name="Changes" comment="Ajout de l'auhentification via GOOGLE vérifier sur supchat.info si ca marche">
+      <change afterPath="$PROJECT_DIR$/supchat-backend/models/Call.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-backend/routes/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/routes/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-backend/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/supchat-frontend/.env" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/.env" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/pages/ProfileSettings.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/nginx.conf" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/nginx.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" beforeDir="false" afterPath="$PROJECT_DIR$/supchat-frontend/src/components/ChatWindow.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,8 +23,8 @@
       <list>
         <option value="Dockerfile" />
         <option value="TypeScript File" />
-        <option value="JavaScript File" />
         <option value="CSS File" />
+        <option value="JavaScript File" />
       </list>
     </option>
   </component>
@@ -73,7 +71,7 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/hugod/Github/Supchat/img&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/hugod/Github/Supchat/supchat-frontend&quot;,
     &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
@@ -90,6 +88,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\hugod\Github\Supchat\supchat-frontend" />
       <recent name="C:\Users\hugod\Github\Supchat\img" />
       <recent name="C:\Users\hugod\Github\Supchat\supchat-frontend\public\img\avatars" />
     </key>
@@ -145,6 +144,12 @@
       <workItem from="1746515222284" duration="6571000" />
       <workItem from="1746530228349" duration="6117000" />
       <workItem from="1747033883929" duration="853000" />
+      <workItem from="1747638932025" duration="19861000" />
+      <workItem from="1747740568500" duration="6718000" />
+      <workItem from="1749332460242" duration="1882000" />
+      <workItem from="1749384689433" duration="1333000" />
+      <workItem from="1749471878795" duration="1174000" />
+      <workItem from="1749544119736" duration="6545000" />
     </task>
     <task id="LOCAL-00001" summary="Début du projet (node.js, express, mongoose, .env)">
       <option name="closed" value="true" />
@@ -426,7 +431,119 @@
       <option name="project" value="LOCAL" />
       <updated>1746974614402</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="ATTENTION Back up préremplissage pas encore fonctionnelle code un peut cassé">
+      <option name="closed" value="true" />
+      <created>1747060915580</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1747060915580</updated>
+    </task>
+    <task id="LOCAL-00037" summary="Fonctionalité fonctionne il reste jsute a implémenté le CSS concernant le /, @ et #">
+      <option name="closed" value="true" />
+      <created>1747062444865</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1747062444866</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Reste juste a avoir les 3 sugestions sur les # @ et / et tout seras correectement implenté">
+      <option name="closed" value="true" />
+      <created>1747073550879</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1747073550879</updated>
+    </task>
+    <task id="LOCAL-00039" summary="Les mentions des user limiter a 3 sugestions">
+      <option name="closed" value="true" />
+      <created>1747075122586</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1747075122586</updated>
+    </task>
+    <task id="LOCAL-00040" summary="Les mentions des user limiter a 3 sugestions et les emoji sont réparer">
+      <option name="closed" value="true" />
+      <created>1747120862049</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1747120862050</updated>
+    </task>
+    <task id="LOCAL-00041" summary="Améliorations de la slidebar avec du css et changement du lodo du trombonen sorte que lorsqu'on est sur l'utilisateur il s'affcihe">
+      <option name="closed" value="true" />
+      <created>1747128945451</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1747128945452</updated>
+    </task>
+    <task id="LOCAL-00042" summary="Ajout dans les notifications le noms d'utilisateurs qui nous a mentionné">
+      <option name="closed" value="true" />
+      <created>1747643027034</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1747643027034</updated>
+    </task>
+    <task id="LOCAL-00043" summary="Les pastilles des nombres de messages non lu fonctipnne parfetements">
+      <option name="closed" value="true" />
+      <created>1747742597267</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1747742597267</updated>
+    </task>
+    <task id="LOCAL-00044" summary="Ajout du sysstème de mute pour les channels">
+      <option name="closed" value="true" />
+      <created>1747746632220</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1747746632221</updated>
+    </task>
+    <task id="LOCAL-00045" summary="Amélioration du boutton de création de workspace">
+      <option name="closed" value="true" />
+      <created>1749323501110</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1749323501110</updated>
+    </task>
+    <task id="LOCAL-00046" summary="Indicateur visuel en cas dz nom remplissage du nom de channels">
+      <option name="closed" value="true" />
+      <created>1749323861947</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1749323861947</updated>
+    </task>
+    <task id="LOCAL-00047" summary="Problème de reload sur les réactions réglé">
+      <option name="closed" value="true" />
+      <created>1749388415705</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1749388415705</updated>
+    </task>
+    <task id="LOCAL-00048" summary="Ajout de l'auhentification via GOOGLE vérifier sur supchat.info si ca marche">
+      <option name="closed" value="true" />
+      <created>1749547390368</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1749547390368</updated>
+    </task>
+    <task id="LOCAL-00049" summary="Ajout de l'auhentification via GOOGLE vérifier sur supchat.info si ca marche">
+      <option name="closed" value="true" />
+      <created>1749640092240</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1749640092240</updated>
+    </task>
+    <option name="localTasksCounter" value="50" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -444,21 +561,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="- Ajout des fichiers qui n'étaient pas ajoutés dans git" />
-    <MESSAGE value="- Ajout du dernier fichier qui n'était pas dans le git" />
-    <MESSAGE value="- Mentions marchent avec notif de type &quot;alert&quot;&#10;- Notif &quot;alert&quot;&#10;- Connexion via un autre PC sur le même réseau&#10;- Bouton déconnexion&#10;- Affichage de la page revu, la barre de message est affichée en bas sans besoin de scroller&#10;- L'envoi de fichier marche&#10;- L'affichage de prévisualisation de l'image avant le message est correctement affiché&#10;- Possibilité de voir l'image envoyée de manière redimenssionnée dans le tchat&#10;- Possibilité de télécharger le fichier, qui n'est pas une image, dans le tchat" />
-    <MESSAGE value="- Ajout de la recherche*&#10;- Les images et fichers du dossier uploads sont bien présents lors du redémarrage de l'application" />
-    <MESSAGE value="- Modification de la recherche" />
-    <MESSAGE value="- Derniers problèmes de la recherche réglés." />
-    <MESSAGE value="- Ajout de boutons pour créer un workspace, créer un channel, supprimer un message.&#10;- Page settings d'un workspace, où on peut supprimer le workspace, renommer le workspace, ajouter un membre, modifier le rôle d'un membre.&#10;- Ajout de l'impossibilité pour un rôle inférieur de modifier un rôle supérieur à lui.&#10;- Ajout de l'actualisation en direct d'actions, comme création de workspace, ajout d'un membre, supprimer channel etc." />
-    <MESSAGE value="- La suppression de messages fonctionne correctement et est actualisé en direct pour celui qui supprime et ceux dans le même chanel.&#10;- On peut éditer ses propres messages (et seulement les siens même si on est owner ou admin) et il est actualisé en direct pour celui qui modifie et ceux dans le channel.&#10;- Affiche  &quot;(Modifié)&quot; en italique à la fin des messages modifiés" />
-    <MESSAGE value="- Création d'un channel privé, ajout possible d'utilisateurs depuis la création&#10;- Ajout et suppression de membres dans le chanel privé via la page settings du workspace. Les owner et admin du workspace et le créateur du channel privé ont les droits admin sur ce channel privé&#10;- Maintenant il y a une actualisation en direct pour les membres ajoutés/supprimés d'un channel public ou privé.&#10;- Ajout des réactions sur les messages.&#10;- On ne peut réagir avec qu'un seul émoticone sur un message, si on en mets un autre il remplace l'ancien &#10;- On peut passer la souris sur un émoticone pour voir afficher qui a réagis avec cet emoticone&#10;- Les émoticones et noms affichés sont bien sûr affichés en direct automatiquement" />
-    <MESSAGE value="- La suppression d'un membre d'un canal privé remarche&#10;- Ajout du hub de notification pour afficher les notifications de mentions&#10;- Affiche un nombre en rouge pour le nombre de notification non lues&#10;- Lors du clique sur la notification, cela ammène au message de la mention&#10;- Lors de l'ouverture du hub, cela affiche les notifications non lues en couleur&#10;- Lors du clique sur une nouvelle notification en couleur, cela la compte comme lue&#10;- Affichage en direct de la notif dans le hub et ajout du chiffre rouge sans besoin de recharger la page" />
-    <MESSAGE value="- Ajout d'une pastille à côté de chaque pseudo de chaque conversation; grise si l'utilisateur est déconnecté et verte s'il est connecté.&#10;- Pour les messages en channel, lors de la lecture d'un message par une personne, affiche en direct &quot;lu par 1 personne&quot; et ainsi de suite, sans compter l'envoyeur. &#10;- Pour &quot;lu par X personnes&quot;, lors du passage de la souris dessus, affiche le nom du ou des utilisateurs ayant lu le message.&#10;- En message privé, ajout d'une pastille verte lorsque le message a été lu par l'autre (avec écrit &quot;lu par l'autre&quot; au passage de la souris sur la pastille verte) mais pour l'instant l'envoyeur doit recharger la page pour voir la pastille verte s'afficher&#10;- Ajout pour les messages privés de la fonctionnalité réaction avec émoticone ainsi que modification du message, tous deux actualisés en direct comme pour les channels" />
-    <MESSAGE value="Problèmes réglés du premier commit d'Hugo qui étaient : &#10;- Pages login et register sans css&#10;- Barre du haut affichée sur / , /login et /register &#10;- Absence de la barre du haut lors de la connexion et une fois dans le chat&#10;- Impossibilité de se connecter via la page localhost (on était obligé d'aller sur la page de notre IP)" />
-    <MESSAGE value="Photo de profile ATTENTION ERREUR" />
-    <MESSAGE value="Ajout d'une API pour avoir de nombreux GIFS" />
-    <MESSAGE value="Amélioration du css pour les paramètre" />
     <MESSAGE value="Réimplentation des thèmes amélioré reste a modifire le css du changement de mdp est a renregistré dans la bdd pour chaque user." />
     <MESSAGE value="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage" />
     <MESSAGE value="ajout de la fonctionalité des bot :&#10;- Rappel&#10;-Metting&#10;-Sondage&#10;Attention a améliorer le visuel" />
@@ -469,7 +571,22 @@
     <MESSAGE value="Ajout des conditions d'utilisations ainsi qu'une options pour voir les mdp en clair reste a mettre en rouge lorsque l'utilisateur ne coche pas la case" />
     <MESSAGE value="Ajout visuel en rouge des conditions d'utilisations lorsque un user ne selectionne pas la cases des CGU" />
     <MESSAGE value="Exportations des données conforme au RGPD" />
-    <option name="LAST_COMMIT_MESSAGE" value="Exportations des données conforme au RGPD" />
+    <MESSAGE value="ATTENTION Back up préremplissage pas encore fonctionnelle code un peut cassé" />
+    <MESSAGE value="Fonctionalité fonctionne il reste jsute a implémenté le CSS concernant le /, @ et #" />
+    <MESSAGE value="Reste juste a avoir les 3 sugestions sur les # @ et / et tout seras correectement implenté" />
+    <MESSAGE value="Les mentions des user limiter a 3 sugestions" />
+    <MESSAGE value="Les mentions des user limiter a 3 sugestions et les emoji sont réparer" />
+    <MESSAGE value="Améliorations de la slidebar avec du css et changement du lodo du trombonen sorte que lorsqu'on est sur l'utilisateur il s'affcihe" />
+    <MESSAGE value="Ajout dans les notifications le noms d'utilisateurs qui nous a mentionné" />
+    <MESSAGE value="Les pastilles des nombres de messages non lu fonctipnne parfetements" />
+    <MESSAGE value="Ajout du sysstème de mute pour les channels" />
+    <MESSAGE value="Amélioration du css lors du bouttons de la création de workspace" />
+    <MESSAGE value="Amélioration du boutton de création de workspace" />
+    <MESSAGE value="Indicateur visuel en cas dz nom remplissage du nom de channels" />
+    <MESSAGE value="Problème de reload sur les réactions réglé" />
+    <MESSAGE value="Ajout de l'auhentification via facebook vérifier sur supchata.info si ca marche" />
+    <MESSAGE value="Ajout de l'auhentification via GOOGLE vérifier sur supchat.info si ca marche" />
+    <option name="LAST_COMMIT_MESSAGE" value="Ajout de l'auhentification via GOOGLE vérifier sur supchat.info si ca marche" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -480,14 +597,14 @@
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/supchat-frontend/src/components/Sidebar.js</url>
-          <line>74</line>
-          <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/supchat-frontend/src/pages/Register.js</url>
           <line>80</line>
           <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/supchat-frontend/src/App.js</url>
+          <line>35</line>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

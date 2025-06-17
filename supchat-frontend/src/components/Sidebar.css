@@ -1,61 +1,138 @@
 /* src/components/Sidebar.css */
 
-/* Conteneur principal de la sidebar */
+/* Conteneur principal */
 .sidebar {
-    height: 100vh;              /* Prend toute la hauteur de la fenêtre */
-    width: 250px;               /* Largeur fixe */
-    position: fixed;            /* Fixe sur l'écran */
-    top: 0;
+    position: fixed;
+    top: 75px;          /* = hauteur exacte de votre navbar */
     left: 0;
-    bottom: 0;
-    overflow-y: auto;           /* Scroll vertical interne */
-    overflow-x: hidden;         /* Pas de scroll horizontal */
+    right: 0;           /* si besoin, ou supprimez-le si vous avez width fixe */
+    bottom: 0;          /* prend tout jusqu’en bas */
+    width: 250px;
     background-color: #1e1e30;
     color: #fff;
     border-right: 1px solid #444;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;            /* scroll vertical */
 }
 
-/* Titre “Sidebar” */
+/* (optionnel) si vous avez un <h3> en haut */
 .sidebar h3 {
     margin: 0;
     padding: 10px;
 }
 
-/* Conteneur principal du contenu (users, workspaces, etc.) */
-.sidebar-content {
-    flex: 1;
-    padding: 0 10px;
-    overflow-y: auto;   /* Défilement vertical interne */
-    overflow-x: hidden;
+/* Titres de section (Épinglés, Utilisateurs, …) */
+.sidebar-section-title {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
 }
 
-/* Liste d’items (users, channels, …) */
-.sidebar-content ul {
+/* Liste générique */
+.sidebar-list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-/* Un item classique */
+/* Espace avant le premier épinglé */
+.pinned-list {
+    padding-top: 12px;
+}
+
+/* Séparateur sous la section “épinglés” */
+.pinned-separator {
+    margin: 8px 0;
+    border: none;
+    border-top: 1px solid #444;
+}
+
+/* Chaque ligne “user” */
 .sidebar-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 8px;          /* compacité horizontale et verticale */
+    margin: 2px 0;
     cursor: pointer;
-    padding: 5px;
-    margin: 5px 0;
     background-color: transparent;
+    transition: background-color 0.2s;
 }
-
 .sidebar-item:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255,255,255,0.05);
 }
 
-/* Quand un item est “sélectionné” */
+/* Ligne sélectionnée */
 .sidebar-item-selected {
     background-color: #3b3b50;
 }
 
-/* Les boutons généraux */
+/* Contenu de la ligne (avatar + nom + statut) */
+.sidebar-user-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Avatar compact */
+.sidebar-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Nom d’utilisateur */
+.sidebar-username {
+    font-size: 0.9rem;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Pastille de statut */
+.sidebar-status-dot,
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #999;     /* fallback */
+}
+.sidebar-status-dot.online,
+.status-dot.online {
+    background-color: #4CAF50;  /* en ligne */
+}
+.sidebar-status-dot.offline,
+.status-dot.offline {
+    background-color: #F44336;  /* déconnecté */
+}
+
+/* Bouton “Épingler” : caché par défaut, visible au hover */
+.sidebar-pin-btn {
+    background: transparent;
+    border: none;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--text-color);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .2s;
+}
+.sidebar-item:hover .sidebar-pin-btn {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Boutons (workspace, channel, …) */
 .sidebar-button {
     cursor: pointer;
     background: #555;
@@ -63,67 +140,106 @@
     border: 1px solid #999;
     border-radius: 4px;
     padding: 4px 6px;
-    margin: 5px 0;
+    margin: 6px 12px;
+    transition: background 0.2s;
 }
-
 .sidebar-button:hover {
-    background-color: #666;
+    background: #666;
 }
 
-/* Formulaires (création workspace, channel, etc.) */
+/* Formulaire de création */
 .sidebar-form {
-    margin-top: 5px;
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
+    padding: 6px 12px;
 }
 
-/* Champs input dans la sidebar */
+/* Input dans la sidebar */
 .sidebar-input {
-    padding: 4px;
+    flex: 1;
+    padding: 4px 6px;
+    background: #2b2b3d;
     border: 1px solid #999;
     border-radius: 4px;
-    background: #2b2b3d;
     color: #fff;
 }
 
-/* Conteneur en bas de la sidebar (footer, par exemple pour la recherche ou logout) */
-.sidebar-footer {
-    padding: 10px;
-    border-top: 1px solid #444;
+.unread-badge {
+    background: #e74c3c;
+    color: white;
+    border-radius: 12px;
+    font-size: 12px;
+    padding: 1px 7px;
+    margin-left: 6px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.sidebar-channel {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+}
+.sidebar-channel .mute-toggle {
+    cursor: pointer;
+    margin-left: 8px;
+}
+
+.settings-section h3 {
+    display: inline-block;
+    margin-right: 1rem;
+    vertical-align: middle;
+}
+
+.settings-section .settings-button {
+    vertical-align: middle;
+}
+
+/* Spécifiquement pour les boutons 🔕/🔔 des channels privés */
+.private-channel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.private-channel-header .bell-btn {
+    margin-left: auto;
+}
+
+/* Pour forcer l'empilement vertical dans le formulaire de création */
+.sidebar-form.sidebar-form-vertical {
     flex-direction: column;
-    gap: 10px;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 8px 12px 10px 12px;
 }
 
-/* Si tu as une barre de recherche dans le footer */
-.sidebar-footer form {
+/* Conteneur pour les boutons sous l’input */
+.sidebar-form-buttons {
     display: flex;
-    gap: 5px;
-}
-.workspace-name-truncate {
-    max-width: 150px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: inline-block;
-}
-/* pastille par défaut (gris si pas de status) */
-.status-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-right: 8px;
-    background-color: #999; /* fallback */
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 10px;
+    justify-content: flex-end;
 }
 
-/* connecté → vert */
-.status-dot.online {
-    background-color: #4CAF50;
+/* Ajoute si besoin pour des boutons larges */
+.sidebar-form-buttons .sidebar-button {
+    flex: 1 1 0;
+    margin: 0;
 }
 
-/* déconnecté → rouge */
-.status-dot.offline {
-    background-color: #F44336;
+.input-error {
+    border: 1.5px solid #e53935 !important;
+    background: #412929 !important;
+}
+
+.error-text {
+    color: #e53935;
+    font-size: 0.90em;
+    margin: 2px 0 6px 0;
+    padding-left: 2px;
+    font-weight: 500;
 }

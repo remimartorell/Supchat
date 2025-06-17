@@ -1,5 +1,5 @@
 // src/pages/Chat.js
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import {useNavigate, useLocation} from 'react-router-dom';
 import {io} from 'socket.io-client';
 import axios from '../services/axiosConfig';
@@ -38,6 +38,30 @@ function Chat({onSocketReady}) {
     const [users, setUsers] = useState([]);
     const [myWorkspaces, setMyWorkspaces] = useState([]);
     const [focusMessageId, setFocusMessageId] = useState('');
+    const [unreadDMs, setUnreadDMs] = useState({});
+    const [unreadChannels, setUnreadChannels] = useState({});
+    const [notifications, setNotifications]     = useState([]);
+    const [unreadNotifCount, setUnreadNotifCount] = useState(0);
+
+    // Liste des channels mutés (mutedChannels stocké en localStorage)
+    const [mutedChannels, setMutedChannels] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('mutedChannels')) || [];
+        } catch {
+            return [];
+        }
+    });
+
+    // Basculer le mute/unmute d’un channel
+    const toggleChannelMute = (channelId) => {
+        setMutedChannels(prev => {
+            const next = prev.includes(channelId)
+                ? prev.filter(id => id !== channelId)
+                : [...prev, channelId];
+            localStorage.setItem('mutedChannels', JSON.stringify(next));
+            return next;
+        });
+    };
 
     /**
      * On conserve les refs pour `selectedUser` et `selectedChannel`
@@ -75,6 +99,28 @@ function Chat({onSocketReady}) {
         };
         fetchUserProfile();
     }, []);
+
+    // → Charger les notifications existantes au login
+    // → Charger les compteurs DM non-lus pour chaque utilisateur
+    useEffect(() => {
+        if (!isLoggedIn || users.length === 0) return;
+        const fetchUnreadDMs = async () => {
+            const counts = {};
+            await Promise.all(
+                users.map(async u => {
+                    try {
+                        const res = await axios.get(`/api/direct-messages/${u._id}/unread-count`);
+                        counts[u._id] = res.data.count;
+                    } catch (err) {
+                        console.error(`Erreur fetch DM count pour ${u._id}:`, err);
+                    }
+                })
+            );
+            setUnreadDMs(counts);
+        };
+        fetchUnreadDMs();
+    }, [isLoggedIn, users]);
+
 
     // ----------------------------------------------------------------
     // 2) Création du socket (unique) et écoute des événements "globaux"
@@ -138,10 +184,11 @@ function Chat({onSocketReady}) {
 
         const handleNewPrivateMessage = (dm) => {
             console.log('[Socket] new-private-message:', dm);
-            const amISender = String(dm.sender) === userId;
+            const amISender   = String(dm.sender) === userId;
             const amIReceiver = String(dm.receiver) === userId;
             if (!amISender && !amIReceiver) return;
 
+            // Si on est DANS la conversation, on ajoute le message
             if (
                 selectedUserRef.current &&
                 (
@@ -149,13 +196,21 @@ function Chat({onSocketReady}) {
                     (String(dm.sender) === selectedUserRef.current && String(dm.receiver) === userId)
                 )
             ) {
-                setMessages((prev) => [...prev, dm]);
+                setMessages(prev => [...prev, dm]);
                 if (!amISender) {
                     axios.put(`/api/direct-messages/${dm._id}/markAsRead`)
                         .catch(err => console.error('Erreur markAsRead DM:', err));
                 }
             }
+            // Sinon, si c'est un DM entrant, on incrémente le badge
+            else if (!amISender && amIReceiver) {
+                setUnreadDMs(prev => ({
+                    ...prev,
+                    [dm.sender]: (prev[dm.sender] || 0) + 1
+                }));
+            }
         };
+
 
         const handleDmMessageRead = (payload) => {
             console.log('[Socket] dm-message-read:', payload);
@@ -189,33 +244,62 @@ function Chat({onSocketReady}) {
         };
     }, [socket, userId]);
 
+    // Écoute en temps réel des notifications
+    useEffect(() => {
+        if (!socket) return;
+        const handleNewNotification = (notif) => {
+            setNotifications(prev => [notif, ...prev]);
+            setUnreadNotifCount(c => c + 1);
+        };
+        socket.on('new-notification', handleNewNotification);
+        return () => {
+            socket.off('new-notification', handleNewNotification);
+        };
+    }, [socket]);
+
+
     // ----------------------------------------------------------------
-    // 4) Événements liés aux Channels
-    // ----------------------------------------------------------------
+// 4) Événements liés aux Channels
+// ----------------------------------------------------------------
     useEffect(() => {
         if (!socket) return;
 
-        const handleNewChannelMessage = (channelMsg) => {
-            console.log('[Socket] new-channel-message:', channelMsg);
-            if (selectedChannelRef.current && channelMsg.channelId === selectedChannelRef.current) {
-                channelMsg.channel = channelMsg.channelId;
-                setMessages((prev) => [...prev, channelMsg]);
-                if (String(channelMsg.sender) !== userId) {
-                    axios.put(`/api/channels/${selectedChannelRef.current}/messages/${channelMsg._id}/markAsRead`)
+        // Quand on reçoit un message dans un channel :
+        const handleNewChannelMessage = (msg) => {
+            // Si on est DANS le channel concerné => on ajoute le message à la liste
+            if (selectedChannelRef.current && msg.channelId === selectedChannelRef.current) {
+                setMessages(prev => [...prev, msg]);
+                // Marque comme lu si ce n'est pas toi
+                if (String(msg.sender) !== userId) {
+                    axios.put(`/api/channels/${selectedChannelRef.current}/messages/${msg._id}/markAsRead`)
                         .catch(err => console.error('Erreur markAsRead new message:', err));
                 }
+            } else {
+                // Sinon on incrémente le badge non-lu
+                setUnreadChannels(prev => ({
+                    ...prev,
+                    [msg.channelId]: (prev[msg.channelId] || 0) + 1
+                }));
             }
         };
 
+        // Quand un message est lu (depuis le backend)
+        const handleUnreadUpdate = ({ channelId, count, userId: payloadUserId }) => {
+            // Si c'est bien toi le user concerné par l'update
+            if (payloadUserId && String(payloadUserId) !== String(userId)) return;
+            setUnreadChannels(prev => ({
+                ...prev,
+                [channelId]: count
+            }));
+        };
+
+        // Tous les autres handlers socket (déjà en place)…
         const handleChannelMessageDeleted = (payload) => {
-            console.log('[Socket] channel-message-deleted:', payload);
             if (selectedChannelRef.current && payload.channelId === selectedChannelRef.current) {
                 setMessages(prev => prev.filter(m => m._id !== payload.messageId));
             }
         };
-
         const handleChannelMessageUpdated = (payload) => {
-            console.log('[Socket] channel-message-updated:', payload);
             if (selectedChannelRef.current && payload.channelId === selectedChannelRef.current) {
                 setMessages(prev =>
                     prev.map(m =>
@@ -226,32 +310,6 @@ function Chat({onSocketReady}) {
                 );
             }
         };
-
-        const handleMessageReacted = (payload) => {
-            console.log('[Socket] message-reacted:', payload);
-            if (selectedChannelRef.current && payload.channelId === selectedChannelRef.current) {
-                setMessages(prev =>
-                    prev.map(msg => {
-                        if (msg._id === payload.messageId) {
-                            if (!msg.reactions) msg.reactions = [];
-                            const existingIndex = msg.reactions.findIndex(r =>
-                                (r.user._id && r.user._id === payload.reaction.user._id) ||
-                                (typeof r.user === 'string' && r.user === payload.reaction.user)
-                            );
-                            if (existingIndex !== -1) {
-                                const newReactions = [...msg.reactions];
-                                newReactions[existingIndex] = payload.reaction;
-                                msg.reactions = newReactions;
-                            } else {
-                                msg.reactions = [...msg.reactions, payload.reaction];
-                            }
-                        }
-                        return msg;
-                    })
-                );
-            }
-        };
-
         const handleMentionNotification = (notif) => {
             alert(
                 `Tu as été mentionné par ${notif.from}\nDans le channel ${notif.channelName}\nDu workspace ${notif.workspaceName}`
@@ -259,7 +317,6 @@ function Chat({onSocketReady}) {
         };
 
         const handleChannelAdded = (channel) => {
-            console.log('[Socket] channel-added:', channel);
             setMyWorkspaces(prev =>
                 prev.map(ws => {
                     if (String(ws._id) === String(channel.workspace)) {
@@ -274,7 +331,6 @@ function Chat({onSocketReady}) {
         };
 
         const handleChannelDeleted = (payload) => {
-            console.log('[Socket] channel-deleted:', payload);
             setMyWorkspaces(prev =>
                 prev.map(ws => {
                     if (ws.channels) {
@@ -286,7 +342,6 @@ function Chat({onSocketReady}) {
         };
 
         const handleMessageRead = (payload) => {
-            console.log('[Socket] message-read:', payload);
             if (selectedChannelRef.current && payload.channelId === selectedChannelRef.current) {
                 setMessages(prev =>
                     prev.map(msg => {
@@ -304,7 +359,6 @@ function Chat({onSocketReady}) {
         };
 
         const handleDmMessageReacted = (payload) => {
-            console.log('[Socket] dm-message-reacted:', payload);
             setMessages(prev =>
                 prev.map(dm => {
                     if (dm._id === payload.dmId) {
@@ -325,9 +379,7 @@ function Chat({onSocketReady}) {
             );
         };
 
-
         const handleDmMessageUpdated = (payload) => {
-            // payload = { dmId, newContent, edited }
             setMessages(prev =>
                 prev.map(dm => {
                     if (dm._id === payload.dmId) {
@@ -337,23 +389,17 @@ function Chat({onSocketReady}) {
                 })
             );
         };
-
+        // --- ENREGISTREMENT DES EVENTS ---
         socket.on('new-channel-message', handleNewChannelMessage);
+        socket.on('channel:unread-update', handleUnreadUpdate);
         socket.on('channel-message-deleted', handleChannelMessageDeleted);
         socket.on('channel-message-updated', handleChannelMessageUpdated);
-        socket.on('message-reacted', handleMessageReacted);
-        socket.on('mention-notification', handleMentionNotification);
-        socket.on('channel-added', handleChannelAdded);
-        socket.on('channel-deleted', handleChannelDeleted);
-        socket.on('message-read', handleMessageRead);
-        socket.on('dm-message-reacted', handleDmMessageReacted);
-        socket.on('dm-message-updated', handleDmMessageUpdated);
 
         return () => {
             socket.off('new-channel-message', handleNewChannelMessage);
+            socket.off('channel:unread-update', handleUnreadUpdate);
             socket.off('channel-message-deleted', handleChannelMessageDeleted);
             socket.off('channel-message-updated', handleChannelMessageUpdated);
-            socket.off('message-reacted', handleMessageReacted);
             socket.off('mention-notification', handleMentionNotification);
             socket.off('channel-added', handleChannelAdded);
             socket.off('channel-deleted', handleChannelDeleted);
@@ -421,10 +467,13 @@ function Chat({onSocketReady}) {
                 updated.push(ws);
             }
             setMyWorkspaces(updated);
+            // Pour debug :
+            console.log('WORKSPACES:', updated);
         } catch (err) {
             console.error('Erreur fetchWorkspacesAndChannels:', err);
         }
     };
+
 
     // ----------------------------------------------------------------
     // 8) Surveiller les paramètres d'URL (channelId, userId, focusMsg)
@@ -447,10 +496,11 @@ function Chat({onSocketReady}) {
     // 9) Sélection d’un channel
     // ----------------------------------------------------------------
     const handleSelectChannel = async (chId, focusMsgParam) => {
-        // Réinitialiser la conversation pour ne pas conserver d'anciens messages
         setSelectedUser('');
         setSelectedChannel(chId);
         setMessages([]);
+        // Remise à zéro du compteur de non lus pour ce channel !
+        setUnreadChannels(prev => ({ ...prev, [chId]: 0 }));
 
         const fetched = await fetchChannelHistory(chId);
         await markChannelMessagesAsRead(chId, fetched);
@@ -464,6 +514,7 @@ function Chat({onSocketReady}) {
         }
     };
 
+
     // ----------------------------------------------------------------
     // 10) Sélection d’un utilisateur (DM)
     // ----------------------------------------------------------------
@@ -471,6 +522,8 @@ function Chat({onSocketReady}) {
         setSelectedChannel('');
         setSelectedUser(uId);
         setMessages([]);
+        // Remise à zéro du compteur de non lus pour ce DM !
+        setUnreadDMs(prev => ({ ...prev, [uId]: 0 }));
 
         const fetchedDMs = await fetchDMHistory(uId);
         setMessages(fetchedDMs);
@@ -482,6 +535,7 @@ function Chat({onSocketReady}) {
             navigate(`${location.pathname}?${queryParams.toString()}`, {replace: true});
         }
     };
+
 
     // ----------------------------------------------------------------
     // 11) Historique DM
@@ -501,14 +555,17 @@ function Chat({onSocketReady}) {
     // ----------------------------------------------------------------
     const fetchChannelHistory = async (channelId) => {
         if (!channelId) return [];
+        const ws = myWorkspaces.find(ws => ws.channels?.some(c => c._id === channelId));
+        if (!ws) return [];
         try {
-            const res = await axios.get(`/api/channels/${channelId}/messages`);
+            const res = await axios.get(`/api/workspaces/${ws._id}/channels/${channelId}/messages`);
             return res.data;
         } catch (err) {
             console.error('Erreur fetchChannelHistory:', err);
             return [];
         }
     };
+
 
     // ----------------------------------------------------------------
 // 13) Envoyer un message (DM ou channel)
@@ -688,16 +745,33 @@ function Chat({onSocketReady}) {
         }
     };
 
-    // ----------------------------------------------------------------
-    // 18) Recharger la liste des utilisateurs lors du changement de conversation
-    // ----------------------------------------------------------------
-    useEffect(() => {
-        if (selectedUser || selectedChannel) {
-            axios.get('/api/auth/allUsers')
-                .then(res => setUsers(res.data))
-                .catch(err => console.error('Erreur fetch allUsers:', err));
-        }
-    }, [selectedUser, selectedChannel]);
+
+    // Liste des channels du workspace actif (pour les #hashtags)
+    const currentChannels = useMemo(() => {
+        if (!selectedChannel) return [];
+        const ws = myWorkspaces.find(ws => ws.channels?.some(c => c._id === selectedChannel));
+        return ws?.channels || [];
+    }, [myWorkspaces, selectedChannel]);
+
+// -------------------
+// données pour MessageInput
+// -------------------
+    const mentionData = users.map(u => ({ id: u._id, display: u.username || u.name }));
+    const channelData  = currentChannels.map(c => {
+        // 🔒 si privé, 🔕 si muté
+        const lockIcon = c.type === 'private' ? ' 🔒' : '';
+        const muteIcon = mutedChannels.includes(c._id) ? ' 🔕' : '';
+        return {
+            id: c._id,
+            display: c.name + lockIcon + muteIcon
+        };
+    });
+    const commandData = [
+        { id: 'meeting', display: 'meeting' },
+        { id: 'poll',    display: 'poll'    },
+        { id: 'remindme',display: 'remindme'}
+    ];
+
 
     // -------------------
     // RENDU FINAL
@@ -714,12 +788,17 @@ function Chat({onSocketReady}) {
                     onSelectChannel={handleSelectChannel}
                     selectedUser={selectedUser}
                     selectedChannel={selectedChannel}
-                    onWorkspacesRefresh={async () => {
-                        await fetchWorkspacesAndChannels();
-                    }}
+                    onWorkspacesRefresh={fetchWorkspacesAndChannels}
+                    unreadDMs={unreadDMs}
+                    setUnreadDMs={setUnreadDMs}
+                    unreadChannels={unreadChannels}
+                    setUnreadChannels={setUnreadChannels}
+                    unreadNotifCount={unreadNotifCount}
+                    notifications={notifications}
+                    mutedChannels={mutedChannels}
+                    onToggleChannelMute={toggleChannelMute}
                 />
             </div>
-
             <div className="chat-layout-main">
                 <ChatWindow
                     socket={socket}
@@ -731,10 +810,15 @@ function Chat({onSocketReady}) {
                     focusMessageId={focusMessageId}
                     canDelete={canDelete}
                     setMessages={setMessages}
+                    channels={currentChannels}
+                    onChannelClick={handleSelectChannel}
                 />
                 <MessageInput
                     onSend={handleSendMessage}
                     disabled={!selectedUser && !selectedChannel}
+                    users={mentionData}
+                    channels={channelData}
+                    commands={commandData}
                 />
             </div>
         </div>
